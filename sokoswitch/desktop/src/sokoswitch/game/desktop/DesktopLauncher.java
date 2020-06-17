@@ -1,12 +1,12 @@
-package com.sokoswitch.desktop;
+package sokoswitch.game.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.sokoswitch.SokoSwitch;
+import sokoswitch.game.Sokoswitch;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new SokoSwitch(), config);
+		new LwjglApplication(new Sokoswitch(), config);
 	}
 }
