@@ -42,5 +42,5 @@ public class Player extends Entity implements Moveable{
 		else if(direction == 3) {
 			x -= 1;
 		}
-	} 
+	}
 }

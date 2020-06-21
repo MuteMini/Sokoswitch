@@ -52,6 +52,8 @@ public class PuzzleScreen extends ScreenAdapter{
 
 	@Override
 	public void render(float delta) {
+		gameLevel.update(delta);
+		
 		Gdx.gl.glClearColor(.45f, .45f, .45f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
@@ -62,10 +64,10 @@ public class PuzzleScreen extends ScreenAdapter{
 		}*/
 		if(Gdx.input.justTouched()) {
 			Vector3 clickPos = game.viewport.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
-			System.out.println(clickPos.x + "," + clickPos.y +"\t");
 			Tiles type = gameLevel.locateTilesByPosition(2, clickPos.x, clickPos.y);
-			System.out.println(type.getId() + " : " + type.getName());
 			gameLevel.getPlayer(0).setPosition((int)clickPos.x/Tiles.SIZE, (int)clickPos.y/Tiles.SIZE);
+			System.out.println(clickPos.x + "," + clickPos.y +"\t");
+			System.out.println(type.getId() + " : " + type.getName());
 		}
 	}
 
