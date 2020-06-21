@@ -12,7 +12,6 @@ Currently, the game is in its early stages. Here are some mechanics (probably du
   - **Locked** Cannot be manipulated by the user - state can only be changed indirectly.
   - **Paired** Only connects with its colored pair.
   - **Disconnected** Only certain sides can be connected with - rotation can be changed with a rotator.
-  - **Holographic** Cannot be pushed or interacted with, but still connects with blocks. Players can stand inside the block.
 - **Connections** Blocks connect together when they touch sides. They move together after being connected, allowing for interesting gimmicks.
   - **Stickpad** When an entity goes on top of the stickpad, they get locked in place. Connected blocks will seperate with the stuck block. 
   - **Splitter** Between tiles. When a block is pushed through the splitter, the two sides become unconnectable.
