@@ -64,7 +64,7 @@ public class PuzzleScreen extends ScreenAdapter{
 		}*/
 		if(Gdx.input.justTouched()) {
 			Vector3 clickPos = game.viewport.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
-			Tiles type = gameLevel.locateTilesByPosition(2, clickPos.x, clickPos.y);
+			Tiles type = gameLevel.locateTilesByPosition(0, clickPos.x, clickPos.y);
 			gameLevel.getPlayer(0).setPosition((int)clickPos.x/Tiles.SIZE, (int)clickPos.y/Tiles.SIZE);
 			System.out.println(clickPos.x + "," + clickPos.y +"\t");
 			System.out.println(type.getId() + " : " + type.getName());

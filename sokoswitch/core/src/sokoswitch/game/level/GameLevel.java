@@ -114,7 +114,6 @@ public class GameLevel extends Level{
 						connectCount++;
 						break;
 					default:
-						break;
 				}
 			}
 		}
@@ -123,8 +122,8 @@ public class GameLevel extends Level{
 	@Override
 	public void update(float delta) {
 		if(offset == 0) {
-			for(Player p : players) {
-				p.move(movement);
+			if(!movePlayers()) {
+				movementHeld = false;
 			}
 		}
 		
@@ -145,10 +144,9 @@ public class GameLevel extends Level{
         			movementOffset = -Tiles.SIZE;
     			else
     				movementOffset = Tiles.SIZE; 
-				heldCount++;
 				movementSpeed = (heldCount > 3) ? 90 : 50;
-				for(Player p : players) {
-					p.move(movement);
+				if(!movePlayers()) {
+					movementHeld = false;
 				}
 			}
 			else {
@@ -166,10 +164,14 @@ public class GameLevel extends Level{
 		mapRender.getBatch().begin();
 		mapRender.renderTileLayer(layers.get(0));
 		for(Player p : players) {
+			float tempOffset = movementOffset;
+			if(!p.getMobile())
+				tempOffset /= 6;
+			
 			if(movement % 2 == 0)
-				mapRender.getBatch().draw(p.getTexture(), p.getXPos(), p.getYPos()+movementOffset);
+				mapRender.getBatch().draw(p.getTexture(), p.getXPos(), p.getYPos()+tempOffset);
 			else if(movement % 2 == 1)
-				mapRender.getBatch().draw(p.getTexture(), p.getXPos()+movementOffset, p.getYPos());
+				mapRender.getBatch().draw(p.getTexture(), p.getXPos()+tempOffset, p.getYPos());
 			else
 				mapRender.getBatch().draw(p.getTexture(), p.getXPos(), p.getYPos());
 		}
@@ -210,5 +212,21 @@ public class GameLevel extends Level{
 	
 	public Player getPlayer(int index) {
 		return players.get(index);
+	}
+	
+	private boolean movePlayers() {
+		boolean allMoved = true;
+		for(Player p : players) {
+			p.setFacing(movement);
+			if(locateTilesByCoordinate(0, p.interact()[0], p.interact()[1]) == Tiles.SPACE) {
+				p.move(movement);
+				p.setMobile(true);
+			}
+			else {
+				p.setMobile(false);
+				allMoved = false;
+			}
+		}
+		return allMoved;
 	}
 }
