@@ -7,14 +7,19 @@ import sokoswitch.game.Sokoswitch;
 public class GameScreenManager {
 	
 	private Stack<Screen> screens;
+	private Sokoswitch game;
 	
 	public GameScreenManager(Sokoswitch game) {
-		screens = new Stack<>();
-		screens.add(new PuzzleScreen(game, 1));
+		this.screens = new Stack<>();
+		this.game = game;
+		screens.push(new MenuScreen(game, this));
+	}
+	
+	public void showPuzzleScreen(int id) {
+		screens.push(new PuzzleScreen(game, id));
 	}
 	
 	public Screen peek() {
 		return screens.peek();
 	}
-	
 }

@@ -6,12 +6,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.*;
 
-import sokoswitch.game.level.Blocks;
+import sokoswitch.game.level.Tiles;
 import sokoswitch.game.screens.*;
 
 public class Sokoswitch extends Game {
 	
-	public final float testingUnit = 1/Blocks.SIZE;
+	public final float testingUnit = 1/Tiles.SIZE;
 	
 	public OrthographicCamera camera;
 	public Viewport viewport;
@@ -29,6 +29,9 @@ public class Sokoswitch extends Game {
 
 	@Override
 	public void render () {
+		if(getScreen() != gsm.peek())
+			setScreen(gsm.peek());
+		
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		screen.render(Gdx.graphics.getDeltaTime());

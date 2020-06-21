@@ -1,30 +1,35 @@
 package sokoswitch.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.viewport.*;
 
 import sokoswitch.game.Sokoswitch;
-import sokoswitch.game.level.*;
 
 public class MenuScreen extends ScreenAdapter{
 
 	private Sokoswitch game;
+	private GameScreenManager gsm;
 
-	public MenuScreen(Sokoswitch game) {
+	public MenuScreen(Sokoswitch game, GameScreenManager gsm) {
 		this.game = game;
+		this.gsm = gsm;
 	}
 	
 	@Override
 	public void show() {
-	
+		
 	}
 
 	@Override
 	public void render(float delta) {
-	
+		Gdx.gl.glClearColor(.45f, .45f, .45f, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+			gsm.showPuzzleScreen(2);
+		}
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 
-public enum Blocks {
+public enum Tiles {
 
 	EMPTY(0, false, "empty"),
 	SPACE(1, false, "space"),
@@ -17,7 +17,7 @@ public enum Blocks {
 	
 	public final static int SIZE = 256;
 	public final static String ASSET_PATH = "puzzlePrototype.png";
-	private static HashMap<Integer, Blocks> blockMap;
+	private static HashMap<Integer, Tiles> blockMap;
 	
 	private final TextureRegion[][] tr = TextureRegion.split(new Texture(ASSET_PATH), SIZE, SIZE);
 	
@@ -28,12 +28,12 @@ public enum Blocks {
 	
 	static {
 		blockMap = new HashMap<>();
-		for(Blocks ob : Blocks.values()) {
+		for(Tiles ob : Tiles.values()) {
 			blockMap.put(ob.getId(), ob);
 		}
 	}
 	
-	public static Blocks getBlockById(int id) {
+	public static Tiles getTilesById(int id) {
 		return blockMap.get(id);
 	}
 	
@@ -53,13 +53,13 @@ public enum Blocks {
 		return sprite;
 	}
 	
-	private Blocks(int id, boolean collideable, String name) {
+	private Tiles(int id, boolean collideable, String name) {
 		this.id = id;
 		this.collideable = collideable;
 		this.name = name;
 		if(id != 0) {
 			int xIndex = (id-1)%4;
-			int yIndex = id/4;
+			int yIndex = (id-1)/4;
 			sprite = tr[yIndex][xIndex];
 		}
 		else {

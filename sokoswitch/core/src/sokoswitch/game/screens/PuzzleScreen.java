@@ -7,18 +7,19 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.*;
 
 import sokoswitch.game.Sokoswitch;
-import sokoswitch.game.entities.Player;
 import sokoswitch.game.level.*;
 
 public class PuzzleScreen extends ScreenAdapter{
 
 	private int levelId;
+	private boolean cameraCentered;
 	private GameLevel gameLevel;
 	private Sokoswitch game;
 	
 	public PuzzleScreen(Sokoswitch game, int levelId) {
 		this.game = game;
 		this.levelId = levelId;
+		this.cameraCentered = false;
 	}
 	
 	public void resetLevel() {}
@@ -30,15 +31,15 @@ public class PuzzleScreen extends ScreenAdapter{
 		
 		float w = Gdx.graphics.getWidth();
 		float h = Gdx.graphics.getHeight();
-		
-		int borderX = gameLevel.getWidth() * Blocks.SIZE;
-		int borderY = gameLevel.getHeight() * Blocks.SIZE;
+		int borderX = gameLevel.getWidth() * Tiles.SIZE;
+		int borderY = gameLevel.getHeight() * Tiles.SIZE;
 
 		game.camera = new OrthographicCamera(w, h);
 		game.camera.position.set(borderX/2f, borderY/2f, 0);
 		
 		if(gameLevel.getWidth() > 14 || gameLevel.getHeight() > 14) {
 			game.camera.zoom += 4;
+			cameraCentered = true;
 		}
 		else {
 			game.viewport = new FitViewport(borderX, borderY, game.camera);
@@ -54,16 +55,17 @@ public class PuzzleScreen extends ScreenAdapter{
 		Gdx.gl.glClearColor(.45f, .45f, .45f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		gameLevel.render(game.camera, game.batch);
+		gameLevel.render(game.camera);
 		
 		/*if(Gdx.input.isTouched()) {
 			game.camera.translate(-Gdx.input.getDeltaX()*3, Gdx.input.getDeltaY()*3);
 		}*/
 		if(Gdx.input.justTouched()) {
-			Vector3 clickPos = game.camera.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
-			Blocks type = gameLevel.locateBlockByPosition(2, clickPos.x, clickPos.y);
+			Vector3 clickPos = game.viewport.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
+			System.out.println(clickPos.x + "," + clickPos.y +"\t");
+			Tiles type = gameLevel.locateTilesByPosition(2, clickPos.x, clickPos.y);
 			System.out.println(type.getId() + " : " + type.getName());
-			//gameLevel.getPlayer().setPosition((int)clickPos.x/Blocks.SIZE, (int)clickPos.y/Blocks.SIZE);
+			gameLevel.getPlayer(0).setPosition((int)clickPos.x/Tiles.SIZE, (int)clickPos.y/Tiles.SIZE);
 		}
 	}
 
