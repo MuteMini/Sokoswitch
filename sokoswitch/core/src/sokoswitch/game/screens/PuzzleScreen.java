@@ -1,6 +1,10 @@
 package sokoswitch.game.screens;
 
+import java.util.Stack;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.math.Vector3;
@@ -13,13 +17,15 @@ public class PuzzleScreen extends ScreenAdapter{
 
 	private int levelId;
 	private boolean cameraCentered;
+	private Stack<Integer> keysPressed;
 	private GameLevel gameLevel;
 	private Sokoswitch game;
-	
+
 	public PuzzleScreen(Sokoswitch game, int levelId) {
 		this.game = game;
 		this.levelId = levelId;
 		this.cameraCentered = false;
+		this.keysPressed = new Stack<>();
 	}
 	
 	public void resetLevel() {}
@@ -27,6 +33,35 @@ public class PuzzleScreen extends ScreenAdapter{
 	
 	@Override
 	public void show() {
+		Gdx.input.setInputProcessor(new InputAdapter() {
+	        @Override 
+	        public boolean keyDown (int keycode) {
+	            if ((keycode == Input.Keys.UP)
+	            		|| (keycode == Input.Keys.DOWN)
+	            		|| (keycode == Input.Keys.RIGHT)
+	            		|| (keycode == Input.Keys.LEFT)
+	            		|| (keycode == Input.Keys.Z)
+			            || (keycode == Input.Keys.SPACE)){
+	            	keysPressed.push(keycode);
+	            	return true;
+	            }
+	            return false;
+	        }
+	        @Override 
+	        public boolean keyUp (int keycode) {
+	        	if((keycode == Input.Keys.UP)
+		        	|| (keycode == Input.Keys.DOWN)
+		            || (keycode == Input.Keys.RIGHT)
+		            || (keycode == Input.Keys.LEFT)
+		            || (keycode == Input.Keys.Z)
+		            || (keycode == Input.Keys.SPACE)){
+	        		keysPressed.remove((Integer)keycode);
+	        		return true;
+	        	}
+	            return false;
+	        }
+	    });
+
 		gameLevel = new GameLevel(LevelPath.getLevelPath(levelId));
 		
 		float w = Gdx.graphics.getWidth();
@@ -52,6 +87,7 @@ public class PuzzleScreen extends ScreenAdapter{
 
 	@Override
 	public void render(float delta) {
+		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		
 		Gdx.gl.glClearColor(.45f, .45f, .45f, 1);
@@ -64,7 +100,7 @@ public class PuzzleScreen extends ScreenAdapter{
 		}*/
 		if(Gdx.input.justTouched()) {
 			Vector3 clickPos = game.viewport.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
-			Tiles type = gameLevel.locateTilesByPosition(0, clickPos.x, clickPos.y);
+			Tiles type = gameLevel.locateTilesByPosition(2, clickPos.x, clickPos.y);
 			gameLevel.getPlayer(0).setPosition((int)clickPos.x/Tiles.SIZE, (int)clickPos.y/Tiles.SIZE);
 			System.out.println(clickPos.x + "," + clickPos.y +"\t");
 			System.out.println(type.getId() + " : " + type.getName());

@@ -12,7 +12,7 @@ public abstract class Level {
 		return this.locateTilesByCoordinate(layer, (int)(x/Tiles.SIZE), (int)(y/Tiles.SIZE));
 	}
 	public abstract Tiles locateTilesByCoordinate(int layer, int x, int y);
-	
+
 	public abstract int getWidth();
 	public abstract int getHeight();
 }

@@ -1,6 +1,6 @@
 package sokoswitch.game.level;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -8,21 +8,22 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 
 import sokoswitch.game.entities.*;
 
 public class GameLevel extends Level{
 	
-	private ArrayList<TiledMapTileLayer> layers;
 	private TiledMap map;
+	private ArrayList<TiledMapTileLayer> layers;
 	private OrthogonalTiledMapRenderer mapRender;
 	
+	/*holds the entities on the grid - players and blocks*/
 	private ArrayList<Player> players;
-	private ArrayList<Entity> pushable;
-	
-	/*first, stores the amount of blocks on the level.*/
+	private ArrayList<BlockWrapper> pushable;
+
+	/*stores the amount of blocks on the level.*/
 	private int connectCount;
-	
 	/*controls which way the player will be moving*/
 	private byte movement;
 	/*controls the movement value*/
@@ -35,52 +36,6 @@ public class GameLevel extends Level{
 	private int heldCount;
 	
 	public GameLevel(String level) {
-		
-		Gdx.input.setInputProcessor(new InputAdapter() {
-	        @Override 
-	        public boolean keyDown (int keycode) {
-	        	if(movementOffset == 0) {
-		            if (keycode == Input.Keys.UP || keycode == Input.Keys.W){
-		            	 movement = 0;
-		            	 movementHeld = true;
-		            }
-		            if (keycode == Input.Keys.DOWN || keycode == Input.Keys.S){
-		            	 movement = 2;
-		            	 movementHeld = true;
-		            }
-		            if (keycode == Input.Keys.RIGHT || keycode == Input.Keys.D){
-		            	 movement = 1;
-		            	 movementHeld = true;
-		            }
-		            if (keycode == Input.Keys.LEFT || keycode == Input.Keys.A){
-		            	 movement = 3;
-		            	 movementHeld = true;
-		            }
-	        	}
-	        	if(movementOffset == 0) {
-	        		offset = 0;
-	        		movementSpeed = 60;
-	        		heldCount = 0;
-	        		if(movement / 2 == 0)
-	        			movementOffset = -Tiles.SIZE;
-	    			else
-	    				movementOffset = Tiles.SIZE; 
-	        	}
-	            return movementHeld;
-	        }
-	        @Override 
-	        public boolean keyUp (int keycode) {
-	        	if((keycode == Input.Keys.UP || keycode == Input.Keys.W)
-		        	|| (keycode == Input.Keys.DOWN || keycode == Input.Keys.S)
-		            || (keycode == Input.Keys.RIGHT || keycode == Input.Keys.D)
-		            || (keycode == Input.Keys.LEFT || keycode == Input.Keys.A)){
-	        		movementHeld = false;
-	        		return true;
-	        	}
-	            return false;
-	        }
-	    });
-		
 		this.map = new TmxMapLoader().load(level);
 		this.layers = new ArrayList<>();
 		for(MapLayer layer : map.getLayers()) {
@@ -88,30 +43,27 @@ public class GameLevel extends Level{
 		}
 		this.mapRender = new OrthogonalTiledMapRenderer(map);
 		
+		int xMax = getWidth();
+		int yMax = getHeight();
+		
 		this.players = new ArrayList<>();
 		this.pushable = new ArrayList<>();
 		
-		this.connectCount = 1;
+		this.connectCount = 0;
 		this.movement = -1;
 		this.movementOffset = 0;
 		this.offset = 1;
 		
-		int xMax = getWidth();
-		int yMax = getHeight();
-		
 		for(int y = 0; y < yMax; y++) {
 			for(int x = 0; x < xMax; x++) {
-				switch(locateTilesByCoordinate(2,x,y)) {
+				Tiles t = locateTilesByCoordinate(2,x,y);
+				switch(t) {
 					case PLAYER:
 						players.add(new Player(x, y, xMax, yMax));
 						break;
 					case BLOCK_OFF:
-						pushable.add(new NormalBlock(x, y, xMax, yMax, false, connectCount));
-						connectCount++;
-						break;
 					case BLOCK_ON:
-						pushable.add(new NormalBlock(x, y, xMax, yMax, true, connectCount));
-						connectCount++;
+						pushable.add(new BlockWrapper(new NormalBlock(x, y, xMax, yMax, (t==Tiles.BLOCK_ON))));
 						break;
 					default:
 				}
@@ -119,24 +71,55 @@ public class GameLevel extends Level{
 		}
 	}
 	
+	public void takeInput(Stack<Integer> input) {	
+		if(input.isEmpty()) {
+			movementHeld = false;
+		}
+		else {
+			if(movementOffset == 0){
+				switch(input.peek()) {		
+					case Input.Keys.UP:
+						movement = 0;
+						break;
+					case Input.Keys.DOWN:
+						movement = 2;
+						break;
+					case Input.Keys.RIGHT:
+						movement = 1;
+						break;
+					case Input.Keys.LEFT:
+						movement = 3;
+						break;
+				}
+				if(movement != -1) {
+					movementHeld = true;
+					offset = 0;
+					if(movement / 2 == 0)
+	        			movementOffset = -Tiles.SIZE;
+	    			else
+	    				movementOffset = Tiles.SIZE; 
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void update(float delta) {
-		if(offset == 0) {
-			if(!movePlayers()) {
-				movementHeld = false;
-			}
+		if(offset == 0 && !movePlayers()) {
+			movementHeld = false;
 		}
 		
 		if(offset < 1) {
 			offset += delta;
-			float smoothing = (1-(1-offset)*(1-offset))*movementSpeed;
+			float smoothing = (1-(1-offset)*(1-offset)*(1-offset))*movementSpeed;
 			movementOffset -= (movementOffset > 0) ? smoothing : -smoothing;
-			if(movementOffset < 20 && movementOffset > -20) {
+			if(Math.abs(movementOffset) < 20) {
 				movementOffset = 0;
 				offset = 1;
 			}
 		}
 		else {
+			resetAllPush();
 			if(movementHeld) {
 				heldCount++;
 				offset = 0.01f;
@@ -163,6 +146,7 @@ public class GameLevel extends Level{
 		mapRender.setView(camera);
 		mapRender.getBatch().begin();
 		mapRender.renderTileLayer(layers.get(0));
+		
 		for(Player p : players) {
 			float tempOffset = movementOffset;
 			if(!p.getMobile())
@@ -175,8 +159,19 @@ public class GameLevel extends Level{
 			else
 				mapRender.getBatch().draw(p.getTexture(), p.getXPos(), p.getYPos());
 		}
-		for(Entity b : pushable) {
-			mapRender.getBatch().draw(b.getTexture(), b.getXPos(), b.getYPos());
+		
+		for(BlockWrapper bw : pushable) {
+			for(Block b : bw.getBlockArray()) {
+				if(b.getPushed()) {		
+					if(movement % 2 == 0)
+						mapRender.getBatch().draw(b.getTexture(), b.getXPos(), b.getYPos()+movementOffset);
+					else if(movement % 2 == 1)
+						mapRender.getBatch().draw(b.getTexture(), b.getXPos()+movementOffset, b.getYPos());
+				}
+				else {
+					mapRender.getBatch().draw(b.getTexture(), b.getXPos(), b.getYPos());
+				}
+			}
 		}
 		mapRender.getBatch().end();
 	}
@@ -199,8 +194,7 @@ public class GameLevel extends Level{
 
 	@Override
 	public Tiles locateTilesByCoordinate(int layer, int x, int y) {
-		Cell cell = ((TiledMapTileLayer)(map.getLayers().get(layer))).getCell(x, y);
-		System.out.print(x + " " + y + " | ");
+		Cell cell = layers.get(layer).getCell(x, y);
 		if(cell != null) {
 			TiledMapTile tile = cell.getTile();
 			if(tile != null) {
@@ -215,18 +209,67 @@ public class GameLevel extends Level{
 	}
 	
 	private boolean movePlayers() {
-		boolean allMoved = true;
+		boolean allMoved = false;
+		
+		resetAllPush();
+		
 		for(Player p : players) {
 			p.setFacing(movement);
-			if(locateTilesByCoordinate(0, p.interact()[0], p.interact()[1]) == Tiles.SPACE) {
+			if(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE
+					&& moveBlocks(p.interact())) {
 				p.move(movement);
 				p.setMobile(true);
+				allMoved = true;
 			}
 			else {
 				p.setMobile(false);
-				allMoved = false;
 			}
 		}
 		return allMoved;
+	}
+	
+	private boolean moveBlocks(Vector2 playerPos) {
+		int xOffset = (movement % 2 == 0) ? 0 : 1;
+		int yOffset = (movement % 2 == 0) ? 1 : 0;
+		xOffset *= (movement == 3) ? -1 : 1;
+		yOffset *= (movement == 2) ? -1 : 1;
+		
+		for(int i = 0; i < pushable.size(); i++) {
+			Vector2[] v = pushable.get(i).getBlockPos();
+			boolean push = false;
+			boolean outside = false;
+			
+			for(Vector2 vect : v) {
+				if(vect.equals(playerPos))
+					push = true;
+				if(locateTilesByCoordinate(0, (int)vect.x+xOffset, (int)vect.y+yOffset) != Tiles.SPACE)
+					outside = true;
+			}
+			
+			if(push && !outside) {
+				for(int j = 0; j < pushable.size(); j++) {
+					if(j != i) {
+						if(pushable.get(i).collides(movement, pushable.get(j)))
+							return false;
+					}
+				}
+				pushable.get(i).push(movement);
+				return true;
+			}
+			else if(push && outside) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private void resetAllPush() {
+		for(BlockWrapper bw : pushable) {
+			bw.unpush();
+		}
+	}
+	
+	private boolean checkSolved() {
+		return false;
 	}
 }

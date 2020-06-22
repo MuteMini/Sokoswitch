@@ -1,5 +1,7 @@
 package sokoswitch.game.entities;
 
+import com.badlogic.gdx.math.Vector2;
+
 public class Player extends Entity implements Moveable{
 	
 	/*0=up, 1=right, 2=down, 3=left*/
@@ -34,20 +36,16 @@ public class Player extends Entity implements Moveable{
 		}
 	}
 	
-	public int[] interact() {
+	public Vector2 interact() {
 		int xOffset = (facing % 2 == 0) ? 0 : 1;
 		int yOffset = (facing % 2 == 0) ? 1 : 0;
 		xOffset *= (facing == 3) ? -1 : 1;
 		yOffset *= (facing == 2) ? -1 : 1;
-		return new int[] {x+xOffset, y+yOffset};
-	}
-
-	public boolean getMobile() {
-		return mobile;
+		return new Vector2(x+xOffset, y+yOffset);
 	}
 	
-	public int[] getPosition() {
-		return new int[] {x, y};
+	public boolean getMobile() {
+		return mobile;
 	}
 	
 	public void setFacing(byte facing) {
@@ -56,10 +54,5 @@ public class Player extends Entity implements Moveable{
 	
 	public void setMobile(boolean mobile) {
 		this.mobile = mobile;
-	}
-	
-	public void setPosition(int x, int y) {
-		this.x = x;
-		this.y = y;
 	}
 }

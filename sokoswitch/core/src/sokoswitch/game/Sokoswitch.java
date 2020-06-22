@@ -17,7 +17,7 @@ public class Sokoswitch extends Game {
 	public Viewport viewport;
 	public SpriteBatch batch;
 	public GameScreenManager gsm;
-	
+
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();

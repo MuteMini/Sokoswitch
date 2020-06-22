@@ -1,6 +1,7 @@
 package sokoswitch.game.entities;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import sokoswitch.game.level.Tiles;
 
@@ -23,7 +24,7 @@ public abstract class Entity {
 	public void dispose() {
 		texture.getTexture().dispose();
 	}
-	
+
 	public int getXPos() {
 		return x * Tiles.SIZE;
 	}
@@ -32,7 +33,16 @@ public abstract class Entity {
 		return y * Tiles.SIZE;
 	}
 	
+	public Vector2 getPosition() {
+		return new Vector2(x, y);
+	}
+	
 	public TextureRegion getTexture() {
 		return texture;
+	}
+	
+	public void setPosition(int x, int y) {
+		this.x = x;
+		this.y = y;
 	}
 }
