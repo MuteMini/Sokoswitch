@@ -1,6 +1,6 @@
 package sokoswitch.game.entities;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 import sokoswitch.game.level.Tiles;
@@ -9,10 +9,10 @@ public abstract class Entity {
 
 	protected int x, y;
 	protected int xMax, yMax;
-	protected TextureRegion texture;
+	protected Sprite sprite;
 	
 	public Entity(int id, int x, int y, int xMax, int yMax) {
-		this.texture = Tiles.getTilesById(id).getSprite();
+		this.sprite = Tiles.getTilesById(id).getSprite();
 		this.x = x;
 		this.y = y;
 		this.xMax = xMax;
@@ -22,7 +22,7 @@ public abstract class Entity {
 	public abstract void update(float delta);
 	
 	public void dispose() {
-		texture.getTexture().dispose();
+		sprite.getTexture().dispose();
 	}
 
 	public int getXPos() {
@@ -37,8 +37,8 @@ public abstract class Entity {
 		return new Vector2(x, y);
 	}
 	
-	public TextureRegion getTexture() {
-		return texture;
+	public Sprite getSprite() {
+		return sprite;
 	}
 	
 	public void setPosition(int x, int y) {

@@ -49,8 +49,8 @@ public enum Tiles {
 		return name;
 	}
 	
-	public TextureRegion getSprite() {
-		return sprite;
+	public Sprite getSprite() {
+		return new Sprite(sprite);
 	}
 	
 	private Tiles(int id, boolean collideable, String name) {

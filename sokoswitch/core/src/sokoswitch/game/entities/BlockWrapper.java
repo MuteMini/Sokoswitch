@@ -48,6 +48,12 @@ public class BlockWrapper{
 		this.blocksJoined.addAll(newB.blocksJoined);
 	}
 	
+	public void dispose() {
+		for(Block b : blocksJoined) {
+			b.dispose();
+		}
+	}
+	
 	public ArrayList<Block> getBlockArray() {
 		return blocksJoined;
 	}

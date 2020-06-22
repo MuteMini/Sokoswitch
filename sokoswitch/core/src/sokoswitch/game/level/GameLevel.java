@@ -182,6 +182,12 @@ public class GameLevel extends Level{
 	public void dispose() {
 		map.dispose();
 		mapRender.dispose();
+		for(Player p : players) {
+			p.dispose();
+		}
+		for(BlockWrapper bw : pushable) {
+			bw.dispose();
+		}
 	}
 
 	@Override

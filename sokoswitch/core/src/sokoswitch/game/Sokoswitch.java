@@ -3,9 +3,7 @@ package sokoswitch.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.*;
-
 import sokoswitch.game.level.Tiles;
 import sokoswitch.game.screens.*;
 
@@ -15,14 +13,12 @@ public class Sokoswitch extends Game {
 	
 	public OrthographicCamera camera;
 	public Viewport viewport;
-	public SpriteBatch batch;
 	public GameScreenManager gsm;
 
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
 		viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		batch = new SpriteBatch();
 		gsm = new GameScreenManager(this);
 		setScreen(gsm.peek());
 	}
@@ -33,13 +29,11 @@ public class Sokoswitch extends Game {
 			setScreen(gsm.peek());
 		
 		camera.update();
-		batch.setProjectionMatrix(camera.combined);
 		screen.render(Gdx.graphics.getDeltaTime());
 	}
 	
 	@Override
 	public void dispose () {
-		batch.dispose();
 		screen.dispose();
 	}
 	
