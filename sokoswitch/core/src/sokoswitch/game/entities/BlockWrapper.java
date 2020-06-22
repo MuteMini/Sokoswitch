@@ -23,7 +23,7 @@ public class BlockWrapper{
 			b.setPushed(false);
 		}
 	}
-
+	
 	public boolean collides(int direction, BlockWrapper newB) {
 		Vector2[] newBv = newB.getBlockPos();
 		Vector2[] thisBv = this.getBlockPosAfterPush(direction);
@@ -36,6 +36,12 @@ public class BlockWrapper{
 			}
 		}
 		return false;
+	}
+	
+	public void switchStates() {
+		for(Block b : blocksJoined) {
+			b.switchState();
+		}
 	}
 	
 	public void connect(BlockWrapper newB) {

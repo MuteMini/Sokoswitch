@@ -1,5 +1,7 @@
 package sokoswitch.game.entities;
 
+import sokoswitch.game.level.Tiles;
+
 public class Block extends Entity implements Moveable{
 	
 	protected boolean onState;
@@ -33,6 +35,11 @@ public class Block extends Entity implements Moveable{
 		pushed = true;
 	}
 
+	public void switchState() {
+		this.onState = !this.onState;
+		this.sprite = Tiles.getTilesById((onState) ? 4 : 3).getSprite();
+	}
+	
 	public boolean getState() {
 		return onState;
 	}
@@ -40,11 +47,7 @@ public class Block extends Entity implements Moveable{
 	public boolean getPushed() {
 		return pushed;
 	}
-	
-	public void setState(boolean onState) {
-		this.onState = onState;
-	}
-	
+
 	public void setPushed(boolean pushed) {
 		this.pushed = pushed;
 	}

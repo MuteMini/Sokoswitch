@@ -1,7 +1,6 @@
 package sokoswitch.game.level;
 
 import java.util.*;
-
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
@@ -22,8 +21,6 @@ public class GameLevel extends Level{
 	private ArrayList<Player> players;
 	private ArrayList<BlockWrapper> pushable;
 
-	/*stores the amount of blocks on the level.*/
-	private int connectCount;
 	/*controls which way the player will be moving*/
 	private byte movement;
 	/*controls the movement value*/
@@ -49,9 +46,9 @@ public class GameLevel extends Level{
 		this.players = new ArrayList<>();
 		this.pushable = new ArrayList<>();
 		
-		this.connectCount = 0;
 		this.movement = -1;
 		this.movementOffset = 0;
+		this.movementSpeed = 50;
 		this.offset = 1;
 		
 		for(int y = 0; y < yMax; y++) {
@@ -89,6 +86,11 @@ public class GameLevel extends Level{
 						break;
 					case Input.Keys.LEFT:
 						movement = 3;
+						break;
+					case Input.Keys.SPACE:
+						movement = -1;
+						input.pop();
+						interact();
 						break;
 				}
 				if(movement != -1) {
@@ -153,23 +155,23 @@ public class GameLevel extends Level{
 				tempOffset /= 6;
 			
 			if(movement % 2 == 0)
-				mapRender.getBatch().draw(p.getTexture(), p.getXPos(), p.getYPos()+tempOffset);
+				mapRender.getBatch().draw(p.getSprite(), p.getXPos(), p.getYPos()+tempOffset);
 			else if(movement % 2 == 1)
-				mapRender.getBatch().draw(p.getTexture(), p.getXPos()+tempOffset, p.getYPos());
+				mapRender.getBatch().draw(p.getSprite(), p.getXPos()+tempOffset, p.getYPos());
 			else
-				mapRender.getBatch().draw(p.getTexture(), p.getXPos(), p.getYPos());
+				mapRender.getBatch().draw(p.getSprite(), p.getXPos(), p.getYPos());
 		}
 		
 		for(BlockWrapper bw : pushable) {
 			for(Block b : bw.getBlockArray()) {
 				if(b.getPushed()) {		
 					if(movement % 2 == 0)
-						mapRender.getBatch().draw(b.getTexture(), b.getXPos(), b.getYPos()+movementOffset);
+						mapRender.getBatch().draw(b.getSprite(), b.getXPos(), b.getYPos()+movementOffset);
 					else if(movement % 2 == 1)
-						mapRender.getBatch().draw(b.getTexture(), b.getXPos()+movementOffset, b.getYPos());
+						mapRender.getBatch().draw(b.getSprite(), b.getXPos()+movementOffset, b.getYPos());
 				}
 				else {
-					mapRender.getBatch().draw(b.getTexture(), b.getXPos(), b.getYPos());
+					mapRender.getBatch().draw(b.getSprite(), b.getXPos(), b.getYPos());
 				}
 			}
 		}
@@ -214,8 +216,10 @@ public class GameLevel extends Level{
 		resetAllPush();
 		
 		for(Player p : players) {
-			p.setFacing(movement);
-			if(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE
+			if(p.setFacing(movement)) {
+				p.setMobile(false);
+			}
+			else if(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE
 					&& moveBlocks(p.interact())) {
 				p.move(movement);
 				p.setMobile(true);
@@ -263,13 +267,26 @@ public class GameLevel extends Level{
 		return true;
 	}
 	
+	private void interact() {
+		Set<Vector2> playerInteract = new HashSet<>();
+		for(int i = 0; i < players.size(); i++) {
+			playerInteract.add(players.get(i).interact());
+		}
+		for(BlockWrapper bw : pushable) {
+			for(Block b : bw.getBlockArray()) {
+				if(b instanceof Switchable 
+						&& ((Switchable)b).switchPossible(movement) 
+						&& playerInteract.contains(b.getPosition())) {
+					bw.switchStates();
+					break;
+				}
+			}
+		}
+	}
+	
 	private void resetAllPush() {
 		for(BlockWrapper bw : pushable) {
 			bw.unpush();
 		}
-	}
-	
-	private boolean checkSolved() {
-		return false;
 	}
 }

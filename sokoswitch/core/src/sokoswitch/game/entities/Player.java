@@ -48,8 +48,12 @@ public class Player extends Entity implements Moveable{
 		return mobile;
 	}
 	
-	public void setFacing(byte facing) {
-		this.facing = facing;
+	public boolean setFacing(byte facing) {
+		if(this.facing != facing) {
+			this.facing = facing;
+			return true;
+		}
+		return false;
 	}
 	
 	public void setMobile(boolean mobile) {

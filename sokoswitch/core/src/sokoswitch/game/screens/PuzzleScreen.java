@@ -53,8 +53,7 @@ public class PuzzleScreen extends ScreenAdapter{
 		        	|| (keycode == Input.Keys.DOWN)
 		            || (keycode == Input.Keys.RIGHT)
 		            || (keycode == Input.Keys.LEFT)
-		            || (keycode == Input.Keys.Z)
-		            || (keycode == Input.Keys.SPACE)){
+		            || (keycode == Input.Keys.Z)){
 	        		keysPressed.remove((Integer)keycode);
 	        		return true;
 	        	}
