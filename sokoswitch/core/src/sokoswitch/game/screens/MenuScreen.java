@@ -11,10 +11,14 @@ public class MenuScreen extends ScreenAdapter{
 
 	private Sokoswitch game;
 	private GameScreenManager gsm;
+	
+	private int testNum;
 
 	public MenuScreen(Sokoswitch game, GameScreenManager gsm) {
 		this.game = game;
 		this.gsm = gsm;
+		
+		this.testNum = 1;
 	}
 	
 	@Override
@@ -24,11 +28,14 @@ public class MenuScreen extends ScreenAdapter{
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(.45f, .45f, .45f, 1);
+		if(Gdx.input.justTouched()) {
+			testNum += (testNum >= 5) ? -4 : 1;
+		}
+		Gdx.gl.glClearColor(.45f, 0.1f*testNum, .45f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-			gsm.showPuzzleScreen(2);
+			gsm.showPuzzleScreen(testNum);
 		}
 	}
 
