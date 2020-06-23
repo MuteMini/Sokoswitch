@@ -6,6 +6,9 @@ This project aims to do a few things:
 2. To get some knowledge in what kinds of work is needed in game development,
 3. And to test my skills in game/level design.
 
+## Plans
+After realizing that Github Issues are public if the repo is public, I moved my current work in progress bar to Trello. Click [here to see the Trello board.](https://trello.com/b/kv0qgetI/soko-switch-development)
+
 ## Mechanics
 Currently, the game is in its early stages. Here are some mechanics (probably due to change):
 - **Blocks** The normal blocks which have an on and off state.
