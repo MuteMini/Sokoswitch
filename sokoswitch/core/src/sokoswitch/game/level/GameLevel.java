@@ -10,6 +10,9 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 import sokoswitch.game.entities.*;
+import sokoswitch.game.entities.blocks.Block;
+import sokoswitch.game.entities.blocks.BlockWrapper;
+import sokoswitch.game.entities.blocks.NormalBlock;
 
 public class GameLevel extends Level{
 	
@@ -32,6 +35,8 @@ public class GameLevel extends Level{
 	private boolean movementHeld;
 	private int heldCount;
 	
+	private boolean solved;
+	
 	public GameLevel(String level) {
 		this.map = new TmxMapLoader().load(level);
 		this.layers = new ArrayList<>();
@@ -51,6 +56,8 @@ public class GameLevel extends Level{
 		this.movementSpeed = 50;
 		this.offset = 1;
 		
+		this.solved = false;
+		
 		for(int y = 0; y < yMax; y++) {
 			for(int x = 0; x < xMax; x++) {
 				Tiles t = locateTilesByCoordinate(2,x,y);
@@ -66,13 +73,15 @@ public class GameLevel extends Level{
 				}
 			}
 		}
+		
+		joinAllBlocks();
 	}
 	
 	public void takeInput(Stack<Integer> input) {	
 		if(input.isEmpty()) {
 			movementHeld = false;
 		}
-		else {
+		else if(!solved){
 			if(movementOffset == 0){
 				switch(input.peek()) {		
 					case Input.Keys.UP:
@@ -216,6 +225,10 @@ public class GameLevel extends Level{
 		return players.get(index);
 	}
 	
+	public boolean isSolved() {
+		return solved;
+	}
+	
 	private boolean movePlayers() {
 		boolean allMoved = false;
 		
@@ -235,6 +248,8 @@ public class GameLevel extends Level{
 				p.setMobile(false);
 			}
 		}
+		
+		joinAllBlocks();
 		return allMoved;
 	}
 	
@@ -280,11 +295,23 @@ public class GameLevel extends Level{
 		}
 		for(BlockWrapper bw : pushable) {
 			for(Block b : bw.getBlockArray()) {
-				if(b instanceof Switchable 
-						&& ((Switchable)b).switchPossible(movement) 
+				if(b.switchPossible(movement) 
 						&& playerInteract.contains(b.getPosition())) {
 					bw.switchStates();
 					break;
+				}
+			}
+		}
+		this.solved = checkLevelSolved();
+	}
+	
+	private void joinAllBlocks() {
+		for(int i = 0; i < pushable.size()-1; i++) {
+			for(int j = i+1; j < pushable.size(); j++) {
+				if(pushable.get(i).touching(pushable.get(j))) {
+					pushable.get(i).connect(pushable.get(j));
+					pushable.remove(pushable.get(j));
+					j--;
 				}
 			}
 		}
@@ -294,5 +321,14 @@ public class GameLevel extends Level{
 		for(BlockWrapper bw : pushable) {
 			bw.unpush();
 		}
+	}
+	
+	private boolean checkLevelSolved() {
+		for(BlockWrapper bw : pushable) {
+			if(!bw.getBlockStateOn()) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

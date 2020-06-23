@@ -1,9 +1,10 @@
-package sokoswitch.game.entities;
+package sokoswitch.game.entities.blocks;
 
+import sokoswitch.game.entities.Entity;
 import sokoswitch.game.level.Tiles;
 
-public class Block extends Entity implements Moveable{
-	
+public class Block extends Entity{
+
 	protected boolean onState;
 	protected boolean pushed;
 	
@@ -14,30 +15,26 @@ public class Block extends Entity implements Moveable{
 	}
 
 	@Override
-	public void update(float delta) {
-		
-	}
-
-	@Override
 	public void move(int direction) {
-		if(direction == 0) {
-			y += 1;
-		}
-		else if(direction == 1) {
-			x += 1;
-		}
-		else if(direction == 2) {
-			y -= 1;
-		}
-		else if(direction == 3) {
-			x -= 1;
-		}
+		super.move(direction);
 		pushed = true;
 	}
-
+	
 	public void switchState() {
 		this.onState = !this.onState;
 		this.sprite = Tiles.getTilesById((onState) ? 4 : 3).getSprite();
+	}
+	
+	public boolean movePossible(int direction) {
+		return true;
+	}
+	
+	public boolean switchPossible(int direction) {
+		return true;
+	}
+
+	public boolean connectionPossible(int direction) {
+		return true;
 	}
 	
 	public boolean getState() {

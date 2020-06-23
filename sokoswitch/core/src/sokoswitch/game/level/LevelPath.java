@@ -12,6 +12,7 @@ public final class LevelPath {
 		levelPath.put(3, "03.tmx");
 		levelPath.put(4, "c-1.tmx");
 		levelPath.put(5, "testing.tmx");
+		levelPath.put(6, "disconnect.tmx");
 	}
 	
 	public static String getLevelPath(int id) {

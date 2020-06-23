@@ -28,8 +28,9 @@ public class PuzzleScreen extends ScreenAdapter{
 		this.keysPressed = new Stack<>();
 	}
 	
-	public void resetLevel() {}
-	public void setLevel() {}
+	public void resetLevel() {
+		gameLevel = new GameLevel(LevelPath.getLevelPath(levelId));
+	}
 	
 	@Override
 	public void show() {
@@ -79,9 +80,8 @@ public class PuzzleScreen extends ScreenAdapter{
 			game.viewport = new FitViewport(borderX, borderY, game.camera);
 			game.viewport.apply();
 		}
-		game.camera.update();
 		
-		System.out.println(gameLevel.getWidth() + " " + gameLevel.getHeight());
+		game.camera.update();
 	}
 
 	@Override
@@ -90,6 +90,9 @@ public class PuzzleScreen extends ScreenAdapter{
 		gameLevel.update(delta);
 		
 		Gdx.gl.glClearColor(.45f, .45f, .45f, 1);
+		if(gameLevel.isSolved()) {
+			Gdx.gl.glClearColor(.5f, .12f, .65f, 1);
+		}
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		gameLevel.render(game.camera);

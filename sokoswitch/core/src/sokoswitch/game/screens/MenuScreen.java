@@ -29,7 +29,7 @@ public class MenuScreen extends ScreenAdapter{
 	@Override
 	public void render(float delta) {
 		if(Gdx.input.justTouched()) {
-			testNum += (testNum >= 5) ? -4 : 1;
+			testNum += (testNum >= 6) ? -5 : 1;
 		}
 		Gdx.gl.glClearColor(.45f, 0.1f*testNum, .45f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

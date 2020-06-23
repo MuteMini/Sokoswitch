@@ -2,7 +2,7 @@ package sokoswitch.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class Player extends Entity implements Moveable{
+public class Player extends Entity{
 	
 	/*0=up, 1=right, 2=down, 3=left*/
 	private byte facing;
@@ -13,27 +13,6 @@ public class Player extends Entity implements Moveable{
 		super(2, x, y, xMax, yMax);
 		this.facing = 0;
 		this.mobile = true;
-	}
-
-	@Override
-	public void update(float delta) {
-		
-	}
-
-	@Override
-	public void move(int direction) {
-		if(direction == 0) {
-			y += 1;
-		}
-		else if(direction == 1) {
-			x += 1;
-		}
-		else if(direction == 2) {
-			y -= 1;
-		}
-		else if(direction == 3) {
-			x -= 1;
-		}
 	}
 	
 	public Vector2 interact() {

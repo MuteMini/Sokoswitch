@@ -15,12 +15,18 @@ public class Sokoswitch extends Game {
 	public Viewport viewport;
 	public GameScreenManager gsm;
 
+	public float totalDeltaTime;
+	public int renderCount;
+	
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
 		viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		gsm = new GameScreenManager(this);
 		setScreen(gsm.peek());
+		
+		totalDeltaTime = 0;
+		renderCount = 0;
 	}
 
 	@Override
@@ -30,6 +36,15 @@ public class Sokoswitch extends Game {
 		
 		camera.update();
 		screen.render(Gdx.graphics.getDeltaTime());
+		
+		/*framerate testing*/
+		totalDeltaTime += Gdx.graphics.getDeltaTime();
+		renderCount++;
+		if(totalDeltaTime >= 1) {
+			System.out.println("update count: " + renderCount);
+			renderCount = 0;
+			totalDeltaTime = 0;
+		}
 	}
 	
 	@Override

@@ -19,12 +19,25 @@ public abstract class Entity {
 		this.yMax = yMax;
 	}
 	
-	public abstract void update(float delta);
-	
 	public void dispose() {
 		sprite.getTexture().dispose();
 	}
-
+	
+	public void move(int direction) {
+		if(direction == 0) {
+			y += 1;
+		}
+		else if(direction == 1) {
+			x += 1;
+		}
+		else if(direction == 2) {
+			y -= 1;
+		}
+		else if(direction == 3) {
+			x -= 1;
+		}
+	}
+	
 	public int getXPos() {
 		return x * Tiles.SIZE;
 	}
