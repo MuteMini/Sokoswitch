@@ -1,7 +1,6 @@
 package sokoswitch.game.entities.blocks;
 
 import sokoswitch.game.entities.Entity;
-import sokoswitch.game.level.Tiles;
 
 public abstract class Block extends Entity{
 

@@ -90,17 +90,15 @@ public class PuzzleScreen extends ScreenAdapter{
 		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		
-		Gdx.gl.glClearColor(.45f, .45f, .45f, 1);
-		if(gameLevel.isSolved()) {
+		if(gameLevel.isSolved())
 			Gdx.gl.glClearColor(.5f, .12f, .65f, 1);
-		}
+		else
+			Gdx.gl.glClearColor(.50f, .50f, .50f, 1);
+		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		gameLevel.render(game.camera);
 		
-		/*if(Gdx.input.isTouched()) {
-			game.camera.translate(-Gdx.input.getDeltaX()*3, Gdx.input.getDeltaY()*3);
-		}*/
 		if(Gdx.input.justTouched()) {
 			resetLevel();
 			
@@ -112,6 +110,11 @@ public class PuzzleScreen extends ScreenAdapter{
 		}
 	}
 
+	@Override
+	public void resize(int width, int height) {
+		game.viewport.update(width, height, false); 
+	}
+	
 	@Override
 	public void dispose() {
 		gameLevel.dispose();

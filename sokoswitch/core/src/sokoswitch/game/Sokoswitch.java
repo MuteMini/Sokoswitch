@@ -54,7 +54,7 @@ public class Sokoswitch extends Game {
 	
 	@Override
 	public void resize(int width, int height) {
-		viewport.update(width, height, false); 
+		screen.resize(width, height);
 	}
 	
 	public void testing() {
