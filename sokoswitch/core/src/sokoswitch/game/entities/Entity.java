@@ -33,14 +33,15 @@ public abstract class Entity {
 		else if(direction == 3) {
 			x -= 1;
 		}
+		setSpritePos();
 	}
 	
-	public int getXPos() {
-		return x * Tiles.SIZE;
+	public void setSpritePos() {
+		sprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
 	}
 	
-	public int getYPos() {
-		return y * Tiles.SIZE;
+	public void setSpritePos(float xOffset, float yOffset) {
+		sprite.setCenter((x*Tiles.SIZE)+xOffset+(Tiles.SIZE/2), (y*Tiles.SIZE)+yOffset+(Tiles.SIZE/2));
 	}
 	
 	public Vector2 getPosition() {

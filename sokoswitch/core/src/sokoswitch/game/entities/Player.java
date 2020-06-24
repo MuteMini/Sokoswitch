@@ -8,11 +8,14 @@ public class Player extends Entity{
 	private byte facing;
 	/*if the player can move into the direction it's facing*/
 	private boolean mobile;
+	/*if the player has chosen to rotate*/
+	private boolean rotate;
 	
 	public Player(int x, int y) {
 		super(2, x, y);
 		this.facing = 0;
-		this.mobile = true;
+		this.mobile = false;
+		this.rotate = false;
 	}
 	
 	public Vector2 interact() {
@@ -23,8 +26,16 @@ public class Player extends Entity{
 		return new Vector2(x+xOffset, y+yOffset);
 	}
 	
+	public byte getFacing() {
+		return facing;
+	}
+	
 	public boolean getMobile() {
 		return mobile;
+	}
+	
+	public boolean getRotate() {
+		return rotate;
 	}
 	
 	public boolean setFacing(byte facing) {
@@ -37,5 +48,9 @@ public class Player extends Entity{
 	
 	public void setMobile(boolean mobile) {
 		this.mobile = mobile;
+	}
+	
+	public void setRotate(boolean rotate) {
+		this.rotate = rotate;
 	}
 }

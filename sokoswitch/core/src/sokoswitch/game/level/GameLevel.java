@@ -22,17 +22,24 @@ public class GameLevel extends Level{
 	private ArrayList<Player> players;
 	private ArrayList<BlockWrapper> pushable;
 
+	/*controls animation offset values*/
+	private float offset;
+	
 	/*controls which way the player will be moving*/
 	private byte movement;
 	/*controls the movement value*/
 	private float movementOffset;
-	private float offset;
 	/*controls at what speed the player will be moving at (slow at first, then gets faster)*/
 	private int movementSpeed;
 	/*controls how much one key has been held for (3~5 holds and gets faster)*/
 	private boolean movementHeld;
 	private int heldCount;
+	/*controls what degree the player is being rotated by*/
+	private int rotateAngle;
+	private float rotateOffset;
+	private byte pastMovement;
 	
+	/*self explanatory, hopefully*/
 	private boolean solved;
 	
 	public GameLevel(String level) {
@@ -43,33 +50,45 @@ public class GameLevel extends Level{
 		}
 		this.mapRender = new OrthogonalTiledMapRenderer(map);
 		
-		int xMax = getWidth();
-		int yMax = getHeight();
-		
 		this.players = new ArrayList<>();
 		this.pushable = new ArrayList<>();
+		
+		this.offset = 1;
 		
 		this.movement = -1;
 		this.movementOffset = 0;
 		this.movementSpeed = 50;
-		this.offset = 1;
+		this.movementHeld = false;
+		this.heldCount = 0;
+		
+		this.rotateAngle = 0;
+		this.rotateOffset = 0;
+		this.pastMovement = -1;
 		
 		this.solved = false;
 		
+		int xMax = getWidth();
+		int yMax = getHeight();
 		for(int y = 0; y < yMax; y++) {
 			for(int x = 0; x < xMax; x++) {
 				Tiles t = locateTilesByCoordinate(2,x,y);
 				switch(t) {
 					case PLAYER:
-						players.add(new Player(x, y));
+						Player p = new Player(x, y);
+						p.setSpritePos();
+						players.add(p);
 						break;
 					case BLOCK_OFF:
 					case BLOCK_ON:
-						pushable.add(new BlockWrapper(new NormalBlock(x, y, (t==Tiles.BLOCK_ON))));
+						Block b1 = new NormalBlock(x, y, (t==Tiles.BLOCK_ON));
+						b1.setSpritePos();
+						pushable.add(new BlockWrapper(b1));
 						break;
 					case LOCKED_BLOCK_OFF:
 					case LOCKED_BLOCK_ON:
-						pushable.add(new BlockWrapper(new LockedBlock(x, y, (t==Tiles.LOCKED_BLOCK_ON))));
+						Block b2 = new LockedBlock(x, y, (t==Tiles.LOCKED_BLOCK_ON));
+						b2.setSpritePos();
+						pushable.add(new BlockWrapper(b2));
 						break;
 					default:
 				}
@@ -123,16 +142,25 @@ public class GameLevel extends Level{
 		}
 		
 		if(offset < 1) {
-			offset += delta;
+			offset += delta*0.8;
 			float smoothing = (1-(1-offset)*(1-offset)*(1-offset))*movementSpeed;
-			movementOffset -= (movementOffset > 0) ? smoothing : -smoothing;
-			if(Math.abs(movementOffset) < 20) {
-				movementOffset = 0;
-				offset = 1;
+			
+			if(players.get(0).getRotate()) {
+				rotateOffset -= (rotateOffset > 0) ? smoothing : -smoothing;
+				if(Math.abs(rotateOffset) < 20) {
+					rotateOffset = 0;
+					offset = 1;
+				}
+			}
+			else {
+				movementOffset -= (movementOffset > 0) ? smoothing : -smoothing;
+				if(Math.abs(movementOffset) < 20) {
+					movementOffset = 0;
+					offset = 1;
+				}
 			}
 		}
 		else {
-			resetAllPush();
 			if(movementHeld) {
 				heldCount++;
 				offset = 0.01f;
@@ -146,6 +174,8 @@ public class GameLevel extends Level{
 				}
 			}
 			else {
+				resetAllPush();
+				resetAllRotate();
 				movement = -1;
 				movementOffset = 0;
 				offset = 1;
@@ -164,26 +194,29 @@ public class GameLevel extends Level{
 			float tempOffset = movementOffset;
 			if(!p.getMobile())
 				tempOffset /= 6;
-			
-			if(movement % 2 == 0)
-				mapRender.getBatch().draw(p.getSprite(), p.getXPos(), p.getYPos()+tempOffset);
-			else if(movement % 2 == 1)
-				mapRender.getBatch().draw(p.getSprite(), p.getXPos()+tempOffset, p.getYPos());
-			else
-				mapRender.getBatch().draw(p.getSprite(), p.getXPos(), p.getYPos());
+
+			if(p.getRotate() || movement == -1) {
+				p.getSprite().setRotation(rotateAngle+rotateOffset);
+			}
+			else if(movement % 2 == 0) {
+				p.setSpritePos(0, tempOffset);
+			}
+			else if(movement % 2 == 1) {
+				p.setSpritePos(tempOffset, 0);
+			}
+			p.getSprite().draw(mapRender.getBatch());
 		}
 		
 		for(BlockWrapper bw : pushable) {
 			for(Block b : bw.getBlockArray()) {
+				b.setSpritePos();
 				if(b.getPushed()) {		
 					if(movement % 2 == 0)
-						mapRender.getBatch().draw(b.getSprite(), b.getXPos(), b.getYPos()+movementOffset);
+						b.setSpritePos(0, movementOffset);
 					else if(movement % 2 == 1)
-						mapRender.getBatch().draw(b.getSprite(), b.getXPos()+movementOffset, b.getYPos());
+						b.setSpritePos(movementOffset, 0);
 				}
-				else {
-					mapRender.getBatch().draw(b.getSprite(), b.getXPos(), b.getYPos());
-				}
+				b.getSprite().draw(mapRender.getBatch());
 			}
 		}
 		mapRender.getBatch().end();
@@ -235,9 +268,11 @@ public class GameLevel extends Level{
 		boolean allMoved = false;
 		
 		resetAllPush();
-		
+		resetAllRotate();
+		pastMovement = players.get(0).getFacing();
 		for(Player p : players) {
 			if(p.setFacing(movement)) {
+				p.setRotate(true);
 				p.setMobile(false);
 			}
 			else if(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE
@@ -249,6 +284,18 @@ public class GameLevel extends Level{
 			else {
 				p.setMobile(false);
 			}
+		}
+		
+		if(players.get(0).getRotate()) {
+			rotateAngle = movement*-90;
+			rotateOffset = (pastMovement-movement)*-90;
+			
+			if(rotateOffset == 180) 
+				rotateOffset *= -1;
+			else if(rotateOffset == 270)
+				rotateOffset = -90;
+			else if(rotateOffset == -270)
+				rotateOffset = 90;
 		}
 		
 		joinAllBlocks();
@@ -322,6 +369,12 @@ public class GameLevel extends Level{
 	private void resetAllPush() {
 		for(BlockWrapper bw : pushable) {
 			bw.unpush();
+		}
+	}
+	
+	private void resetAllRotate() {
+		for(Player p : players) {
+			p.setRotate(false);
 		}
 	}
 	
