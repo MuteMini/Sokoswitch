@@ -33,10 +33,10 @@ public class MenuScreen extends ScreenAdapter{
 		}
 		Gdx.gl.glClearColor(.45f, 0.1f*testNum, .45f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+		gsm.showPuzzleScreen(4);
+		/*if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
 			gsm.showPuzzleScreen(testNum);
-		}
+		}*/
 	}
 
 	@Override

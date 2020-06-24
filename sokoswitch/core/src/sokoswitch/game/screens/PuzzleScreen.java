@@ -15,11 +15,12 @@ import sokoswitch.game.level.*;
 
 public class PuzzleScreen extends ScreenAdapter{
 
+	private Sokoswitch game;
+	
 	private int levelId;
 	private boolean cameraCentered;
 	private Stack<Integer> keysPressed;
 	private GameLevel gameLevel;
-	private Sokoswitch game;
 
 	public PuzzleScreen(Sokoswitch game, int levelId) {
 		this.game = game;
@@ -101,17 +102,14 @@ public class PuzzleScreen extends ScreenAdapter{
 			game.camera.translate(-Gdx.input.getDeltaX()*3, Gdx.input.getDeltaY()*3);
 		}*/
 		if(Gdx.input.justTouched()) {
-			Vector3 clickPos = game.viewport.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
+			resetLevel();
+			
+			/*Vector3 clickPos = game.viewport.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
 			Tiles type = gameLevel.locateTilesByPosition(2, clickPos.x, clickPos.y);
 			gameLevel.getPlayer(0).setPosition((int)clickPos.x/Tiles.SIZE, (int)clickPos.y/Tiles.SIZE);
 			System.out.println(clickPos.x + "," + clickPos.y +"\t");
-			System.out.println(type.getId() + " : " + type.getName());
+			System.out.println(type.getId() + " : " + type.getName());*/
 		}
-	}
-
-	@Override
-	public void resize(int width, int height) {
-		game.viewport.update(width, height, false); 
 	}
 
 	@Override

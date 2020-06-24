@@ -10,9 +10,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 import sokoswitch.game.entities.*;
-import sokoswitch.game.entities.blocks.Block;
-import sokoswitch.game.entities.blocks.BlockWrapper;
-import sokoswitch.game.entities.blocks.NormalBlock;
+import sokoswitch.game.entities.blocks.*;
 
 public class GameLevel extends Level{
 	
@@ -63,11 +61,15 @@ public class GameLevel extends Level{
 				Tiles t = locateTilesByCoordinate(2,x,y);
 				switch(t) {
 					case PLAYER:
-						players.add(new Player(x, y, xMax, yMax));
+						players.add(new Player(x, y));
 						break;
 					case BLOCK_OFF:
 					case BLOCK_ON:
-						pushable.add(new BlockWrapper(new NormalBlock(x, y, xMax, yMax, (t==Tiles.BLOCK_ON))));
+						pushable.add(new BlockWrapper(new NormalBlock(x, y, (t==Tiles.BLOCK_ON))));
+						break;
+					case LOCKED_BLOCK_OFF:
+					case LOCKED_BLOCK_ON:
+						pushable.add(new BlockWrapper(new LockedBlock(x, y, (t==Tiles.LOCKED_BLOCK_ON))));
 						break;
 					default:
 				}

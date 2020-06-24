@@ -3,13 +3,13 @@ package sokoswitch.game.entities.blocks;
 import sokoswitch.game.entities.Entity;
 import sokoswitch.game.level.Tiles;
 
-public class Block extends Entity{
+public abstract class Block extends Entity{
 
 	protected boolean onState;
 	protected boolean pushed;
 	
-	public Block(int id, int x, int y, int xMax, int yMax, boolean onState) {
-		super(id, x, y, xMax, yMax);
+	public Block(int id, int x, int y, boolean onState) {
+		super(id, x, y);
 		this.onState = onState;
 		this.pushed = false;
 	}
@@ -20,10 +20,7 @@ public class Block extends Entity{
 		pushed = true;
 	}
 	
-	public void switchState() {
-		this.onState = !this.onState;
-		this.sprite = Tiles.getTilesById((onState) ? 4 : 3).getSprite();
-	}
+	public abstract void switchState();
 	
 	public boolean movePossible(int direction) {
 		return true;

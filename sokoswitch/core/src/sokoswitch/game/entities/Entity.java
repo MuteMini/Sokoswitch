@@ -8,15 +8,12 @@ import sokoswitch.game.level.Tiles;
 public abstract class Entity {
 
 	protected int x, y;
-	protected int xMax, yMax;
 	protected Sprite sprite;
 	
-	public Entity(int id, int x, int y, int xMax, int yMax) {
+	public Entity(int id, int x, int y) {
 		this.sprite = Tiles.getTilesById(id).getSprite();
 		this.x = x;
 		this.y = y;
-		this.xMax = xMax;
-		this.yMax = yMax;
 	}
 	
 	public void dispose() {

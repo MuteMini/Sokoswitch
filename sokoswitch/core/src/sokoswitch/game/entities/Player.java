@@ -9,8 +9,8 @@ public class Player extends Entity{
 	/*if the player can move into the direction it's facing*/
 	private boolean mobile;
 	
-	public Player(int x, int y, int xMax, int yMax) {
-		super(2, x, y, xMax, yMax);
+	public Player(int x, int y) {
+		super(2, x, y);
 		this.facing = 0;
 		this.mobile = true;
 	}
