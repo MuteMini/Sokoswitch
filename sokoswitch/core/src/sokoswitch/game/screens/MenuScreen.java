@@ -1,7 +1,6 @@
 package sokoswitch.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 
@@ -33,7 +32,7 @@ public class MenuScreen extends ScreenAdapter{
 		}
 		Gdx.gl.glClearColor(.45f, 0.1f*testNum, .45f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		gsm.showPuzzleScreen(4);
+		gsm.showPuzzleScreen(1);
 		/*if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
 			gsm.showPuzzleScreen(testNum);
 		}*/
