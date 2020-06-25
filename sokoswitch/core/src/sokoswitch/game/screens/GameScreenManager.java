@@ -12,11 +12,15 @@ public class GameScreenManager {
 	public GameScreenManager(Sokoswitch game) {
 		this.screens = new Stack<>();
 		this.game = game;
-		screens.push(new MenuScreen(game, this));
+		screens.push(new MenuScreen(game));
 	}
 	
 	public void showPuzzleScreen(int id) {
 		screens.push(new PuzzleScreen(game, id));
+	}
+	
+	public void pop() {
+		screens.pop();
 	}
 	
 	public Screen peek() {

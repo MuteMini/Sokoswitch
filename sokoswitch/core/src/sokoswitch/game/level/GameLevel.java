@@ -1,7 +1,6 @@
 package sokoswitch.game.level;
 
 import java.util.*;
-import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.*;
@@ -105,19 +104,19 @@ public class GameLevel extends Level{
 		else if(!solved){
 			if(movementOffset == 0){
 				switch(input.peek()) {		
-					case Input.Keys.UP:
+					case 1:
 						movement = 0;
 						break;
-					case Input.Keys.DOWN:
+					case 2:
 						movement = 2;
 						break;
-					case Input.Keys.RIGHT:
+					case 3:
 						movement = 1;
 						break;
-					case Input.Keys.LEFT:
+					case 4:
 						movement = 3;
 						break;
-					case Input.Keys.SPACE:
+					case 5:
 						movement = -1;
 						input.pop();
 						interact();
@@ -195,22 +194,19 @@ public class GameLevel extends Level{
 			if(!p.getMobile())
 				tempOffset /= 6;
 
-			if(p.getRotate() || movement == -1) {
+			if(p.getRotate() || movement == -1)
 				p.getSprite().setRotation(rotateAngle+rotateOffset);
-			}
-			else if(movement % 2 == 0) {
+			else if(movement % 2 == 0)
 				p.setSpritePos(0, tempOffset);
-			}
-			else if(movement % 2 == 1) {
+			else if(movement % 2 == 1)
 				p.setSpritePos(tempOffset, 0);
-			}
 			p.getSprite().draw(mapRender.getBatch());
 		}
 		
 		for(BlockWrapper bw : pushable) {
 			for(Block b : bw.getBlockArray()) {
 				b.setSpritePos();
-				if(b.getPushed()) {		
+				if(b.getPushed()) {	
 					if(movement % 2 == 0)
 						b.setSpritePos(0, movementOffset);
 					else if(movement % 2 == 1)
