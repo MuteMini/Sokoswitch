@@ -134,7 +134,7 @@ public class GameLevel extends Level{
 				case 6:
 					undoState();
 					movement = -1;
-					offsetSpeed = (heldCount >= 5) ? 20 : 10;
+					offsetSpeed = (heldCount >= 5) ? 20 : 7;
 					offset = 0;
 					undoHeld = true;
 					break;
@@ -186,23 +186,12 @@ public class GameLevel extends Level{
 				}
 			}
 			else {
-				if(movementHeld) {
-					heldCount++;
-					offset = 0f;
-					if(movement / 2 == 0)
-	        			movementOffset = -Tiles.SIZE;
-	    			else
-	    				movementOffset = Tiles.SIZE; 
-					offsetSpeed = (heldCount > 3) ? 90 : 50;
-				}
-				else {
-					resetAllPush();
-					resetAllRotate();
-					movement = -1;
-					movementOffset = 0;
-					offset = 1;
-					heldCount = 0;
-				}
+				resetAllPush();
+				resetAllRotate();
+				movement = -1;
+				movementOffset = 0;
+				offset = 1;
+				heldCount = 0;
 			}
 		}
 	}
@@ -333,22 +322,25 @@ public class GameLevel extends Level{
 			for(Vector2 vect : v) {
 				if(vect.equals(playerPos))
 					push = true;
-				if(locateTilesByCoordinate(0, (int)vect.x+xOffset, (int)vect.y+yOffset) != Tiles.SPACE)
+				if((locateTilesByCoordinate(0, (int)vect.x+xOffset, (int)vect.y+yOffset) != Tiles.SPACE)
+						|| (locateTilesByCoordinate(0, (int)vect.x, (int)vect.y) == Tiles.EMPTY))
 					outside = true;
 			}
 			
-			if(push && !outside) {
-				for(int j = 0; j < pushable.size(); j++) {
-					if(j != i) {
-						if(pushable.get(i).collides(movement, pushable.get(j)))
-							return false;
+			if(push) {
+				if(outside)
+					return false;
+				else {
+					for(int j = 0; j < pushable.size(); j++) {
+						if(j != i) {
+							if(pushable.get(i).collides(movement, pushable.get(j)))
+								return false;
+						}
 					}
+					pushable.get(i).push(movement);
+					return true;
 				}
-				pushable.get(i).push(movement);
-				return true;
 			}
-			else if(push && outside)
-				return false;
 		}
 		return true;
 	}
@@ -371,12 +363,22 @@ public class GameLevel extends Level{
 	}
 	
 	private void joinAllBlocks() {
-		for(int i = 0; i < pushable.size()-1; i++) {
-			for(int j = i+1; j < pushable.size(); j++) {
-				if(pushable.get(i).touching(pushable.get(j))) {
+		int size = pushable.size();
+		for(int i = 0; i < size; i++) {
+			for(int j = 0; j < size; j++) {
+				if(i != j && pushable.get(i).touching(pushable.get(j))) {
+					System.out.print(pushable.get(i).getBlockPos()[0].x + " " + pushable.get(i).getBlockPos()[0].y + " ");
+					System.out.println(pushable.get(j).getBlockPos()[0].x + " " + pushable.get(j).getBlockPos()[0].y);
+					System.out.println(i + " " + j);
+					System.out.println();
+					
 					pushable.get(i).connect(pushable.get(j));
 					pushable.remove(pushable.get(j));
-					j--;
+					if(j > i)
+						j--;
+					else
+						i--;
+					size--;
 				}
 			}
 		}
