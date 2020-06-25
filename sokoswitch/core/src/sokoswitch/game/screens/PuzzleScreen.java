@@ -38,28 +38,63 @@ public class PuzzleScreen extends ScreenAdapter{
 		Gdx.input.setInputProcessor(new InputAdapter() {
 	        @Override 
 	        public boolean keyDown (int keycode) {
-	            if ((keycode == Input.Keys.UP)
-	            		|| (keycode == Input.Keys.DOWN)
-	            		|| (keycode == Input.Keys.RIGHT)
-	            		|| (keycode == Input.Keys.LEFT)
-	            		|| (keycode == Input.Keys.Z)
-			            || (keycode == Input.Keys.SPACE)){
-	            	keysPressed.push(keycode);
-	            	return true;
+	            switch(keycode) {
+	            	case Input.Keys.UP:
+	            	case Input.Keys.W:
+	            		keysPressed.push(1);
+	            		break;
+	            	case Input.Keys.DOWN:
+	            	case Input.Keys.S:	
+	            		keysPressed.push(2);
+	            		break;
+	            	case Input.Keys.RIGHT:
+	            	case Input.Keys.D:
+	            		keysPressed.push(3);
+	            		break;
+	            	case Input.Keys.LEFT:
+	            	case Input.Keys.A:
+	            		keysPressed.push(4);
+	            		break;
+	            	case Input.Keys.SPACE:
+	            		keysPressed.push(5);
+	            		break;
+	            	case Input.Keys.Z:
+	            		keysPressed.push(6);
+	            		break;
+	            	default:
+	            		 return false;
 	            }
-	            return false;
+	            return true;
 	        }
 	        @Override 
 	        public boolean keyUp (int keycode) {
-	        	if((keycode == Input.Keys.UP)
-		        	|| (keycode == Input.Keys.DOWN)
-		            || (keycode == Input.Keys.RIGHT)
-		            || (keycode == Input.Keys.LEFT)
-		            || (keycode == Input.Keys.Z)){
-	        		keysPressed.remove((Integer)keycode);
-	        		return true;
-	        	}
-	            return false;
+	        	switch(keycode) {
+	            	case Input.Keys.UP:
+	            	case Input.Keys.W:
+	            		keysPressed.remove((Integer)1);
+	            		break;
+	            	case Input.Keys.DOWN:
+	            	case Input.Keys.S:	
+	            		keysPressed.remove((Integer)2);
+	            		break;
+	            	case Input.Keys.RIGHT:
+	            	case Input.Keys.D:
+	            		keysPressed.remove((Integer)3);
+	            		break;
+	            	case Input.Keys.LEFT:
+	            	case Input.Keys.A:
+	            		keysPressed.remove((Integer)4);
+	            		break;
+	            	case Input.Keys.SPACE:
+	            		keysPressed.remove((Integer)5);
+	            		break;
+	            	case Input.Keys.Z:
+	            		keysPressed.remove((Integer)6);
+	            		break;
+	            	default:
+	            		 return false;
+	            }
+            return true;
 	        }
 	    });
 
@@ -90,15 +125,21 @@ public class PuzzleScreen extends ScreenAdapter{
 		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		
-		if(gameLevel.isSolved())
-			Gdx.gl.glClearColor(.5f, .12f, .65f, 1);
-		else
+		/*testing*/
+		if(gameLevel.isSolved()) {
+			Gdx.gl.glClearColor(.5f, .65f, .12f, 1);
+		}
+		else /*testing*/
 			Gdx.gl.glClearColor(.50f, .50f, .50f, 1);
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		gameLevel.render(game.camera);
 		
+		if(gameLevel.isSolved()) {
+			game.gsm.pop();
+		}
+			
 		if(Gdx.input.justTouched()) {
 			resetLevel();
 			
