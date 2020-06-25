@@ -6,12 +6,14 @@ import com.badlogic.gdx.math.Vector2;
 import sokoswitch.game.level.Tiles;
 
 public abstract class Entity {
-
+	
+	protected int id;
 	protected int x, y;
 	protected Sprite sprite;
 	
 	public Entity(int id, int x, int y) {
 		this.sprite = Tiles.getTilesById(id).getSprite();
+		this.id = id;
 		this.x = x;
 		this.y = y;
 	}
@@ -36,20 +38,29 @@ public abstract class Entity {
 		setSpritePos();
 	}
 	
-	public void setSpritePos() {
-		sprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
-	}
-	
-	public void setSpritePos(float xOffset, float yOffset) {
-		sprite.setCenter((x*Tiles.SIZE)+xOffset+(Tiles.SIZE/2), (y*Tiles.SIZE)+yOffset+(Tiles.SIZE/2));
-	}
-	
 	public Vector2 getPosition() {
 		return new Vector2(x, y);
 	}
 	
 	public Sprite getSprite() {
 		return sprite;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setSprite(int id) {
+		this.id = id;
+		this.sprite = Tiles.getTilesById(id).getSprite();
+	}
+	
+	public void setSpritePos() {
+		sprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
+	}
+	
+	public void setSpritePos(float xOffset, float yOffset) {
+		sprite.setCenter((x*Tiles.SIZE)+xOffset+(Tiles.SIZE/2), (y*Tiles.SIZE)+yOffset+(Tiles.SIZE/2));
 	}
 	
 	public void setPosition(int x, int y) {

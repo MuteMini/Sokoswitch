@@ -8,14 +8,22 @@ public class BlockWrapper{
 	protected ArrayList<Block> blocksJoined;
 	
 	public BlockWrapper(Block b) {
-		this.blocksJoined = new ArrayList<>();
-		blocksJoined.add(b);
+		this();
+		addBlock(b);
 	}
 	
+	public BlockWrapper() {
+		this.blocksJoined = new ArrayList<>();
+	}
+
 	public void dispose() {
 		for(Block b : blocksJoined) {
 			b.dispose();
 		}
+	}
+	
+	public void addBlock(Block b) {
+		blocksJoined.add(b);
 	}
 	
 	public void push(int direction) {
@@ -159,9 +167,5 @@ public class BlockWrapper{
 			v[i] = new Vector2(tempV.x+xOffset, tempV.y+yOffset);
 		}
 		return v;
-	}
-	
-	private void addBlock(Block b) {
-		blocksJoined.add(b);
 	}
 }

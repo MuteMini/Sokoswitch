@@ -1,7 +1,5 @@
 package sokoswitch.game.entities.blocks;
 
-import sokoswitch.game.level.Tiles;
-
 public class LockedBlock extends Block{
 
 	public LockedBlock(int x, int y, boolean turnedOn) {
@@ -11,7 +9,7 @@ public class LockedBlock extends Block{
 	@Override
 	public void switchState() {
 		this.onState = !this.onState;
-		this.sprite = Tiles.getTilesById((onState) ? 6 : 5).getSprite();
+		super.setSprite((onState) ? 6 : 5);
 	}
 	
 	@Override

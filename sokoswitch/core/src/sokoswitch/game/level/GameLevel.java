@@ -21,22 +21,27 @@ public class GameLevel extends Level{
 	private ArrayList<Player> players;
 	private ArrayList<BlockWrapper> pushable;
 
+	private Stack<GameState> undoStack;
+	
 	/*controls animation offset values*/
 	private float offset;
+	private int offsetSpeed;
+	/*how long a button has been pressed*/
+	private int heldCount;
 	
 	/*controls which way the player will be moving*/
 	private byte movement;
 	/*controls the movement value*/
 	private float movementOffset;
-	/*controls at what speed the player will be moving at (slow at first, then gets faster)*/
-	private int movementSpeed;
-	/*controls how much one key has been held for (3~5 holds and gets faster)*/
+	/*holds if a movement button is being pressed*/
 	private boolean movementHeld;
-	private int heldCount;
 	/*controls what degree the player is being rotated by*/
 	private int rotateAngle;
 	private float rotateOffset;
 	private byte pastMovement;
+	
+	/*holds if the undo button is being pressed*/
+	private boolean undoHeld;
 	
 	/*self explanatory, hopefully*/
 	private boolean solved;
@@ -52,17 +57,21 @@ public class GameLevel extends Level{
 		this.players = new ArrayList<>();
 		this.pushable = new ArrayList<>();
 		
+		this.undoStack = new Stack<>();
+		
 		this.offset = 1;
+		this.offsetSpeed = 50;
+		this.heldCount = 0;
 		
 		this.movement = -1;
 		this.movementOffset = 0;
-		this.movementSpeed = 50;
 		this.movementHeld = false;
-		this.heldCount = 0;
 		
 		this.rotateAngle = 0;
 		this.rotateOffset = 0;
 		this.pastMovement = -1;
+		
+		this.undoHeld = false;
 		
 		this.solved = false;
 		
@@ -94,6 +103,7 @@ public class GameLevel extends Level{
 			}
 		}
 		
+		addState();
 		joinAllBlocks();
 	}
 	
@@ -101,84 +111,98 @@ public class GameLevel extends Level{
 		if(input.isEmpty()) {
 			movementHeld = false;
 		}
-		else if(!solved){
-			if(movementOffset == 0){
-				switch(input.peek()) {		
-					case 1:
-						movement = 0;
-						break;
-					case 2:
-						movement = 2;
-						break;
-					case 3:
-						movement = 1;
-						break;
-					case 4:
-						movement = 3;
-						break;
-					case 5:
-						movement = -1;
-						input.pop();
-						interact();
-						break;
-				}
-				if(movement != -1) {
-					movementHeld = true;
+		else if(!solved && offset == 1 && !undoHeld) {
+			switch(input.peek()) {		
+				case 1:
+					movement = 0;
+					break;
+				case 2:
+					movement = 2;
+					break;
+				case 3:
+					movement = 1;
+					break;
+				case 4:
+					movement = 3;
+					break;
+				case 5:
+					movement = -1;
+					input.pop();
+					interact();
+					addState();
+					break;
+				case 6:
+					undoState();
+					movement = -1;
+					offsetSpeed = (heldCount >= 5) ? 20 : 10;
 					offset = 0;
-					if(movement / 2 == 0)
-	        			movementOffset = -Tiles.SIZE;
-	    			else
-	    				movementOffset = Tiles.SIZE; 
-				}
+					undoHeld = true;
+					break;
+			}
+			if(movement > -1) {
+				movementHeld = true;
+				offset = 0;
+				offsetSpeed = 50;
+				heldCount = 0;
+				if(movement / 2 == 0)
+        			movementOffset = -Tiles.SIZE;
+    			else
+    				movementOffset = Tiles.SIZE; 
+				movePlayers();
 			}
 		}
 	}
 	
 	@Override
 	public void update(float delta) {
-		if(offset == 0 && !movePlayers()) {
-			movementHeld = false;
-		}
-		
-		if(offset < 1) {
-			offset += delta*0.8;
-			float smoothing = (1-(1-offset)*(1-offset)*(1-offset))*movementSpeed;
-			
-			if(players.get(0).getRotate()) {
-				rotateOffset -= (rotateOffset > 0) ? smoothing : -smoothing;
-				if(Math.abs(rotateOffset) < 20) {
-					rotateOffset = 0;
-					offset = 1;
-				}
+		if(undoHeld) {
+			if(offset < 1) {
+				offset += delta*offsetSpeed;
 			}
 			else {
-				movementOffset -= (movementOffset > 0) ? smoothing : -smoothing;
-				if(Math.abs(movementOffset) < 20) {
-					movementOffset = 0;
-					offset = 1;
-				}
+				offset = 1;
+				heldCount++;
+				undoHeld = false;
 			}
 		}
 		else {
-			if(movementHeld) {
-				heldCount++;
-				offset = 0.01f;
-				if(movement / 2 == 0)
-        			movementOffset = -Tiles.SIZE;
-    			else
-    				movementOffset = Tiles.SIZE; 
-				movementSpeed = (heldCount > 3) ? 90 : 50;
-				if(!movePlayers()) {
-					movementHeld = false;
+			if(offset < 1 && movement != -1) {
+				offset += delta*0.8;
+				float smoothing = (1-(1-offset)*(1-offset)*(1-offset))*offsetSpeed;
+				
+				if(players.get(0).getRotate()) {
+					rotateOffset -= (rotateOffset > 0) ? smoothing : -smoothing;
+					if(Math.abs(rotateOffset) < 20) {
+						rotateOffset = 0;
+						offset = 1;
+					}
+				}
+				else {
+					movementOffset -= (movementOffset > 0) ? smoothing : -smoothing;
+					if(Math.abs(movementOffset) < 20) {
+						movementOffset = 0;
+						offset = 1;
+					}
 				}
 			}
 			else {
-				resetAllPush();
-				resetAllRotate();
-				movement = -1;
-				movementOffset = 0;
-				offset = 1;
-				heldCount = 0;
+				if(movementHeld) {
+					heldCount++;
+					offset = 0f;
+					if(movement / 2 == 0)
+	        			movementOffset = -Tiles.SIZE;
+	    			else
+	    				movementOffset = Tiles.SIZE; 
+					offsetSpeed = (heldCount > 3) ? 90 : 50;
+				}
+				else {
+					resetAllPush();
+					resetAllRotate();
+					movement = -1;
+					movementOffset = 0;
+					offset = 1;
+					heldCount = 0;
+				}
 			}
 		}
 	}
@@ -245,9 +269,8 @@ public class GameLevel extends Level{
 		Cell cell = layers.get(layer).getCell(x, y);
 		if(cell != null) {
 			TiledMapTile tile = cell.getTile();
-			if(tile != null) {
+			if(tile != null)
 				return Tiles.getTilesById(tile.getId());
-			}
 		}
 		return Tiles.getTilesById(0);
 	}
@@ -260,26 +283,23 @@ public class GameLevel extends Level{
 		return solved;
 	}
 	
-	private boolean movePlayers() {
-		boolean allMoved = false;
-		
+	private void movePlayers() {	
 		resetAllPush();
 		resetAllRotate();
 		pastMovement = players.get(0).getFacing();
+		
 		for(Player p : players) {
 			if(p.setFacing(movement)) {
 				p.setRotate(true);
-				p.setMobile(false);
+				p.setMobile(true);
 			}
 			else if(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE
 					&& moveBlocks(p.interact())) {
 				p.move(movement);
 				p.setMobile(true);
-				allMoved = true;
 			}
-			else {
+			else
 				p.setMobile(false);
-			}
 		}
 		
 		if(players.get(0).getRotate()) {
@@ -294,8 +314,9 @@ public class GameLevel extends Level{
 				rotateOffset = 90;
 		}
 		
+		if(players.get(0).getMobile())
+			addState();
 		joinAllBlocks();
-		return allMoved;
 	}
 	
 	private boolean moveBlocks(Vector2 playerPos) {
@@ -326,9 +347,8 @@ public class GameLevel extends Level{
 				pushable.get(i).push(movement);
 				return true;
 			}
-			else if(push && outside) {
+			else if(push && outside)
 				return false;
-			}
 		}
 		return true;
 	}
@@ -371,6 +391,24 @@ public class GameLevel extends Level{
 	private void resetAllRotate() {
 		for(Player p : players) {
 			p.setRotate(false);
+		}
+	}
+	
+	private void addState() {
+		undoStack.add(new GameState(players, pushable));
+	}
+	
+	private void undoState() {
+		if(undoStack.size() > 1) {
+			players = undoStack.peek().getPlayerArray();
+			pushable = undoStack.peek().getBlockArray();
+			rotateAngle = players.get(0).getFacing()*-90;
+			undoStack.pop();
+		}
+		else {
+			players = undoStack.peek().getPlayerArray();
+			pushable = undoStack.peek().getBlockArray();
+			rotateAngle = players.get(0).getFacing()*-90;
 		}
 	}
 	

@@ -41,7 +41,17 @@ public abstract class Block extends Entity{
 		return pushed;
 	}
 
+	public void setState(boolean onState) {
+		this.onState = onState;
+	}
+	
 	public void setPushed(boolean pushed) {
 		this.pushed = pushed;
+	}
+	
+	@Override
+	public void setSprite(int id) {
+		super.setSprite(id);
+		this.onState = id % 2 == 0;
 	}
 }

@@ -1,7 +1,5 @@
 package sokoswitch.game.entities.blocks;
 
-import sokoswitch.game.level.Tiles;
-
 public class NormalBlock extends Block{
 
 	public NormalBlock(int x, int y, boolean turnedOn) {
@@ -11,6 +9,6 @@ public class NormalBlock extends Block{
 	@Override
 	public void switchState() {
 		this.onState = !this.onState;
-		this.sprite = Tiles.getTilesById((onState) ? 4 : 3).getSprite();
+		super.setSprite((onState) ? 4 : 3);
 	}
 }
