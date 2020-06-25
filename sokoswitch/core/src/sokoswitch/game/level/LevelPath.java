@@ -26,6 +26,7 @@ public final class LevelPath {
 		levelPath.put(16, LEVEL_DIR+"2/10.tmx");
 		levelPath.put(17, LEVEL_DIR+"2/11.tmx");
 		levelPath.put(18, LEVEL_DIR+"a.tmx");
+		levelPath.put(19, LEVEL_DIR+"test.tmx");
 	}
 	
 	public static String getLevelPath(int id) {

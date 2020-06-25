@@ -401,17 +401,11 @@ public class GameLevel extends Level{
 	}
 	
 	private void undoState() {
-		if(undoStack.size() > 1) {
-			players = undoStack.peek().getPlayerArray();
-			pushable = undoStack.peek().getBlockArray();
-			rotateAngle = players.get(0).getFacing()*-90;
+		players = undoStack.peek().getPlayerArray();
+		pushable = undoStack.peek().getBlockArray();
+		rotateAngle = players.get(0).getFacing()*-90;
+		if(undoStack.size() > 1)
 			undoStack.pop();
-		}
-		else {
-			players = undoStack.peek().getPlayerArray();
-			pushable = undoStack.peek().getBlockArray();
-			rotateAngle = players.get(0).getFacing()*-90;
-		}
 	}
 	
 	private boolean checkLevelSolved() {

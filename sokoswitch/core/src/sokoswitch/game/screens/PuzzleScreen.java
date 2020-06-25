@@ -15,11 +15,21 @@ import sokoswitch.game.level.*;
 
 public class PuzzleScreen extends ScreenAdapter{
 
+	private final int CENTERED_MARGIN = 6;
+	
+	/*used to switch screens*/
 	private Sokoswitch game;
 	
-	private int levelId;
+	/*holds if the camera should be "centered"*/
 	private boolean cameraCentered;
+	private float maxCameraX, maxCameraY;
+	
+	/*holds what keys are being pressed*/
 	private Stack<Integer> keysPressed;
+	
+	/*holds levelPath id for GameLevel*/
+	private int levelId;
+	/*holds the actual game level*/
 	private GameLevel gameLevel;
 
 	public PuzzleScreen(Sokoswitch game, int levelId) {
@@ -106,22 +116,42 @@ public class PuzzleScreen extends ScreenAdapter{
 		int borderY = gameLevel.getHeight() * Tiles.SIZE;
 
 		game.camera = new OrthographicCamera(w, h);
-		game.camera.position.set(borderX/2f, borderY/2f, 0);
 		
-		if(gameLevel.getWidth() > 14 || gameLevel.getHeight() > 14) {
+		if(gameLevel.getWidth() > 16 || gameLevel.getHeight() > 16) {
 			game.camera.zoom += 4;
 			cameraCentered = true;
+			this.maxCameraX = borderX - Tiles.SIZE*CENTERED_MARGIN;
+			this.maxCameraY = borderY - Tiles.SIZE*CENTERED_MARGIN;
 		}
 		else {
 			game.viewport = new FitViewport(borderX, borderY, game.camera);
 			game.viewport.apply();
+			game.camera.position.set(borderX/2f, borderY/2f, 0);
+			this.maxCameraX = 0;
+			this.maxCameraY = 0;
 		}
+		
 		
 		game.camera.update();
 	}
 
 	@Override
 	public void render(float delta) {
+		if(cameraCentered) {
+			float cameraX = gameLevel.getPlayer(0).getSprite().getX();
+			float cameraY = gameLevel.getPlayer(0).getSprite().getY();
+			if(cameraX < Tiles.SIZE*CENTERED_MARGIN)
+				cameraX = Tiles.SIZE*CENTERED_MARGIN;
+			else if(cameraX > maxCameraX)
+				cameraX = maxCameraX;
+			if(cameraY < Tiles.SIZE*CENTERED_MARGIN)
+				cameraY = Tiles.SIZE*CENTERED_MARGIN;
+			else if(cameraY > maxCameraY)
+				cameraY = maxCameraY;
+			game.camera.position.set(cameraX, cameraY, 0);
+			game.camera.update();
+		}
+		
 		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		
