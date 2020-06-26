@@ -18,9 +18,11 @@ public class GameLevel extends Level{
 	private OrthogonalTiledMapRenderer mapRender;
 	
 	/*holds the entities on the grid - players and blocks*/
-	private ArrayList<Player> players;
+	private Comparator<Player> playerComparatorTopDown, playerComparatorLeftRight;
+	private ArrayList<Player> playersTopDown, playersLeftRight;
+	private Player mainFocusPlayer;
 	private ArrayList<BlockWrapper> pushable;
-
+	
 	private Stack<GameState> undoStack;
 	
 	/*controls animation offset values*/
@@ -28,6 +30,8 @@ public class GameLevel extends Level{
 	private int offsetSpeed;
 	/*how long a button has been pressed*/
 	private int heldCount;
+	/*if a button is being pressed*/
+	private boolean keyPressed;
 	
 	/*controls which way the player will be moving*/
 	private byte movement;
@@ -53,15 +57,29 @@ public class GameLevel extends Level{
 			layers.add((TiledMapTileLayer)layer);
 		}
 		this.mapRender = new OrthogonalTiledMapRenderer(map);
-		
-		this.players = new ArrayList<>();
+
 		this.pushable = new ArrayList<>();
+		this.playerComparatorTopDown = new Comparator<Player>(){
+			@Override
+			public int compare(Player o1, Player o2) {
+				return ((Float)o1.getPosition().y).compareTo((Float)o2.getPosition().y);
+			}
+		};
+		this.playerComparatorLeftRight = new Comparator<Player>(){
+			@Override
+			public int compare(Player o1, Player o2) {
+				return ((Float)o1.getPosition().x).compareTo((Float)o2.getPosition().x);
+			}
+		};
+		this.playersTopDown = new ArrayList<>();
+		this.playersLeftRight = new ArrayList<>();
 		
 		this.undoStack = new Stack<>();
 		
 		this.offset = 1;
 		this.offsetSpeed = 50;
 		this.heldCount = 0;
+		this.keyPressed = false;
 		
 		this.movement = -1;
 		this.movementOffset = 0;
@@ -84,7 +102,8 @@ public class GameLevel extends Level{
 					case PLAYER:
 						Player p = new Player(x, y);
 						p.setSpritePos();
-						players.add(p);
+						playersTopDown.add(p);
+						playersLeftRight.add(p);
 						break;
 					case BLOCK_OFF:
 					case BLOCK_ON:
@@ -103,15 +122,14 @@ public class GameLevel extends Level{
 			}
 		}
 		
+		this.mainFocusPlayer = playersTopDown.get(0);
 		addState();
 		joinAllBlocks();
 	}
 	
 	public void takeInput(Stack<Integer> input) {	
-		if(input.isEmpty()) {
-			movementHeld = false;
-		}
-		else if(!solved && offset == 1 && !undoHeld) {
+		keyPressed = !input.isEmpty();
+		if(offset == 1 && keyPressed && !solved && !undoHeld) {
 			switch(input.peek()) {		
 				case 1:
 					movement = 0;
@@ -127,6 +145,7 @@ public class GameLevel extends Level{
 					break;
 				case 5:
 					movement = -1;
+					heldCount = 0;
 					input.pop();
 					interact();
 					addState();
@@ -139,22 +158,29 @@ public class GameLevel extends Level{
 					undoHeld = true;
 					break;
 			}
-			if(movement > -1) {
+			if(movement != -1) {
 				movementHeld = true;
+				offsetSpeed = (heldCount >= 3) ? 80 : 50;
 				offset = 0;
-				offsetSpeed = 50;
-				heldCount = 0;
-				if(movement / 2 == 0)
+				if(movement / 2 == 0) {
         			movementOffset = -Tiles.SIZE;
-    			else
+				}
+    			else {
     				movementOffset = Tiles.SIZE; 
-				movePlayers();
+    			}
+				movePlayers((movement % 2 == 0) ? playersTopDown : playersLeftRight, (movement % 2 == 0) ? (movement == 0) : (movement == 1));
 			}
 		}
 	}
 	
 	@Override
 	public void update(float delta) {
+
+		/*for(Player p : playersTopDown) {
+			System.out.print(p.getPosition().y + " ");
+		}
+		System.out.println();*/
+		
 		if(undoHeld) {
 			if(offset < 1) {
 				offset += delta*offsetSpeed;
@@ -165,16 +191,18 @@ public class GameLevel extends Level{
 				undoHeld = false;
 			}
 		}
-		else {
-			if(offset < 1 && movement != -1) {
+		else if (movementHeld){
+			if(offset < 1) {
 				offset += delta*0.8;
 				float smoothing = (1-(1-offset)*(1-offset)*(1-offset))*offsetSpeed;
 				
-				if(players.get(0).getRotate()) {
+				if(playersTopDown.iterator().next().getRotate()) {
 					rotateOffset -= (rotateOffset > 0) ? smoothing : -smoothing;
 					if(Math.abs(rotateOffset) < 20) {
 						rotateOffset = 0;
 						offset = 1;
+						heldCount++;
+						movementHeld = false;	
 					}
 				}
 				else {
@@ -182,17 +210,19 @@ public class GameLevel extends Level{
 					if(Math.abs(movementOffset) < 20) {
 						movementOffset = 0;
 						offset = 1;
+						heldCount++;
+						movementHeld = false;
 					}
 				}
 			}
-			else {
-				resetAllPush();
-				resetAllRotate();
-				movement = -1;
-				movementOffset = 0;
-				offset = 1;
-				heldCount = 0;
-			}
+		}
+		else if (!keyPressed){
+			resetAllPush();
+			resetAllRotate();
+			movement = -1;
+			movementOffset = 0;
+			offset = 1;
+			heldCount = 0;
 		}
 	}
 
@@ -202,7 +232,7 @@ public class GameLevel extends Level{
 		mapRender.getBatch().begin();
 		mapRender.renderTileLayer(layers.get(0));
 		
-		for(Player p : players) {
+		for(Player p : playersTopDown) {
 			float tempOffset = movementOffset;
 			if(!p.getMobile())
 				tempOffset /= 6;
@@ -235,7 +265,7 @@ public class GameLevel extends Level{
 	public void dispose() {
 		map.dispose();
 		mapRender.dispose();
-		for(Player p : players) {
+		for(Player p : playersTopDown) {
 			p.dispose();
 		}
 		for(BlockWrapper bw : pushable) {
@@ -264,26 +294,31 @@ public class GameLevel extends Level{
 		return Tiles.getTilesById(0);
 	}
 	
-	public Player getPlayer(int index) {
-		return players.get(index);
+	public Player getPlayer() {
+		return mainFocusPlayer;
 	}
 	
 	public boolean isSolved() {
 		return solved;
 	}
-	
-	private void movePlayers() {	
+
+	private void movePlayers(ArrayList<Player> players, boolean flipped) {	
 		resetAllPush();
 		resetAllRotate();
-		pastMovement = players.get(0).getFacing();
+		pastMovement = getPlayer().getFacing();
 		
-		for(Player p : players) {
+		ArrayList<Player> tempPlayer = new ArrayList<>(players);
+		if(flipped)
+			Collections.reverse(tempPlayer);
+		
+		for(Player p : tempPlayer) {
 			if(p.setFacing(movement)) {
 				p.setRotate(true);
 				p.setMobile(true);
 			}
 			else if(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE
-					&& moveBlocks(p.interact())) {
+					&& moveBlocks(tempPlayer, tempPlayer.indexOf(p))
+					&& !collidesWithPlayer(tempPlayer, tempPlayer.indexOf(p))) {
 				p.move(movement);
 				p.setMobile(true);
 			}
@@ -291,7 +326,7 @@ public class GameLevel extends Level{
 				p.setMobile(false);
 		}
 		
-		if(players.get(0).getRotate()) {
+		if(mainFocusPlayer.getRotate()) {
 			rotateAngle = movement*-90;
 			rotateOffset = (pastMovement-movement)*-90;
 			
@@ -303,27 +338,33 @@ public class GameLevel extends Level{
 				rotateOffset = 90;
 		}
 		
-		if(players.get(0).getMobile())
-			addState();
+		for(Player p : tempPlayer) {
+			if(p.getMobile()) {
+				addState();
+				break;
+			}
+		}
+		updateArrays();
 		joinAllBlocks();
 	}
 	
-	private boolean moveBlocks(Vector2 playerPos) {
+	private boolean moveBlocks(ArrayList<Player> players, int index) {
 		int xOffset = (movement % 2 == 0) ? 0 : 1;
 		int yOffset = (movement % 2 == 0) ? 1 : 0;
 		xOffset *= (movement == 3) ? -1 : 1;
 		yOffset *= (movement == 2) ? -1 : 1;
+		Vector2 movementVector = new Vector2(xOffset, yOffset);
 		
 		for(int i = 0; i < pushable.size(); i++) {
 			Vector2[] v = pushable.get(i).getBlockPos();
 			boolean push = false;
 			boolean outside = false;
 			
-			for(Vector2 vect : v) {
-				if(vect.equals(playerPos))
+			for(int j = 0; j < v.length; j++) {
+				if(v[j].equals(players.get(index).interact()))
 					push = true;
-				if((locateTilesByCoordinate(0, (int)vect.x+xOffset, (int)vect.y+yOffset) != Tiles.SPACE)
-						|| (locateTilesByCoordinate(0, (int)vect.x, (int)vect.y) == Tiles.EMPTY))
+				if((locateTilesByCoordinate(0, (int)v[j].x+xOffset, (int)v[j].y+yOffset) != Tiles.SPACE)
+						|| (locateTilesByCoordinate(0, (int)v[j].x, (int)v[j].y) == Tiles.EMPTY))
 					outside = true;
 			}
 			
@@ -331,6 +372,13 @@ public class GameLevel extends Level{
 				if(outside)
 					return false;
 				else {
+					for(Block b : pushable.get(i).getBlockArray()) {
+						for(int j = 0; j < players.size(); j++) {
+							if(j != index && players.get(j).getPosition().equals(b.getPosition().add(movementVector))){
+								return false;
+							}
+						}
+					}
 					for(int j = 0; j < pushable.size(); j++) {
 						if(j != i) {
 							if(pushable.get(i).collides(movement, pushable.get(j)))
@@ -344,11 +392,23 @@ public class GameLevel extends Level{
 		}
 		return true;
 	}
+
+	private boolean collidesWithPlayer(ArrayList<Player> players, int index) {
+		Player main = players.get(index);
+		for(Player p : players) {
+			if(p != main 
+					&& p.getPosition().equals(main.interact()) 
+					&& (locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.EMPTY || !moveBlocks(players, players.indexOf(p)))) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	private void interact() {
 		Set<Vector2> playerInteract = new HashSet<>();
-		for(int i = 0; i < players.size(); i++) {
-			playerInteract.add(players.get(i).interact());
+		for(int i = 0; i < playersTopDown.size(); i++) {
+			playerInteract.add(playersTopDown.get(i).interact());
 		}
 		for(BlockWrapper bw : pushable) {
 			for(Block b : bw.getBlockArray()) {
@@ -391,21 +451,31 @@ public class GameLevel extends Level{
 	}
 	
 	private void resetAllRotate() {
-		for(Player p : players) {
+		for(Player p : new ArrayList<Player>(playersTopDown)) {
 			p.setRotate(false);
 		}
 	}
 	
 	private void addState() {
-		undoStack.add(new GameState(players, pushable));
+		undoStack.add(new GameState(new ArrayList<Player>(playersTopDown), pushable));
 	}
 	
 	private void undoState() {
-		players = undoStack.peek().getPlayerArray();
+		ArrayList<Player> players = undoStack.peek().getPlayerArray();
+		
+		this.playersTopDown = new ArrayList<>(players);
+		this.playersLeftRight = new ArrayList<>(players);
+		updateArrays();
+		 
 		pushable = undoStack.peek().getBlockArray();
-		rotateAngle = players.get(0).getFacing()*-90;
+		rotateAngle = mainFocusPlayer.getFacing()*-90;
 		if(undoStack.size() > 1)
 			undoStack.pop();
+	}
+	
+	private void updateArrays() {
+		Collections.sort(playersTopDown, playerComparatorTopDown);
+		Collections.sort(playersLeftRight, playerComparatorLeftRight);
 	}
 	
 	private boolean checkLevelSolved() {
