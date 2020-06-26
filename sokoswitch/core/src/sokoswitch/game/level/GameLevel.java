@@ -160,7 +160,7 @@ public class GameLevel extends Level{
 			}
 			if(movement != -1) {
 				movementHeld = true;
-				offsetSpeed = (heldCount >= 3) ? 80 : 50;
+				offsetSpeed = (heldCount >= 10) ? 80 : 50;
 				offset = 0;
 				if(movement / 2 == 0) {
         			movementOffset = -Tiles.SIZE;
@@ -195,8 +195,7 @@ public class GameLevel extends Level{
 			if(offset < 1) {
 				offset += delta*0.8;
 				float smoothing = (1-(1-offset)*(1-offset)*(1-offset))*offsetSpeed;
-				
-				if(playersTopDown.iterator().next().getRotate()) {
+				if(mainFocusPlayer.getRotate()) {
 					rotateOffset -= (rotateOffset > 0) ? smoothing : -smoothing;
 					if(Math.abs(rotateOffset) < 20) {
 						rotateOffset = 0;
@@ -427,11 +426,6 @@ public class GameLevel extends Level{
 		for(int i = 0; i < size; i++) {
 			for(int j = 0; j < size; j++) {
 				if(i != j && pushable.get(i).touching(pushable.get(j))) {
-					System.out.print(pushable.get(i).getBlockPos()[0].x + " " + pushable.get(i).getBlockPos()[0].y + " ");
-					System.out.println(pushable.get(j).getBlockPos()[0].x + " " + pushable.get(j).getBlockPos()[0].y);
-					System.out.println(i + " " + j);
-					System.out.println();
-					
 					pushable.get(i).connect(pushable.get(j));
 					pushable.remove(pushable.get(j));
 					if(j > i)

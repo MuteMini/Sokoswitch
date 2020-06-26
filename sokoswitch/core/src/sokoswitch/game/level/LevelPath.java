@@ -8,6 +8,7 @@ public final class LevelPath {
 	
 	static {
 		levelPath = new HashMap<>();
+		levelPath.put(0, LEVEL_DIR+"test.tmx");
 		levelPath.put(1, LEVEL_DIR+"1/01.tmx");
 		levelPath.put(2, LEVEL_DIR+"1/02.tmx");
 		levelPath.put(3, LEVEL_DIR+"1/03.tmx");
@@ -26,7 +27,6 @@ public final class LevelPath {
 		levelPath.put(16, LEVEL_DIR+"2/10.tmx");
 		levelPath.put(17, LEVEL_DIR+"2/11.tmx");
 		levelPath.put(18, LEVEL_DIR+"a.tmx");
-		levelPath.put(19, LEVEL_DIR+"test.tmx");
 	}
 	
 	public static String getLevelPath(int id) {

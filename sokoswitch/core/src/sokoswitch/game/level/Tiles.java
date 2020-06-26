@@ -24,7 +24,7 @@ public enum Tiles {
 	private int id;
 	private boolean collideable;
 	private String name;
-	private TextureRegion sprite;
+	private Sprite sprite;
 	
 	static {
 		blockMap = new HashMap<>();
@@ -50,7 +50,7 @@ public enum Tiles {
 	}
 	
 	public Sprite getSprite() {
-		return new Sprite(sprite);
+		return sprite;
 	}
 	
 	private Tiles(int id, boolean collideable, String name) {
@@ -60,7 +60,7 @@ public enum Tiles {
 		if(id != 0) {
 			int xIndex = (id-1)%4;
 			int yIndex = (id-1)/4;
-			sprite = tr[yIndex][xIndex];
+			sprite = new Sprite(tr[yIndex][xIndex]);
 		}
 		else {
 			sprite = null;

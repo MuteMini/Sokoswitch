@@ -154,15 +154,8 @@ public class PuzzleScreen extends ScreenAdapter{
 		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		
-		/*testing*/
-		if(gameLevel.isSolved()) {
-			Gdx.gl.glClearColor(.5f, .65f, .12f, 1);
-		}
-		else /*testing*/
-			Gdx.gl.glClearColor(.50f, .50f, .50f, 1);
-		
+		Gdx.gl.glClearColor(.50f, .50f, .50f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
 		gameLevel.render(game.camera);
 		
 		if(gameLevel.isSolved()) {

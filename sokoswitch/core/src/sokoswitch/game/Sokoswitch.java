@@ -42,6 +42,7 @@ public class Sokoswitch extends Game {
 		renderCount++;
 		if(totalDeltaTime >= 1) {
 			System.out.println("update count: " + renderCount);
+			System.out.println("other thing: " + Gdx.graphics.getFramesPerSecond());
 			renderCount = 0;
 			totalDeltaTime = 0;
 		}
