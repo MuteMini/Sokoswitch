@@ -10,9 +10,12 @@ public class Player extends Entity{
 	private boolean mobile;
 	/*if the player has chosen to rotate*/
 	private boolean rotate;
+	/*holds the "tag" of the player for equal method*/
+	private int tag;
 	
-	public Player(int x, int y) {
+	public Player(int x, int y, int tag) {
 		super(2, x, y);
+		this.tag = tag;
 		this.facing = 0;
 		this.mobile = false;
 		this.rotate = false;
@@ -36,6 +39,10 @@ public class Player extends Entity{
 	
 	public boolean getRotate() {
 		return rotate;
+	}
+	
+	public int getTag() {
+		return tag;
 	}
 	
 	public boolean setFacing(byte facing) {

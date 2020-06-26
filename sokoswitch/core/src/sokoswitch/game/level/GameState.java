@@ -7,16 +7,17 @@ import sokoswitch.game.entities.blocks.*;
 
 public class GameState {
 
-	private int[][] playerPos;
+	private int[][] playerData;
 	private float[][][] blockPos;
 	private int[][][] blockType;
 	
 	public GameState(ArrayList<Player> players, ArrayList<BlockWrapper> pushable) {
-		this.playerPos = new int[players.size()][3];
-		for(int i = 0; i < playerPos.length; i++) {
-			playerPos[i][0] = (int)players.get(i).getPosition().x;
-			playerPos[i][1] = (int)players.get(i).getPosition().y;
-			playerPos[i][2] = (int)players.get(i).getFacing();
+		this.playerData = new int[players.size()][4];
+		for(int i = 0; i < playerData.length; i++) {
+			playerData[i][0] = (int)players.get(i).getPosition().x;
+			playerData[i][1] = (int)players.get(i).getPosition().y;
+			playerData[i][2] = (int)players.get(i).getTag();
+			playerData[i][3] = (int)players.get(i).getFacing();
 		}
 		
 		this.blockPos = new float[pushable.size()][][];
@@ -37,9 +38,9 @@ public class GameState {
 	
 	public ArrayList<Player> getPlayerArray() {
 		ArrayList<Player> players = new ArrayList<>();
-		for(int i = 0; i < playerPos.length; i++) {
-			Player p = new Player(playerPos[i][0], playerPos[i][1]);
-			p.setFacing((byte)playerPos[i][2]);
+		for(int i = 0; i < playerData.length; i++) {
+			Player p = new Player(playerData[i][0], playerData[i][1], playerData[i][2]);
+			p.setFacing((byte)playerData[i][3]);
 			p.setSpritePos();
 			players.add(p);
 		}

@@ -12,7 +12,7 @@ public abstract class Entity {
 	protected Sprite sprite;
 	
 	public Entity(int id, int x, int y) {
-		this.sprite = Tiles.getTilesById(id).getSprite();
+		this.sprite = new Sprite(Tiles.getTilesById(id).getTexture());
 		this.id = id;
 		this.x = x;
 		this.y = y;
@@ -52,7 +52,7 @@ public abstract class Entity {
 	
 	public void setSprite(int id) {
 		this.id = id;
-		this.sprite = Tiles.getTilesById(id).getSprite();
+		this.sprite = new Sprite(Tiles.getTilesById(id).getTexture());
 	}
 	
 	public void setSpritePos() {
