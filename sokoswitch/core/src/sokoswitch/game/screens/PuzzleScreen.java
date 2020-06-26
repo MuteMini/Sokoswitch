@@ -7,7 +7,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.*;
 
 import sokoswitch.game.Sokoswitch;
@@ -138,8 +137,8 @@ public class PuzzleScreen extends ScreenAdapter{
 	@Override
 	public void render(float delta) {
 		if(cameraCentered) {
-			float cameraX = gameLevel.getPlayer(0).getSprite().getX();
-			float cameraY = gameLevel.getPlayer(0).getSprite().getY();
+			float cameraX = gameLevel.getPlayer().getSprite().getX();
+			float cameraY = gameLevel.getPlayer().getSprite().getY();
 			if(cameraX < Tiles.SIZE*CENTERED_MARGIN)
 				cameraX = Tiles.SIZE*CENTERED_MARGIN;
 			else if(cameraX > maxCameraX)
@@ -148,7 +147,7 @@ public class PuzzleScreen extends ScreenAdapter{
 				cameraY = Tiles.SIZE*CENTERED_MARGIN;
 			else if(cameraY > maxCameraY)
 				cameraY = maxCameraY;
-			game.camera.position.set(cameraX, cameraY, 0);
+			game.camera.position.set(cameraX + Tiles.SIZE/2, cameraY + Tiles.SIZE/2, 0);
 			game.camera.update();
 		}
 		
