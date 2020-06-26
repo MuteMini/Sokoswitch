@@ -2,29 +2,24 @@ package sokoswitch.game.level;
 
 import java.util.HashMap;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.*;
-
 public enum Tiles {
 
-	EMPTY(0, false, "empty"),
-	SPACE(1, false, "space"),
-	PLAYER(2, true, "player"),
-	BLOCK_OFF(3, true, "off block"),
-	BLOCK_ON(4, true, "on block"),
-	LOCKED_BLOCK_OFF(5, true, "off locked block"),
-	LOCKED_BLOCK_ON(6, true, "on locked block");
+	OFF(-2, 2, 0),
+	ON(-1, 2, 1),
+	EMPTY(0, 0, 0),
+	SPACE(1, 1, 0),
+	PLAYER(2, 1, 1),
+	BLOCK_OFF(3, 2, 2),
+	BLOCK_ON(4, 2, 2),
+	LOCKED_BLOCK_OFF(5, 2, 3),
+	LOCKED_BLOCK_ON(6, 2, 3);
 	
 	public final static int SIZE = 256;
-	public final static String ASSET_PATH = "puzzlePrototype.png";
 	private static HashMap<Integer, Tiles> blockMap;
 	
-	private final TextureRegion[][] tr = TextureRegion.split(new Texture(ASSET_PATH), SIZE, SIZE);
-	
 	private int id;
-	private boolean collideable;
-	private String name;
-	private TextureRegion texture;
+	private int textureId;
+	private int texturePos;
 	
 	static {
 		blockMap = new HashMap<>();
@@ -40,30 +35,18 @@ public enum Tiles {
 	public int getId() {
 		return id;
 	}
-
-	public boolean isCollideable() {
-		return collideable;
+	
+	public int getTextureId() {
+		return textureId;
 	}
 	
-	public String getName() {
-		return name;
+	public int getTexturePos() {
+		return texturePos;
 	}
 	
-	public TextureRegion getTexture() {
-		return texture;
-	}
-	
-	private Tiles(int id, boolean collideable, String name) {
+	private Tiles(int id, int textureId, int texturePos) {
 		this.id = id;
-		this.collideable = collideable;
-		this.name = name;
-		if(id != 0) {
-			int xIndex = (id-1)%4;
-			int yIndex = (id-1)/4;
-			texture = tr[yIndex][xIndex];
-		}
-		else {
-			texture = null;
-		}
+		this.textureId = textureId;
+		this.texturePos = texturePos;
 	}
 }

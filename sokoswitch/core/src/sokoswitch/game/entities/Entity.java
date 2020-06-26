@@ -1,8 +1,9 @@
 package sokoswitch.game.entities;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-
+import sokoswitch.game.GameAssetManager;
 import sokoswitch.game.level.Tiles;
 
 public abstract class Entity {
@@ -10,16 +11,17 @@ public abstract class Entity {
 	protected int id;
 	protected int x, y;
 	protected Sprite sprite;
+	protected GameAssetManager manager;
 	
-	public Entity(int id, int x, int y) {
-		this.sprite = new Sprite(Tiles.getTilesById(id).getTexture());
-		this.id = id;
+	public Entity(int id, int x, int y, GameAssetManager manager) {
+		this.manager = manager;
+		setSprite(id);
 		this.x = x;
 		this.y = y;
 	}
 	
-	public void dispose() {
-		sprite.getTexture().dispose();
+	public void render(Batch batch) {
+		sprite.draw(batch);
 	}
 	
 	public void move(int direction) {
@@ -52,7 +54,8 @@ public abstract class Entity {
 	
 	public void setSprite(int id) {
 		this.id = id;
-		this.sprite = new Sprite(Tiles.getTilesById(id).getTexture());
+		Tiles tile = Tiles.getTilesById(id);
+		this.sprite = manager.getSprite(tile.getTextureId(), tile.getTexturePos());
 	}
 	
 	public void setSpritePos() {

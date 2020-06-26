@@ -1,6 +1,7 @@
 package sokoswitch.game.level;
 
 import java.util.*;
+
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.*;
@@ -8,10 +9,13 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 
+import sokoswitch.game.GameAssetManager;
 import sokoswitch.game.entities.*;
 import sokoswitch.game.entities.blocks.*;
 
 public class GameLevel extends Level{
+	
+	private GameAssetManager manager;
 	
 	private TiledMap map;
 	private ArrayList<TiledMapTileLayer> layers;
@@ -49,8 +53,10 @@ public class GameLevel extends Level{
 	/*self explanatory, hopefully*/
 	private boolean solved;
 	
-	public GameLevel(String level) {
-		this.map = new TmxMapLoader().load(level);
+	public GameLevel(TiledMap map, GameAssetManager manager) {
+		this.manager = manager;
+		
+		this.map = map;
 		this.layers = new ArrayList<>();
 		for(MapLayer layer : map.getLayers()) {
 			layers.add((TiledMapTileLayer)layer);
@@ -99,20 +105,20 @@ public class GameLevel extends Level{
 				Tiles t = locateTilesByCoordinate(2,x,y);
 				switch(t) {
 					case PLAYER:
-						Player p = new Player(x, y, playersTopDown.size()+1);
+						Player p = new Player(x, y, playersTopDown.size()+1, manager);
 						p.setSpritePos();
 						playersTopDown.add(p);
 						playersLeftRight.add(p);
 						break;
 					case BLOCK_OFF:
 					case BLOCK_ON:
-						Block b1 = new NormalBlock(x, y, (t==Tiles.BLOCK_ON));
+						Block b1 = new NormalBlock(x, y, (t==Tiles.BLOCK_ON), manager);
 						b1.setSpritePos();
 						pushable.add(new BlockWrapper(b1));
 						break;
 					case LOCKED_BLOCK_OFF:
 					case LOCKED_BLOCK_ON:
-						Block b2 = new LockedBlock(x, y, (t==Tiles.LOCKED_BLOCK_ON));
+						Block b2 = new LockedBlock(x, y, (t==Tiles.LOCKED_BLOCK_ON), manager);
 						b2.setSpritePos();
 						pushable.add(new BlockWrapper(b2));
 						break;
@@ -147,7 +153,6 @@ public class GameLevel extends Level{
 					heldCount = 0;
 					input.pop();
 					interact();
-					addState();
 					break;
 				case 6:
 					undoState();
@@ -237,7 +242,7 @@ public class GameLevel extends Level{
 				p.setSpritePos(0, tempOffset);
 			else if(movement % 2 == 1)
 				p.setSpritePos(tempOffset, 0);
-			p.getSprite().draw(mapRender.getBatch());
+			p.render(mapRender.getBatch());
 		}
 		
 		for(BlockWrapper bw : pushable) {
@@ -249,7 +254,7 @@ public class GameLevel extends Level{
 					else if(movement % 2 == 1)
 						b.setSpritePos(movementOffset, 0);
 				}
-				b.getSprite().draw(mapRender.getBatch());
+				b.render(mapRender.getBatch());
 			}
 		}
 		mapRender.getBatch().end();
@@ -259,12 +264,6 @@ public class GameLevel extends Level{
 	public void dispose() {
 		map.dispose();
 		mapRender.dispose();
-		for(Player p : playersTopDown) {
-			p.dispose();
-		}
-		for(BlockWrapper bw : pushable) {
-			bw.dispose();
-		}
 	}
 
 	@Override
@@ -408,15 +407,20 @@ public class GameLevel extends Level{
 		for(int i = 0; i < playersTopDown.size(); i++) {
 			playerInteract.add(playersTopDown.get(i).interact());
 		}
+		
+		boolean wasSwitched = false;
 		for(BlockWrapper bw : pushable) {
 			for(Block b : bw.getBlockArray()) {
 				if(b.switchPossible(movement) 
 						&& playerInteract.contains(b.getPosition())) {
 					bw.switchStates();
+					wasSwitched = true;
 					break;
 				}
 			}
 		}
+		if(wasSwitched)
+			addState();
 		this.solved = checkLevelSolved();
 	}
 	
@@ -454,13 +458,13 @@ public class GameLevel extends Level{
 	}
 	
 	private void undoState() {
-		ArrayList<Player> players = undoStack.peek().getPlayerArray();
+		ArrayList<Player> players = undoStack.peek().getPlayerArray(manager);
 		
 		this.playersTopDown = new ArrayList<>(players);
 		this.playersLeftRight = new ArrayList<>(players);
 		updateArrays();
 		
-		pushable = undoStack.peek().getBlockArray();
+		pushable = undoStack.peek().getBlockArray(manager);
 		rotateAngle = playersTopDown.get(0).getFacing()*-90;
 		if(undoStack.size() > 1)
 			undoStack.pop();

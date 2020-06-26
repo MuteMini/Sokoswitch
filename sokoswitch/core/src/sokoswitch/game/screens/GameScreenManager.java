@@ -4,7 +4,7 @@ import java.util.Stack;
 import com.badlogic.gdx.Screen;
 import sokoswitch.game.Sokoswitch;
 
-public class GameScreenManager {
+public class GameScreenManager{
 	
 	private Stack<Screen> screens;
 	private Sokoswitch game;
@@ -12,11 +12,16 @@ public class GameScreenManager {
 	public GameScreenManager(Sokoswitch game) {
 		this.screens = new Stack<>();
 		this.game = game;
-		screens.push(new MenuScreen(game));
+		screens.push(new LoadingScreen(game));
 	}
 	
 	public void showPuzzleScreen(int id) {
 		screens.push(new PuzzleScreen(game, id));
+	}
+	
+	public void showMenu() {
+		screens.pop();
+		screens.push(new MenuScreen(game));
 	}
 	
 	public void pop() {

@@ -1,18 +1,31 @@
 package sokoswitch.game.entities.blocks;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+
+import sokoswitch.game.GameAssetManager;
 import sokoswitch.game.entities.Entity;
+import sokoswitch.game.level.Tiles;
 
 public abstract class Block extends Entity{
 
 	protected boolean onState;
 	protected boolean pushed;
+	protected Sprite stateSprite;
 	
-	public Block(int id, int x, int y, boolean onState) {
-		super(id, x, y);
+	public Block(int id, int x, int y, boolean onState, GameAssetManager manager) {
+		super(id, x, y, manager);
 		this.onState = onState;
 		this.pushed = false;
+		updateStateSprite();
 	}
 
+	@Override
+	public void render(Batch batch) {
+		sprite.draw(batch);
+		stateSprite.draw(batch);
+	}
+	
 	@Override
 	public void move(int direction) {
 		super.move(direction);
@@ -50,8 +63,18 @@ public abstract class Block extends Entity{
 	}
 	
 	@Override
-	public void setSprite(int id) {
-		super.setSprite(id);
-		this.onState = id % 2 == 0;
+	public void setSpritePos() {
+		sprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
+		stateSprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
+	}
+	
+	@Override
+	public void setSpritePos(float xOffset, float yOffset) {
+		sprite.setCenter((x*Tiles.SIZE)+xOffset+(Tiles.SIZE/2), (y*Tiles.SIZE)+yOffset+(Tiles.SIZE/2));
+		stateSprite.setCenter((x*Tiles.SIZE)+xOffset+(Tiles.SIZE/2), (y*Tiles.SIZE)+yOffset+(Tiles.SIZE/2));
+	}
+	
+	protected void updateStateSprite() {
+		this.stateSprite = manager.getSprite(2, onState ? 1 : 0);
 	}
 }

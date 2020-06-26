@@ -24,11 +24,17 @@ public class MenuScreen extends ScreenAdapter{
 		game.gsm.showPuzzleScreen(++level);
 	}
 
+	public void update(float delta) {
+		
+	}
+	
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(.45f, 0.45f, .45f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+		update(delta);
+		
 		/*if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
 			gsm.showPuzzleScreen(testNum);
 		}*/

@@ -1,15 +1,17 @@
 package sokoswitch.game.entities.blocks;
 
+import sokoswitch.game.GameAssetManager;
+
 public class LockedBlock extends Block{
 
-	public LockedBlock(int x, int y, boolean turnedOn) {
-		super((turnedOn) ? 6 : 5, x, y, turnedOn);
+	public LockedBlock(int x, int y, boolean turnedOn, GameAssetManager manager) {
+		super(5, x, y, turnedOn, manager);
 	}
 	
 	@Override
 	public void switchState() {
 		this.onState = !this.onState;
-		super.setSprite((onState) ? 6 : 5);
+		updateStateSprite();
 	}
 	
 	@Override

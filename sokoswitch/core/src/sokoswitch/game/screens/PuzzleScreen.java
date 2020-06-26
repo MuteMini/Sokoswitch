@@ -39,7 +39,7 @@ public class PuzzleScreen extends ScreenAdapter{
 	}
 	
 	public void resetLevel() {
-		gameLevel = new GameLevel(LevelPath.getLevelPath(levelId));
+		gameLevel = new GameLevel(game.gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath()), game.gam);
 	}
 	
 	@Override
@@ -107,15 +107,11 @@ public class PuzzleScreen extends ScreenAdapter{
 	        }
 	    });
 
-		gameLevel = new GameLevel(LevelPath.getLevelPath(levelId));
-		
-		float w = Gdx.graphics.getWidth();
-		float h = Gdx.graphics.getHeight();
+		resetLevel();
+
 		int borderX = gameLevel.getWidth() * Tiles.SIZE;
 		int borderY = gameLevel.getHeight() * Tiles.SIZE;
 
-		game.camera = new OrthographicCamera(w, h);
-		
 		if(gameLevel.getWidth() > 16 || gameLevel.getHeight() > 16) {
 			game.camera.zoom += 4;
 			cameraCentered = true;
@@ -134,8 +130,7 @@ public class PuzzleScreen extends ScreenAdapter{
 		game.camera.update();
 	}
 
-	@Override
-	public void render(float delta) {
+	public void update(float delta) {
 		if(cameraCentered) {
 			float cameraX = gameLevel.getPlayer().getSprite().getX();
 			float cameraY = gameLevel.getPlayer().getSprite().getY();
@@ -154,23 +149,20 @@ public class PuzzleScreen extends ScreenAdapter{
 		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		
+		if(gameLevel.isSolved())
+			game.gsm.pop();
+		
+		if(Gdx.input.justTouched())
+			resetLevel();
+	}
+	
+	@Override
+	public void render(float delta) {
 		Gdx.gl.glClearColor(.50f, .50f, .50f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		gameLevel.render(game.camera);
 		
-		if(gameLevel.isSolved()) {
-			game.gsm.pop();
-		}
-			
-		if(Gdx.input.justTouched()) {
-			resetLevel();
-			
-			/*Vector3 clickPos = game.viewport.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
-			Tiles type = gameLevel.locateTilesByPosition(2, clickPos.x, clickPos.y);
-			gameLevel.getPlayer(0).setPosition((int)clickPos.x/Tiles.SIZE, (int)clickPos.y/Tiles.SIZE);
-			System.out.println(clickPos.x + "," + clickPos.y +"\t");
-			System.out.println(type.getId() + " : " + type.getName());*/
-		}
+		update(delta);
+		gameLevel.render(game.camera);
 	}
 
 	@Override

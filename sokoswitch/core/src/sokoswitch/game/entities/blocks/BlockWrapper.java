@@ -16,12 +16,6 @@ public class BlockWrapper{
 		this.blocksJoined = new ArrayList<>();
 	}
 
-	public void dispose() {
-		for(Block b : blocksJoined) {
-			b.dispose();
-		}
-	}
-	
 	public void addBlock(Block b) {
 		blocksJoined.add(b);
 	}

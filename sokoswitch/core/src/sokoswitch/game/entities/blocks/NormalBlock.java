@@ -1,14 +1,16 @@
 package sokoswitch.game.entities.blocks;
 
+import sokoswitch.game.GameAssetManager;
+
 public class NormalBlock extends Block{
 
-	public NormalBlock(int x, int y, boolean turnedOn) {
-		super((turnedOn) ? 4 : 3, x, y, turnedOn);
+	public NormalBlock(int x, int y, boolean turnedOn, GameAssetManager manager) {
+		super(3, x, y, turnedOn, manager);
 	}
 	
 	@Override
 	public void switchState() {
 		this.onState = !this.onState;
-		super.setSprite((onState) ? 4 : 3);
+		updateStateSprite();
 	}
 }
