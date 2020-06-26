@@ -32,8 +32,9 @@ public class GameState {
 			for(int j = 0; j < bwArrv.length; j++) {
 				blockPos[i][j][0] = bwArrv[j].x;
 				blockPos[i][j][1] = bwArrv[j].y;
-				blockType[i][j] = new int[1];
+				blockType[i][j] = new int[2];
 				blockType[i][j][0] = bwArrb.get(j).getId();
+				blockType[i][j][1] = bwArrb.get(j).getState() ? 1 : 0;
 			}
 		}
 	}
@@ -58,11 +59,11 @@ public class GameState {
 				switch(blockType[i][j][0]) {
 					case 3:
 					case 4:
-						b = new NormalBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][0] == 4), manager);
+						b = new NormalBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][1] == 1), manager);
 						break;
 					case 5:
 					case 6:
-						b = new LockedBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][0] == 6), manager);
+						b = new LockedBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][1] == 1), manager);
 						break;
 				}
 				b.setSpritePos();

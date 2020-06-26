@@ -15,13 +15,13 @@ public class MenuScreen extends ScreenAdapter{
 	public MenuScreen(Sokoswitch game) {
 		this.game = game;
 		
-		this.level = 1 -1;
+		this.level = 19;
 	}
 	
 	@Override
 	public void show() {
 		System.out.println("moving on from level " + level);
-		game.gsm.showPuzzleScreen(++level);
+		game.gsm.showPuzzleScreen(level++);
 	}
 
 	public void update(float delta) {
