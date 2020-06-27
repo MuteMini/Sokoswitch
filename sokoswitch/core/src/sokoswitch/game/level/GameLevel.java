@@ -23,7 +23,7 @@ public class GameLevel extends Level{
 	
 	/*holds the entities on the grid - players and blocks*/
 	private Comparator<Player> playerComparatorTopDown, playerComparatorLeftRight;
-	private ArrayList<Player> playersTopDown, playersLeftRight;
+	private ArrayList<Player> players;
 	private ArrayList<BlockWrapper> pushable;
 	
 	private Stack<GameState> undoStack;
@@ -76,8 +76,7 @@ public class GameLevel extends Level{
 				return ((Float)o1.getPosition().x).compareTo((Float)o2.getPosition().x);
 			}
 		};
-		this.playersTopDown = new ArrayList<>();
-		this.playersLeftRight = new ArrayList<>();
+		this.players = new ArrayList<>();
 		
 		this.undoStack = new Stack<>();
 		
@@ -105,10 +104,9 @@ public class GameLevel extends Level{
 				Tiles t = locateTilesByCoordinate(2,x,y);
 				switch(t) {
 					case PLAYER:
-						Player p = new Player(x, y, playersTopDown.size()+1, manager);
+						Player p = new Player(x, y, players.size()+1, manager);
 						p.setSpritePos();
-						playersTopDown.add(p);
-						playersLeftRight.add(p);
+						players.add(p);
 						break;
 					case BLOCK_OFF:
 					case BLOCK_ON:
@@ -172,7 +170,7 @@ public class GameLevel extends Level{
     			else {
     				movementOffset = Tiles.SIZE; 
     			}
-				movePlayers((movement % 2 == 0) ? playersTopDown : playersLeftRight, (movement % 2 == 0) ? (movement == 0) : (movement == 1));
+				movePlayers();
 			}
 		}
 	}
@@ -193,7 +191,7 @@ public class GameLevel extends Level{
 			if(offset < 1) {
 				offset += delta*0.8;
 				float smoothing = (1-(1-offset)*(1-offset)*(1-offset))*offsetSpeed;
-				if(playersTopDown.get(0).getRotate()) {
+				if(players.get(0).getRotate()) {
 					rotateOffset -= (rotateOffset > 0) ? smoothing : -smoothing;
 					if(Math.abs(rotateOffset) < 20) {
 						rotateOffset = 0;
@@ -229,7 +227,7 @@ public class GameLevel extends Level{
 		mapRender.getBatch().begin();
 		mapRender.renderTileLayer(layers.get(0));
 		
-		for(Player p : playersTopDown) {
+		for(Player p : players) {
 			float tempOffset = movementOffset;
 			if(!p.getMobile())
 				tempOffset /= 6;
@@ -288,7 +286,7 @@ public class GameLevel extends Level{
 	}
 	
 	public Player getPlayer() {
-		for(Player p : playersTopDown) {
+		for(Player p : players) {
 			if(p.getTag() == 1)
 				return p;
 		}
@@ -299,23 +297,20 @@ public class GameLevel extends Level{
 		return solved;
 	}
 
-	private void movePlayers(ArrayList<Player> players, boolean flipped) {	
+	private void movePlayers() {	
 		resetAllPush();
 		resetAllRotate();
 		pastMovement = getPlayer().getFacing();
-		
-		ArrayList<Player> tempPlayer = new ArrayList<>(players);
-		if(flipped)
-			Collections.reverse(tempPlayer);
-		
-		for(Player p : tempPlayer) {
+		updateArrays();
+
+		for(Player p : players) {
 			if(p.setFacing(movement)) {
 				p.setRotate(true);
 				p.setMobile(true);
 			}
 			else if(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE
-					&& moveBlocks(tempPlayer, tempPlayer.indexOf(p))
-					&& !collidesWithPlayer(tempPlayer, tempPlayer.indexOf(p))) {
+					&& moveBlocks(players, players.indexOf(p))
+					&& !collidesWithPlayer(players, players.indexOf(p))) {
 				p.move(movement);
 				p.setMobile(true);
 			}
@@ -323,7 +318,7 @@ public class GameLevel extends Level{
 				p.setMobile(false);
 		}
 
-		if(playersTopDown.get(0).getRotate()) {
+		if(players.get(0).getRotate()) {
 			rotateAngle = movement*-90;
 			rotateOffset = (pastMovement-movement)*-90;
 			
@@ -335,13 +330,12 @@ public class GameLevel extends Level{
 				rotateOffset = 90;
 		}
 		
-		for(Player p : tempPlayer) {
+		for(Player p : players) {
 			if(p.getMobile()) {
 				addState();
 				break;
 			}
 		}
-		updateArrays();
 		joinAllBlocks();
 	}
 	
@@ -404,8 +398,8 @@ public class GameLevel extends Level{
 	
 	private void interact() {
 		Set<Vector2> playerInteract = new HashSet<>();
-		for(int i = 0; i < playersTopDown.size(); i++) {
-			playerInteract.add(playersTopDown.get(i).interact());
+		for(int i = 0; i < players.size(); i++) {
+			playerInteract.add(players.get(i).interact());
 		}
 		
 		boolean wasSwitched = false;
@@ -448,31 +442,37 @@ public class GameLevel extends Level{
 	}
 	
 	private void resetAllRotate() {
-		for(Player p : new ArrayList<Player>(playersTopDown)) {
+		for(Player p : players) {
 			p.setRotate(false);
 		}
 	}
 	
 	private void addState() {
-		undoStack.add(new GameState(new ArrayList<Player>(playersTopDown), pushable));
+		undoStack.add(new GameState(players, pushable));
 	}
 	
 	private void undoState() {
 		ArrayList<Player> players = undoStack.peek().getPlayerArray(manager);
 		
-		this.playersTopDown = new ArrayList<>(players);
-		this.playersLeftRight = new ArrayList<>(players);
-		updateArrays();
-		
+		this.players = new ArrayList<>(players);
+
 		pushable = undoStack.peek().getBlockArray(manager);
-		rotateAngle = playersTopDown.get(0).getFacing()*-90;
+		rotateAngle = players.get(0).getFacing()*-90;
 		if(undoStack.size() > 1)
 			undoStack.pop();
 	}
 	
 	private void updateArrays() {
-		Collections.sort(playersTopDown, playerComparatorTopDown);
-		Collections.sort(playersLeftRight, playerComparatorLeftRight);
+		if(movement % 2 == 0) {
+			Collections.sort(players, playerComparatorTopDown);
+			if(movement == 0)
+				Collections.reverse(players);
+		}
+		else {
+			Collections.sort(players, playerComparatorLeftRight);
+			if(movement == 1)
+				Collections.reverse(players);
+		}
 	}
 	
 	private boolean checkLevelSolved() {
