@@ -112,7 +112,7 @@ public class PuzzleScreen extends ScreenAdapter{
 		int borderX = gameLevel.getWidth() * Tiles.SIZE;
 		int borderY = gameLevel.getHeight() * Tiles.SIZE;
 
-		if(gameLevel.getWidth() > 16 || gameLevel.getHeight() > 16) {
+		if(gameLevel.isWorld()) {
 			game.camera.zoom += 4;
 			cameraCentered = true;
 			this.maxCameraX = borderX - Tiles.SIZE*CENTERED_MARGIN;
@@ -125,7 +125,6 @@ public class PuzzleScreen extends ScreenAdapter{
 			this.maxCameraX = 0;
 			this.maxCameraY = 0;
 		}
-		
 		
 		game.camera.update();
 	}
@@ -152,8 +151,11 @@ public class PuzzleScreen extends ScreenAdapter{
 		if(gameLevel.isSolved())
 			game.gsm.pop();
 		
-		if(Gdx.input.justTouched())
+		if(Gdx.input.justTouched()) {
 			resetLevel();
+			/*Tiles tile = gameLevel.locateTilesByCoordinate(2, Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
+			System.out.println(tile.getId());*/
+		}
 	}
 	
 	@Override

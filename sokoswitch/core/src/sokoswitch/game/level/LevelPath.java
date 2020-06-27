@@ -22,11 +22,14 @@ public enum LevelPath {
 	LEVEL2_9(15, "2/09.tmx"),
 	LEVEL2_10(16, "2/10.tmx"),
 	LEVEL2_11(17, "2/11.tmx"),
-	LEVEL2_a(18, "a.tmx"),
-	LEVEL3_1(19, "3/01.tmx"),
-	LEVEL3_2(20, "3/02.tmx"),
-	LEVEL3_a(21, "3/a.tmx"),
-	LEVEL3_b(22, "3/a.tmx");
+	LEVEL2_a(18, "2/12.tmx"),
+	LEVEL2_b(19, "2/13.tmx"),
+	LEVEL3_1(20, "3/01.tmx"),
+	LEVEL3_2(21, "3/02.tmx"),
+	LEVEL3_a(22, "3/a.tmx"),
+	LEVEL3_b(23, "3/b.tmx"),
+	LEVEL3_c(24, "3/c.tmx"),
+	LEVEL3_test(25, "3/test.tmx");
 	
 	private static final String LEVEL_DIR = "levels/";
 	private static HashMap<Integer, LevelPath> levelMap;

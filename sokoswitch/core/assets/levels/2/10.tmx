@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="256" tileheight="256" infinite="0" nextlayerid="4" nextobjectid="1">
+ <properties>
+  <property name="isWorld" type="bool" value="false"/>
+ </properties>
  <tileset firstgid="1" name="prototypeSet" tilewidth="256" tileheight="256" tilecount="16" columns="4">
-  <image source="../../puzzlePrototype.png" width="1024" height="1024"/>
+  <image source="../../puzzlePrototype2.png" width="1024" height="1024"/>
  </tileset>
  <layer id="1" name="Floor" width="8" height="8">
   <data encoding="csv">
@@ -29,12 +32,12 @@
  </layer>
  <layer id="3" name="Interactable" width="8" height="8">
   <data encoding="csv">
-0,0,0,0,5,0,0,0,
-0,0,6,0,0,0,0,0,
-0,0,4,0,0,0,0,0,
-0,0,0,0,5,0,0,5,
+0,0,0,0,6,0,0,0,
+0,0,7,0,0,0,0,0,
+0,0,5,0,0,0,0,0,
+0,0,0,0,6,0,0,6,
 0,0,0,0,0,0,0,0,
-0,0,2,0,0,6,6,0,
+0,0,2,0,0,7,7,0,
 0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0
 </data>

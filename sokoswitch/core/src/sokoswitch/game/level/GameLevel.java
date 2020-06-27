@@ -43,7 +43,6 @@ public class GameLevel extends Level{
 	/*holds if a movement button is being pressed*/
 	private boolean movementHeld;
 	/*controls what degree the player is being rotated by*/
-	private int rotateAngle;
 	private float rotateOffset;
 	private byte pastMovement;
 	
@@ -89,7 +88,6 @@ public class GameLevel extends Level{
 		this.movementOffset = 0;
 		this.movementHeld = false;
 		
-		this.rotateAngle = 0;
 		this.rotateOffset = 0;
 		this.pastMovement = -1;
 		
@@ -107,6 +105,11 @@ public class GameLevel extends Level{
 						Player p = new Player(x, y, players.size()+1, manager);
 						p.setSpritePos();
 						players.add(p);
+						break;
+					case INVERSE_PLAYER:
+						Player ip = new InversePlayer(x, y, -(players.size()+1), manager);
+						ip.setSpritePos();
+						players.add(ip);
 						break;
 					case BLOCK_OFF:
 					case BLOCK_ON:
@@ -164,12 +167,7 @@ public class GameLevel extends Level{
 				movementHeld = true;
 				offsetSpeed = (heldCount >= 10) ? 80 : 50;
 				offset = 0;
-				if(movement / 2 == 0) {
-        			movementOffset = -Tiles.SIZE;
-				}
-    			else {
-    				movementOffset = Tiles.SIZE; 
-    			}
+				movementOffset = Tiles.SIZE; 
 				movePlayers();
 			}
 		}
@@ -201,8 +199,8 @@ public class GameLevel extends Level{
 					}
 				}
 				else {
-					movementOffset -= (movementOffset > 0) ? smoothing : -smoothing;
-					if(Math.abs(movementOffset) < 20) {
+					movementOffset -= smoothing;
+					if(movementOffset < 20) {
 						movementOffset = 0;
 						offset = 1;
 						heldCount++;
@@ -233,13 +231,11 @@ public class GameLevel extends Level{
 				tempOffset /= 6;
 			
 			if(p.getRotate() || movement == -1) {
-				p.getSprite().setRotation(rotateAngle+rotateOffset);
+				p.setRotation(rotateOffset);
 				p.setSpritePos();
 			}
-			else if(movement % 2 == 0)
-				p.setSpritePos(0, tempOffset);
-			else if(movement % 2 == 1)
-				p.setSpritePos(tempOffset, 0);
+			else
+				p.setSpritePos(tempOffset);
 			p.render(mapRender.getBatch());
 		}
 		
@@ -247,10 +243,7 @@ public class GameLevel extends Level{
 			for(Block b : bw.getBlockArray()) {
 				b.setSpritePos();
 				if(b.getPushed()) {	
-					if(movement % 2 == 0)
-						b.setSpritePos(0, movementOffset);
-					else if(movement % 2 == 1)
-						b.setSpritePos(movementOffset, 0);
+					b.setSpritePos(movementOffset);
 				}
 				b.render(mapRender.getBatch());
 			}
@@ -297,6 +290,12 @@ public class GameLevel extends Level{
 		return solved;
 	}
 
+	public boolean isWorld() {
+		if(map.getProperties().get("isWorld") != null)
+			return (boolean) map.getProperties().get("isWorld");
+		return false;
+	}
+	
 	private void movePlayers() {	
 		resetAllPush();
 		resetAllRotate();
@@ -316,10 +315,11 @@ public class GameLevel extends Level{
 			}
 			else
 				p.setMobile(false);
+			
+			System.out.println(p.getId() + " " + p.getFacing());
 		}
 
 		if(players.get(0).getRotate()) {
-			rotateAngle = movement*-90;
 			rotateOffset = (pastMovement-movement)*-90;
 			
 			if(rotateOffset == 180) 
@@ -330,20 +330,21 @@ public class GameLevel extends Level{
 				rotateOffset = 90;
 		}
 		
+		joinAllBlocks();
 		for(Player p : players) {
 			if(p.getMobile()) {
 				addState();
 				break;
 			}
 		}
-		joinAllBlocks();
 	}
 	
 	private boolean moveBlocks(ArrayList<Player> players, int index) {
-		int xOffset = (movement % 2 == 0) ? 0 : 1;
-		int yOffset = (movement % 2 == 0) ? 1 : 0;
-		xOffset *= (movement == 3) ? -1 : 1;
-		yOffset *= (movement == 2) ? -1 : 1;
+		byte playerDirection = players.get(index).getFacing();
+		int xOffset = (playerDirection % 2 == 0) ? 0 : 1;
+		int yOffset = (playerDirection % 2 == 0) ? 1 : 0;
+		xOffset *= (playerDirection == 3) ? -1 : 1;
+		yOffset *= (playerDirection == 2) ? -1 : 1;
 		Vector2 movementVector = new Vector2(xOffset, yOffset);
 		
 		for(int i = 0; i < pushable.size(); i++) {
@@ -372,11 +373,11 @@ public class GameLevel extends Level{
 					}
 					for(int j = 0; j < pushable.size(); j++) {
 						if(j != i) {
-							if(pushable.get(i).collides(movement, pushable.get(j)))
+							if(pushable.get(i).collides(playerDirection, pushable.get(j)))
 								return false;
 						}
 					}
-					pushable.get(i).push(movement);
+					pushable.get(i).push(playerDirection);
 					return true;
 				}
 			}
@@ -455,9 +456,7 @@ public class GameLevel extends Level{
 		ArrayList<Player> players = undoStack.peek().getPlayerArray(manager);
 		
 		this.players = new ArrayList<>(players);
-
-		pushable = undoStack.peek().getBlockArray(manager);
-		rotateAngle = players.get(0).getFacing()*-90;
+		this.pushable = undoStack.peek().getBlockArray(manager);
 		if(undoStack.size() > 1)
 			undoStack.pop();
 	}

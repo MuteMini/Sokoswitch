@@ -61,7 +61,7 @@ public abstract class Block extends Entity{
 	public void setPushed(boolean pushed) {
 		this.pushed = pushed;
 	}
-	
+
 	@Override
 	public void setSpritePos() {
 		sprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
@@ -69,9 +69,18 @@ public abstract class Block extends Entity{
 	}
 	
 	@Override
-	public void setSpritePos(float xOffset, float yOffset) {
-		sprite.setCenter((x*Tiles.SIZE)+xOffset+(Tiles.SIZE/2), (y*Tiles.SIZE)+yOffset+(Tiles.SIZE/2));
-		stateSprite.setCenter((x*Tiles.SIZE)+xOffset+(Tiles.SIZE/2), (y*Tiles.SIZE)+yOffset+(Tiles.SIZE/2));
+	public void setSpritePos(float offset) {
+		if(facing <= 1)
+			offset *= -1;
+			
+		if(facing % 2 == 0) {
+			sprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+offset+(Tiles.SIZE/2));
+			stateSprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+offset+(Tiles.SIZE/2));
+		}
+		else {
+			sprite.setCenter((x*Tiles.SIZE)+offset+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
+			stateSprite.setCenter((x*Tiles.SIZE)+offset+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
+		}	
 	}
 	
 	protected void updateStateSprite() {

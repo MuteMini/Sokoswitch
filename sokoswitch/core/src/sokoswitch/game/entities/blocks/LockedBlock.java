@@ -5,7 +5,7 @@ import sokoswitch.game.GameAssetManager;
 public class LockedBlock extends Block{
 
 	public LockedBlock(int x, int y, boolean turnedOn, GameAssetManager manager) {
-		super(5, x, y, turnedOn, manager);
+		super(6, x, y, turnedOn, manager);
 	}
 	
 	@Override

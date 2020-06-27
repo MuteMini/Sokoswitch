@@ -5,7 +5,7 @@ import sokoswitch.game.GameAssetManager;
 public class NormalBlock extends Block{
 
 	public NormalBlock(int x, int y, boolean turnedOn, GameAssetManager manager) {
-		super(3, x, y, turnedOn, manager);
+		super(4, x, y, turnedOn, manager);
 	}
 	
 	@Override

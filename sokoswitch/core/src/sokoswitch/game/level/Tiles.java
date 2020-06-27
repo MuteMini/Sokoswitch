@@ -9,10 +9,11 @@ public enum Tiles {
 	EMPTY(0, 0, 0),
 	SPACE(1, 1, 0),
 	PLAYER(2, 1, 1),
-	BLOCK_OFF(3, 2, 2),
-	BLOCK_ON(4, 2, 2),
-	LOCKED_BLOCK_OFF(5, 2, 3),
-	LOCKED_BLOCK_ON(6, 2, 3);
+	INVERSE_PLAYER(3, 1, 2),
+	BLOCK_OFF(4, 2, 2),
+	BLOCK_ON(5, 2, 2),
+	LOCKED_BLOCK_OFF(6, 2, 3),
+	LOCKED_BLOCK_ON(7, 2, 3);
 	
 	public final static int SIZE = 256;
 	private static HashMap<Integer, Tiles> blockMap;

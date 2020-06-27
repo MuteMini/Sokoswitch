@@ -22,6 +22,7 @@ public class BlockWrapper{
 	
 	public void push(int direction) {
 		for(Block b : blocksJoined) {
+			b.setFacing((byte)direction);
 			b.move(direction);
 		}
 	}

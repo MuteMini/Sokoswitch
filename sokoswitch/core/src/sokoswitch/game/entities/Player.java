@@ -6,19 +6,16 @@ import sokoswitch.game.GameAssetManager;
 
 public class Player extends Entity{
 	
-	/*0=up, 1=right, 2=down, 3=left*/
-	private byte facing;
 	/*if the player can move into the direction it's facing*/
-	private boolean mobile;
+	protected boolean mobile;
 	/*if the player has chosen to rotate*/
-	private boolean rotate;
+	protected boolean rotate;
 	/*holds the "tag" of the player for equal method*/
-	private int tag;
+	protected int tag;
 	
 	public Player(int x, int y, int tag, GameAssetManager manager) {
 		super(2, x, y, manager);
 		this.tag = tag;
-		this.facing = 0;
 		this.mobile = false;
 		this.rotate = false;
 	}
@@ -31,8 +28,8 @@ public class Player extends Entity{
 		return new Vector2(x+xOffset, y+yOffset);
 	}
 	
-	public byte getFacing() {
-		return facing;
+	public void setRotation(float rotateOffset) {
+		sprite.setRotation((facing*-90)+rotateOffset);
 	}
 	
 	public boolean getMobile() {
@@ -45,14 +42,6 @@ public class Player extends Entity{
 	
 	public int getTag() {
 		return tag;
-	}
-	
-	public boolean setFacing(byte facing) {
-		if(this.facing != facing) {
-			this.facing = facing;
-			return true;
-		}
-		return false;
 	}
 	
 	public void setMobile(boolean mobile) {
