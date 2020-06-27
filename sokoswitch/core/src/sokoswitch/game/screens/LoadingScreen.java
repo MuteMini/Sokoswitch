@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -24,25 +25,29 @@ public class LoadingScreen extends ScreenAdapter{
 	private ShapeRenderer shapeRenderer;
 	private SpriteBatch batch;
 	private BitmapFont font;
+	private GlyphLayout layout;
 	
 	public LoadingScreen(Sokoswitch game) {
 		this.WIDTH_GUIDE = game.camera.viewportWidth/10f;
 		this.HEIGHT_GUIDE = game.camera.viewportHeight/10f;
 		this.game = game;
-		this.loadPos = 0;
-		this.loadingString = "";
-		this.shapeRenderer = new ShapeRenderer();
-		this.batch = new SpriteBatch();
 	}
 	
 	@Override
 	public void show() {
+		this.shapeRenderer = new ShapeRenderer();
+		this.batch = new SpriteBatch();
+		
+		this.loadPos = 0;
+		this.loadingString = "Loading Sprites...";
+		
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/BalsamiqSans-Regular.ttf"));
 	    FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-	    parameter.size = 30;
+	    parameter.size = 48;
 	    parameter.borderWidth = 1;
 	    parameter.color = new Color(.90f, .90f, .90f, 1);
 	    this.font = generator.generateFont(parameter);
+	    this.layout = new GlyphLayout(font, loadingString);
 	    generator.dispose();
 	}
 
@@ -66,6 +71,7 @@ public class LoadingScreen extends ScreenAdapter{
 				game.gsm.showMenu();
 				game.transition = 1;
 		    }
+			this.layout = new GlyphLayout(font, loadingString);
 		}
 		else {
 			percent = Interpolation.linear.apply(percent, game.gam.manager.getProgress(), 0.1f);
@@ -87,7 +93,7 @@ public class LoadingScreen extends ScreenAdapter{
 		shapeRenderer.end();
 		
 		batch.begin();
-		font.draw(batch, loadingString, WIDTH_GUIDE*4, HEIGHT_GUIDE*6);
+		font.draw(batch, loadingString, WIDTH_GUIDE*5.1f-(layout.width/2), HEIGHT_GUIDE*6.1f);
 		batch.end();
 	}
 
