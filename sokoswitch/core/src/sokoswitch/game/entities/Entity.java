@@ -81,7 +81,6 @@ public abstract class Entity {
 	public boolean setFacing(byte facing) {
 		if(this.facing != facing) {
 			this.facing = facing;
-			System.out.println(facing);
 			return true;
 		}
 		return false;

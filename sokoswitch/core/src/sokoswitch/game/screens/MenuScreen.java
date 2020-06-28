@@ -15,7 +15,7 @@ public class MenuScreen extends ScreenAdapter{
 	public MenuScreen(Sokoswitch game) {
 		this.game = game;
 		
-		this.level = 25;
+		this.level = 24;
 	}
 	
 	@Override
