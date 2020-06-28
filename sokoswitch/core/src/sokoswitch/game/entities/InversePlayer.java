@@ -5,10 +5,9 @@ import sokoswitch.game.level.Tiles;
 
 public class InversePlayer extends Player{
 
-	public InversePlayer(int x, int y, int tag, GameAssetManager manager) {
-		super(x, y, tag, manager);
+	public InversePlayer(int x, int y, int tag, int facing, GameAssetManager manager) {
+		super(x, y, tag, facing, manager);
 		setSprite(3);
-		this.facing = 2;
 	}
 	
 	@Override

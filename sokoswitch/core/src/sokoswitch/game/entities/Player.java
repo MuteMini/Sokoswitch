@@ -13,9 +13,10 @@ public class Player extends Entity{
 	/*holds the "tag" of the player for equal method*/
 	protected int tag;
 	
-	public Player(int x, int y, int tag, GameAssetManager manager) {
+	public Player(int x, int y, int tag, int facing, GameAssetManager manager) {
 		super(2, x, y, manager);
 		this.tag = tag;
+		this.facing = (byte)facing;
 		this.mobile = false;
 		this.rotate = false;
 	}

@@ -47,14 +47,10 @@ public class GameState {
 		ArrayList<Player> players = new ArrayList<>();
 		for(int i = 0; i < playerData.length; i++) {
 			Player p = null;
-			if(playerData[i][2] == 1) {
-				p = new Player(playerData[i][0], playerData[i][1], playerData[i][3], manager);
-				p.setFacing((byte)playerData[i][4]);
-			}
-			else {
-				p = new InversePlayer(playerData[i][0], playerData[i][1], playerData[i][3], manager);
-				p.setFacing((byte)((playerData[i][4]+2)%2));
-			}
+			if(playerData[i][2] == 1)
+				p = new Player(playerData[i][0], playerData[i][1], playerData[i][3], playerData[i][4], manager);
+			else
+				p = new InversePlayer(playerData[i][0], playerData[i][1], playerData[i][3], playerData[i][4], manager);
 			p.setSpritePos();
 			players.add(p);
 		}

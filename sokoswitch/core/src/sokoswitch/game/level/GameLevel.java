@@ -102,12 +102,12 @@ public class GameLevel extends Level{
 				Tiles t = locateTilesByCoordinate(2,x,y);
 				switch(t) {
 					case PLAYER:
-						Player p = new Player(x, y, players.size()+1, manager);
+						Player p = new Player(x, y, players.size()+1, 0, manager);
 						p.setSpritePos();
 						players.add(p);
 						break;
 					case INVERSE_PLAYER:
-						Player ip = new InversePlayer(x, y, -(players.size()+1), manager);
+						Player ip = new InversePlayer(x, y, -(players.size()+1), 2, manager);
 						ip.setSpritePos();
 						players.add(ip);
 						break;
@@ -302,18 +302,17 @@ public class GameLevel extends Level{
 		pastMovement = getPlayer().getFacing();
 		updateArrays();
 
+		boolean notMobile = true;
 		ArrayList<Vector2> playerV = new ArrayList<>(players.size());
 		for(Player p : players) {
 			if(p.setFacing(movement)) {
 				p.setRotate(true);
 				p.setMobile(true);
+				notMobile = false;
 			}
-			else {
-				playerV.add(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE ? p.interact() : p.getPosition());
-			}
+			playerV.add(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE ? p.interact() : p.getPosition());
 		}
 		
-		boolean notMobile = true;
 		if(players.get(0).getRotate()) {
 			rotateOffset = (pastMovement-movement)*-90;
 			if(rotateOffset == 180) 
@@ -341,14 +340,20 @@ public class GameLevel extends Level{
 					
 					if(first != last) {
 						allUpdated = false;
+						boolean[] resetPos = new boolean[playerV.size()];
 						for(int j = 0; j < playerV.size(); j++) {
 							if(playerV.get(j).equals(playerV.get(i))) {
 								updateP[j] = false;
+								resetPos[j] = true;
+							}
+						}
+						for(int j = 0; j < resetPos.length; j++) {
+							if(resetPos[j]) {
 								playerV.set(j, players.get(j).getPosition());
 							}
 						}
 					}
-					else if(blockPushed != null) {
+					if(blockPushed != null) {
 						int xOffset = (players.get(i).getFacing() % 2 == 0) ? 0 : 1;
 						int yOffset = (players.get(i).getFacing() % 2 == 0) ? 1 : 0;
 						xOffset *= (players.get(i).getFacing() == 3) ? -1 : 1;
@@ -371,11 +376,20 @@ public class GameLevel extends Level{
 							for(Vector2 vect : blockV) {
 								for(int j = 0; j < playerV.size(); j++) {
 									if(playerV.get(j).equals(vect)) {
-										updateP[j] = false;
-										playerV.set(j, players.get(j).getPosition());
+										//updateP[j] = false;
+										//playerV.set(j, players.get(j).getPosition());
 										update = false;
 										allUpdated = false;
 									}
+								}
+							}
+						}
+
+						if(update) {
+							for(BlockWrapper bw : pushable) {
+								if(blockPushed != bw && blockPushed.collides(players.get(i).getFacing(), bw)) {
+									update = false;
+									break;
 								}
 							}
 						}
@@ -384,6 +398,7 @@ public class GameLevel extends Level{
 						updateP[i] = update;
 						if(update) {
 							blockPlayerPusher[pushable.indexOf(blockPushed)] = i;
+							blockPushed.push(players.get(i).getFacing());
 						}
 						else {
 							playerV.set(i, players.get(i).getPosition());
@@ -400,11 +415,11 @@ public class GameLevel extends Level{
 					notMobile = false;
 				}
 			}
-			for(int i = 0; i < updateB.length; i++) {
+			/*for(int i = 0; i < updateB.length; i++) {
 				if(updateB[i]) {
 					pushable.get(i).push(players.get(blockPlayerPusher[i]).getFacing());
 				}
-			}
+			}*/
 		}
 		
 		joinAllBlocks();
