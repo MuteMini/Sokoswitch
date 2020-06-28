@@ -33,8 +33,7 @@ public class BlockWrapper{
 		}
 	}
 	
-	public boolean collides(int direction, BlockWrapper newB) {
-		Vector2[] newBv = newB.getBlockPos();
+	public boolean collides(int direction, Vector2[] newBv) {
 		Vector2[] thisBv = this.getBlockPosAfterPush(direction);
 		
 		for(Vector2 v1 : newBv) {

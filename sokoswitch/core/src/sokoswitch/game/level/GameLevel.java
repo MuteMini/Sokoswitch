@@ -22,7 +22,7 @@ public class GameLevel extends Level{
 	private OrthogonalTiledMapRenderer mapRender;
 	
 	/*holds the entities on the grid - players and blocks*/
-	private Comparator<Player> playerComparatorTopDown, playerComparatorLeftRight;
+	private Comparator<Player> playerComparator;
 	private ArrayList<Player> players;
 	private ArrayList<BlockWrapper> pushable;
 	
@@ -63,16 +63,10 @@ public class GameLevel extends Level{
 		this.mapRender = new OrthogonalTiledMapRenderer(map);
 
 		this.pushable = new ArrayList<>();
-		this.playerComparatorTopDown = new Comparator<Player>(){
+		this.playerComparator = new Comparator<Player>(){
 			@Override
 			public int compare(Player o1, Player o2) {
-				return ((Float)o1.getPosition().y).compareTo((Float)o2.getPosition().y);
-			}
-		};
-		this.playerComparatorLeftRight = new Comparator<Player>(){
-			@Override
-			public int compare(Player o1, Player o2) {
-				return ((Float)o1.getPosition().x).compareTo((Float)o2.getPosition().x);
+				return (((Integer)(o1.getTag())).compareTo((Integer)(o2.getTag())));
 			}
 		};
 		this.players = new ArrayList<>();
@@ -97,17 +91,18 @@ public class GameLevel extends Level{
 		
 		int xMax = getWidth();
 		int yMax = getHeight();
+		int tag = 1;
 		for(int y = 0; y < yMax; y++) {
 			for(int x = 0; x < xMax; x++) {
 				Tiles t = locateTilesByCoordinate(2,x,y);
 				switch(t) {
 					case PLAYER:
-						Player p = new Player(x, y, players.size()+1, 0, manager);
+						Player p = new Player(x, y, tag++, 0, manager);
 						p.setSpritePos();
 						players.add(p);
 						break;
 					case INVERSE_PLAYER:
-						Player ip = new InversePlayer(x, y, -(players.size()+1), 2, manager);
+						Player ip = new InversePlayer(x, y, -(tag++), 2, manager);
 						ip.setSpritePos();
 						players.add(ip);
 						break;
@@ -128,7 +123,7 @@ public class GameLevel extends Level{
 			}
 		}
 		
-		updateArrays();
+		Collections.sort(players, playerComparator);
 		addState();
 		joinAllBlocks();
 	}
@@ -300,10 +295,11 @@ public class GameLevel extends Level{
 		resetBlockValue();
 		resetPlayerValue();
 		pastMovement = getPlayer().getFacing();
-		updateArrays();
 
 		boolean notMobile = true;
 		ArrayList<Vector2> playerV = new ArrayList<>(players.size());
+		Vector2[][] blockWrapperV = new Vector2[pushable.size()][];
+		
 		for(Player p : players) {
 			if(p.setFacing(movement)) {
 				p.setRotate(true);
@@ -331,6 +327,10 @@ public class GameLevel extends Level{
 			Arrays.fill(updateP, true);
 			Arrays.fill(blockPlayerPusher, -1);
 			
+			for(int i = 0; i < blockWrapperV.length; i++) {
+				blockWrapperV[i] = pushable.get(i).getBlockPos();
+			}
+			
 			while(!complete) {
 				boolean allUpdated = true;
 				for(int i = 0; i < playerV.size(); i++) {
@@ -338,17 +338,25 @@ public class GameLevel extends Level{
 					int last = playerV.lastIndexOf(playerV.get(i));
 					BlockWrapper blockPushed = moveBlocks(playerV.get(i));
 					
+					if(players.get(i) instanceof InversePlayer) {
+						boolean updateInverse = true;
+						for(int j = 0; j < playerV.size(); j++) {
+							if(playerV.get(j).equals(players.get(i).getPosition())) {
+								updateInverse = false;
+								updateP[j] = false;
+								playerV.set(j, players.get(j).getPosition());
+							}
+						}
+						if(!updateInverse) {
+							updateP[i] = false;
+							playerV.set(i, players.get(i).getPosition());
+						}
+					}
 					if(first != last) {
 						allUpdated = false;
-						boolean[] resetPos = new boolean[playerV.size()];
 						for(int j = 0; j < playerV.size(); j++) {
 							if(playerV.get(j).equals(playerV.get(i))) {
 								updateP[j] = false;
-								resetPos[j] = true;
-							}
-						}
-						for(int j = 0; j < resetPos.length; j++) {
-							if(resetPos[j]) {
 								playerV.set(j, players.get(j).getPosition());
 							}
 						}
@@ -360,12 +368,19 @@ public class GameLevel extends Level{
 						yOffset *= (players.get(i).getFacing() == 2) ? -1 : 1;
 						Vector2 movementVector = new Vector2(xOffset, yOffset);
 						Vector2[] blockV = blockPushed.getBlockPos();
-
+						boolean[] playerPosOverlaps = new boolean[players.size()];
+						
 						boolean update = true;	
 						for(Vector2 vect : blockV) {
-							if(locateTilesByCoordinate(0, (int)vect.x, (int)vect.y) != Tiles.SPACE || locateTilesByCoordinate(0, (int)vect.x+xOffset, (int)vect.y+yOffset) == Tiles.EMPTY) {
+							if(locateTilesByCoordinate(0, (int)vect.x, (int)vect.y) != Tiles.SPACE 
+									|| locateTilesByCoordinate(0, (int)vect.x+xOffset, (int)vect.y+yOffset) == Tiles.EMPTY) {
 								update = false;
 								break;
+							}
+							for(int j = 0; j < players.size(); j++) {
+								if(vect.equals(players.get(j).interact())) {
+									playerPosOverlaps[j] = true;
+								}
 							}
 						}
 					
@@ -374,31 +389,38 @@ public class GameLevel extends Level{
 								blockV[j].add(movementVector);
 							}
 							for(Vector2 vect : blockV) {
-								for(int j = 0; j < playerV.size(); j++) {
-									if(playerV.get(j).equals(vect)) {
-										//updateP[j] = false;
-										//playerV.set(j, players.get(j).getPosition());
-										update = false;
-										allUpdated = false;
+								if(playerV.contains(vect)) {
+									update = false;
+									allUpdated = false;
+								}
+								for(int j = 0; j < players.size(); j++) {
+									if(vect.equals(players.get(j).getPosition())) {
+										if(playerPosOverlaps[j]) {
+											updateP[j] = false;
+											playerV.set(j, players.get(j).getPosition());
+											update = false;
+											allUpdated = false;
+										}
 									}
 								}
 							}
 						}
 
 						if(update) {
-							for(BlockWrapper bw : pushable) {
-								if(blockPushed != bw && blockPushed.collides(players.get(i).getFacing(), bw)) {
+							for(int j = 0; j < pushable.size(); j++) {
+								if(blockPushed != pushable.get(j) && blockPushed.collides(players.get(i).getFacing(), blockWrapperV[j])) {
 									update = false;
+									allUpdated = false;
 									break;
 								}
 							}
 						}
 						
 						updateB[pushable.indexOf(blockPushed)] = update;
-						updateP[i] = update;
+						updateP[i] = update;	
 						if(update) {
 							blockPlayerPusher[pushable.indexOf(blockPushed)] = i;
-							blockPushed.push(players.get(i).getFacing());
+							blockWrapperV[pushable.indexOf(blockPushed)] = blockV;
 						}
 						else {
 							playerV.set(i, players.get(i).getPosition());
@@ -415,11 +437,11 @@ public class GameLevel extends Level{
 					notMobile = false;
 				}
 			}
-			/*for(int i = 0; i < updateB.length; i++) {
+			for(int i = 0; i < updateB.length; i++) {
 				if(updateB[i]) {
 					pushable.get(i).push(players.get(blockPlayerPusher[i]).getFacing());
 				}
-			}*/
+			}
 		}
 		
 		joinAllBlocks();
@@ -503,25 +525,12 @@ public class GameLevel extends Level{
 	}
 	
 	private void undoState() {
+		if(undoStack.size() > 1) {
+			undoStack.pop();
+		}
 		ArrayList<Player> players = undoStack.peek().getPlayerArray(manager);
-		
 		this.players = new ArrayList<>(players);
 		this.pushable = undoStack.peek().getBlockArray(manager);
-		if(undoStack.size() > 1)
-			undoStack.pop();
-	}
-	
-	private void updateArrays() {
-		if(movement % 2 == 0) {
-			Collections.sort(players, playerComparatorTopDown);
-			if(movement == 0)
-				Collections.reverse(players);
-		}
-		else {
-			Collections.sort(players, playerComparatorLeftRight);
-			if(movement == 1)
-				Collections.reverse(players);
-		}
 	}
 	
 	private boolean checkLevelSolved() {
