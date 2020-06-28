@@ -168,7 +168,7 @@ public class GameLevel extends Level{
 				offsetSpeed = (heldCount >= 10) ? 80 : 50;
 				offset = 0;
 				movementOffset = Tiles.SIZE; 
-				movePlayers();
+				moveEntities();
 			}
 		}
 	}
@@ -210,8 +210,8 @@ public class GameLevel extends Level{
 			}
 		}
 		else if (!keyPressed){
-			resetAllPush();
-			resetAllRotate();
+			resetBlockValue();
+			resetPlayerValue();
 			movement = -1;
 			movementOffset = 0;
 			offset = 1;
@@ -296,32 +296,26 @@ public class GameLevel extends Level{
 		return false;
 	}
 	
-	private void movePlayers() {	
-		resetAllPush();
-		resetAllRotate();
+	private void moveEntities() {	
+		resetBlockValue();
+		resetPlayerValue();
 		pastMovement = getPlayer().getFacing();
 		updateArrays();
 
+		ArrayList<Vector2> playerV = new ArrayList<>(players.size());
 		for(Player p : players) {
 			if(p.setFacing(movement)) {
 				p.setRotate(true);
 				p.setMobile(true);
 			}
-			else if(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE
-					&& moveBlocks(players, players.indexOf(p))
-					&& !collidesWithPlayer(players, players.indexOf(p))) {
-				p.move(movement);
-				p.setMobile(true);
+			else {
+				playerV.add(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE ? p.interact() : p.getPosition());
 			}
-			else
-				p.setMobile(false);
-			
-			System.out.println(p.getId() + " " + p.getFacing());
 		}
-
+		
+		boolean notMobile = true;
 		if(players.get(0).getRotate()) {
 			rotateOffset = (pastMovement-movement)*-90;
-			
 			if(rotateOffset == 180) 
 				rotateOffset *= -1;
 			else if(rotateOffset == 270)
@@ -329,74 +323,114 @@ public class GameLevel extends Level{
 			else if(rotateOffset == -270)
 				rotateOffset = 90;
 		}
-		
-		joinAllBlocks();
-		for(Player p : players) {
-			if(p.getMobile()) {
-				addState();
-				break;
-			}
-		}
-	}
-	
-	private boolean moveBlocks(ArrayList<Player> players, int index) {
-		byte playerDirection = players.get(index).getFacing();
-		int xOffset = (playerDirection % 2 == 0) ? 0 : 1;
-		int yOffset = (playerDirection % 2 == 0) ? 1 : 0;
-		xOffset *= (playerDirection == 3) ? -1 : 1;
-		yOffset *= (playerDirection == 2) ? -1 : 1;
-		Vector2 movementVector = new Vector2(xOffset, yOffset);
-		
-		for(int i = 0; i < pushable.size(); i++) {
-			Vector2[] v = pushable.get(i).getBlockPos();
-			boolean push = false;
-			boolean outside = false;
+		else {
+			boolean complete = false;
+			boolean[] updateP = new boolean[players.size()];
+			boolean[] updateB = new boolean[pushable.size()];
+			int[] blockPlayerPusher = new int[pushable.size()];
 			
-			for(int j = 0; j < v.length; j++) {
-				if(v[j].equals(players.get(index).interact()))
-					push = true;
-				if((locateTilesByCoordinate(0, (int)v[j].x+xOffset, (int)v[j].y+yOffset) != Tiles.SPACE)
-						|| (locateTilesByCoordinate(0, (int)v[j].x, (int)v[j].y) == Tiles.EMPTY))
-					outside = true;
-			}
+			Arrays.fill(updateP, true);
+			Arrays.fill(blockPlayerPusher, -1);
 			
-			if(push) {
-				if(outside)
-					return false;
-				else {
-					for(Block b : pushable.get(i).getBlockArray()) {
-						for(int j = 0; j < players.size(); j++) {
-							if(j != index && players.get(j).getPosition().equals(b.getPosition().add(movementVector))){
-								return false;
+			while(!complete) {
+				boolean allUpdated = true;
+				for(int i = 0; i < playerV.size(); i++) {
+					int first = playerV.indexOf(playerV.get(i));
+					int last = playerV.lastIndexOf(playerV.get(i));
+					BlockWrapper blockPushed = moveBlocks(playerV.get(i));
+					
+					if(first != last) {
+						allUpdated = false;
+						for(int j = 0; j < playerV.size(); j++) {
+							if(playerV.get(j).equals(playerV.get(i))) {
+								updateP[j] = false;
+								playerV.set(j, players.get(j).getPosition());
 							}
 						}
 					}
-					for(int j = 0; j < pushable.size(); j++) {
-						if(j != i) {
-							if(pushable.get(i).collides(playerDirection, pushable.get(j)))
-								return false;
+					else if(blockPushed != null) {
+						int xOffset = (players.get(i).getFacing() % 2 == 0) ? 0 : 1;
+						int yOffset = (players.get(i).getFacing() % 2 == 0) ? 1 : 0;
+						xOffset *= (players.get(i).getFacing() == 3) ? -1 : 1;
+						yOffset *= (players.get(i).getFacing() == 2) ? -1 : 1;
+						Vector2 movementVector = new Vector2(xOffset, yOffset);
+						Vector2[] blockV = blockPushed.getBlockPos();
+
+						boolean update = true;	
+						for(Vector2 vect : blockV) {
+							if(locateTilesByCoordinate(0, (int)vect.x, (int)vect.y) != Tiles.SPACE || locateTilesByCoordinate(0, (int)vect.x+xOffset, (int)vect.y+yOffset) == Tiles.EMPTY) {
+								update = false;
+								break;
+							}
+						}
+					
+						if(update) {
+							for(int j = 0; j < blockV.length; j++) {
+								blockV[j].add(movementVector);
+							}
+							for(Vector2 vect : blockV) {
+								for(int j = 0; j < playerV.size(); j++) {
+									if(playerV.get(j).equals(vect)) {
+										updateP[j] = false;
+										playerV.set(j, players.get(j).getPosition());
+										update = false;
+										allUpdated = false;
+									}
+								}
+							}
+						}
+						
+						updateB[pushable.indexOf(blockPushed)] = update;
+						updateP[i] = update;
+						if(update) {
+							blockPlayerPusher[pushable.indexOf(blockPushed)] = i;
+						}
+						else {
+							playerV.set(i, players.get(i).getPosition());
 						}
 					}
-					pushable.get(i).push(playerDirection);
-					return true;
+				}
+				complete = allUpdated;
+			}
+			
+			for(int i = 0; i < updateP.length; i++) {
+				if(updateP[i] && playerV.get(i).equals(players.get(i).interact())) {
+					players.get(i).move(movement);
+					players.get(i).setMobile(true);
+					notMobile = false;
+				}
+			}
+			for(int i = 0; i < updateB.length; i++) {
+				if(updateB[i]) {
+					pushable.get(i).push(players.get(blockPlayerPusher[i]).getFacing());
 				}
 			}
 		}
-		return true;
-	}
-
-	private boolean collidesWithPlayer(ArrayList<Player> players, int index) {
-		Player main = players.get(index);
-		for(Player p : players) {
-			if(p != main 
-					&& p.getPosition().equals(main.interact()) 
-					&& (locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.EMPTY || !moveBlocks(players, players.indexOf(p)))) {
-				return true;
-			}
+		
+		joinAllBlocks();
+		if(!notMobile) {
+			addState();
 		}
-		return false;
 	}
 	
+	private BlockWrapper moveBlocks(Vector2 pVector) {
+		for(int i = 0; i < pushable.size(); i++) {
+			Vector2[] v = pushable.get(i).getBlockPos();
+			boolean push = false;
+			
+			for(int j = 0; j < v.length; j++) {
+				if(v[j].equals(pVector)) {
+					push = true;
+					break;
+				}
+			}
+			if(push) {
+				return pushable.get(i);
+			}
+		}
+		return null;
+	}
+
 	private void interact() {
 		Set<Vector2> playerInteract = new HashSet<>();
 		for(int i = 0; i < players.size(); i++) {
@@ -436,15 +470,16 @@ public class GameLevel extends Level{
 		}
 	}
 	
-	private void resetAllPush() {
+	private void resetBlockValue() {
 		for(BlockWrapper bw : pushable) {
 			bw.unpush();
 		}
 	}
 	
-	private void resetAllRotate() {
+	private void resetPlayerValue() {
 		for(Player p : players) {
 			p.setRotate(false);
+			p.setMobile(false);
 		}
 	}
 	
