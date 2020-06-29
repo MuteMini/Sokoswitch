@@ -43,9 +43,9 @@ public class LoadingScreen extends ScreenAdapter{
 		
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/BalsamiqSans-Regular.ttf"));
 	    FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-	    parameter.size = 48;
-	    parameter.borderWidth = 1;
-	    parameter.color = new Color(.90f, .90f, .90f, 1);
+		    parameter.size = 48;
+		    parameter.borderWidth = 1;
+		    parameter.color = new Color(.90f, .90f, .90f, 1);
 	    this.font = generator.generateFont(parameter);
 	    this.layout = new GlyphLayout(font, loadingString);
 	    generator.dispose();
@@ -63,8 +63,12 @@ public class LoadingScreen extends ScreenAdapter{
 			    	game.gam.loadLevels();
 			    	loadingString = "Loading Levels...";
 			    	break;
+			    case 3:
+			    	game.gam.loadFonts();
+			    	loadingString = "Loading Fonts...";
+			    	break;
 		    }
-			if (loadPos > 2){
+			if (loadPos > 3){
 				loadingString = "Loading Complete!";
 				percent = 1;
 				game.gam.initializeValues();

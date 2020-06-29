@@ -1,20 +1,15 @@
 package sokoswitch.game.screens;
 
-import java.util.Stack;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.ScreenAdapter;
+import java.util.*;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.utils.viewport.*;
-
 import sokoswitch.game.Sokoswitch;
 import sokoswitch.game.level.*;
 
 public class PuzzleScreen extends ScreenAdapter{
 
-	private final int CENTERED_MARGIN = 6;
+	private final int CENTERED_MARGIN = 5;
 	
 	/*used to switch screens*/
 	private Sokoswitch game;
@@ -30,16 +25,20 @@ public class PuzzleScreen extends ScreenAdapter{
 	private int levelId;
 	/*holds the actual game level*/
 	private GameLevel gameLevel;
+	/*holds how much levels the player has solved*/
+	private HashSet<Long> levelsSolved;
 
-	public PuzzleScreen(Sokoswitch game, int levelId) {
+	public PuzzleScreen(Sokoswitch game, int levelId, HashSet<Long> levelsSolved) {
 		this.game = game;
 		this.levelId = levelId;
 		this.cameraCentered = false;
 		this.keysPressed = new Stack<>();
+		this.levelsSolved = levelsSolved;
+		resetLevel();
 	}
 	
 	public void resetLevel() {
-		gameLevel = new GameLevel(game.gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath()), game.gam);
+		this.gameLevel = new GameLevel(levelId, game.gam, levelsSolved);
 	}
 	
 	@Override
@@ -106,19 +105,20 @@ public class PuzzleScreen extends ScreenAdapter{
             return true;
 	        }
 	    });
-
-		resetLevel();
-
+		
 		int borderX = gameLevel.getWidth() * Tiles.SIZE;
 		int borderY = gameLevel.getHeight() * Tiles.SIZE;
 
-		if(gameLevel.isWorld()) {
-			game.camera.zoom += 4;
+		if(gameLevel.isCentered()) {
+			game.camera.zoom = 4;
+			game.viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), game.camera);
+			game.viewport.apply();
 			cameraCentered = true;
 			this.maxCameraX = borderX - Tiles.SIZE*CENTERED_MARGIN;
 			this.maxCameraY = borderY - Tiles.SIZE*CENTERED_MARGIN;
 		}
 		else {
+			game.camera.zoom = 1;
 			game.viewport = new FitViewport(borderX, borderY, game.camera);
 			game.viewport.apply();
 			game.camera.position.set(borderX/2f, borderY/2f, 0);
@@ -148,13 +148,22 @@ public class PuzzleScreen extends ScreenAdapter{
 		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		
-		if(gameLevel.isSolved())
+		if(gameLevel.isSolved()) {
+			levelsSolved.add((long)levelId);
 			game.gsm.pop();
+			//game.gsm.showWorldScreen(gameLevel.getLinkedWorld());
+		}
+		
+		if(gameLevel.isToSwitch()) {
+			gameLevel.setToSwitch(false);
+			game.gsm.showPuzzleScreen(gameLevel.getSwitchId());
+		}
 		
 		if(Gdx.input.justTouched()) {
 			resetLevel();
-			/*Tiles tile = gameLevel.locateTilesByCoordinate(2, Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
-			System.out.println(tile.getId());*/
+			/*Vector3 clickPos = game.camera.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
+			Tiles tile = gameLevel.locateTilesByPosition(2, clickPos.x, clickPos.y);
+			System.out.println(tile.getId() + " " + clickPos);*/
 		}
 	}
 	
@@ -175,5 +184,9 @@ public class PuzzleScreen extends ScreenAdapter{
 	@Override
 	public void dispose() {
 		gameLevel.dispose();
+	}
+	
+	public HashSet<Long> getLevelsSolved() {
+		return levelsSolved;
 	}
 }

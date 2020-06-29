@@ -3,25 +3,24 @@ package sokoswitch.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
-
 import sokoswitch.game.Sokoswitch;
 
 public class MenuScreen extends ScreenAdapter{
 
 	private Sokoswitch game;
 	
-	private int level;
+	//private int level;
 
 	public MenuScreen(Sokoswitch game) {
 		this.game = game;
 		
-		this.level = 24;
+		//this.level = 0;
 	}
 	
 	@Override
 	public void show() {
-		System.out.println("moving on from level " + level);
-		game.gsm.showPuzzleScreen(level++);
+		//System.out.println("moving on from level " + level);
+		game.gsm.showPuzzleScreen(0);
 	}
 
 	public void update(float delta) {
