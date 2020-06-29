@@ -21,3 +21,7 @@ Currently, the game is in its early stages. Here are some mechanics (probably du
   
 ## Release?
 I haven't even thought about this step, but it's probably good to set myself a deadline. Currently, a "playable" version is aimed to be released on July 20th. The menu work, assets, and animations will be very rough. Expect more releases after this date.
+
+## Libraries Used
+- [libGDX](https://libgdx.badlogicgames.com/)
+- [JSON.simple](https://code.google.com/archive/p/json-simple/)
