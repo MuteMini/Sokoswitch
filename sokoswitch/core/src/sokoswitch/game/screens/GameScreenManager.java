@@ -45,7 +45,7 @@ public class GameScreenManager{
 				System.out.print("menu ");
 			}
 			else if(scr instanceof PuzzleScreen) {
-				System.out.print("puzzle ");
+				System.out.print("puzzle " + ((PuzzleScreen)scr).getLevelId());
 			}
 		}
 		System.out.println();

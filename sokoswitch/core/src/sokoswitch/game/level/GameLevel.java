@@ -18,6 +18,7 @@ public class GameLevel extends Level{
 	
 	private GameAssetManager gam;
 	
+	@SuppressWarnings("unused")
 	private int levelId;
 	private TiledMap map;
 	private ArrayList<TiledMapTileLayer> layers;

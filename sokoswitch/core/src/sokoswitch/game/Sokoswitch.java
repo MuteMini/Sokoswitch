@@ -52,6 +52,8 @@ public class Sokoswitch extends Game {
 			setScreen(gsm.peek());
 		}
 		
+		//gsm.printStack();
+		
 		/*framerate testing*/
 		totalDeltaTime += Gdx.graphics.getDeltaTime();
 		renderCount++;
