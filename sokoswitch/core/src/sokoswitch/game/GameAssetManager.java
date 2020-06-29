@@ -3,6 +3,7 @@ package sokoswitch.game;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
@@ -18,10 +19,11 @@ public final class GameAssetManager {
 	public final String puzzleEntityPath = "puzzleEntity.png";
 	public final String puzzleBlocksPath = "puzzleBlocks.png";
 	public final String[] fontPath = {"fonts/BalsamiqSans-Regular.ttf"};
+	public final int fontArraySize = 1;
 	
 	private TextureRegion[][] entity;
 	private TextureRegion[][] blocks;
-	private FreeTypeFontGenerator[] fonts;
+	private BitmapFont[] fonts;
 	
 	public GameAssetManager() {
 		TmxMapLoader loader = new TmxMapLoader();
@@ -53,10 +55,15 @@ public final class GameAssetManager {
 	public void initializeValues() {
 		entity = TextureRegion.split(manager.get(puzzleEntityPath), Tiles.SIZE, Tiles.SIZE);
 		blocks = TextureRegion.split(manager.get(puzzleBlocksPath), Tiles.SIZE, Tiles.SIZE);
-		fonts = new FreeTypeFontGenerator[fontPath.length];
-		for(int i = 0; i < 1; i++) {
-			fonts[i] = manager.get(fontPath[i]);
-		}
+		fonts = new BitmapFont[fontArraySize];
+		
+		FreeTypeFontGenerator balsamic = manager.get(fontPath[0]);
+		FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
+			param.size = 120;
+			param.borderWidth = 10;
+			param.borderColor = Color.DARK_GRAY;
+			param.color = new Color(.90f, .90f, .90f, 1);
+		fonts[0] = balsamic.generateFont(param);
 	}
 	
 	public Sprite getSprite(int id, int pos) {
@@ -73,7 +80,7 @@ public final class GameAssetManager {
 		return null;
 	}
 	
-	public FreeTypeFontGenerator getFont(int index) {
+	public BitmapFont getFont(int index) {
 		return fonts[index];
 	}
 	
