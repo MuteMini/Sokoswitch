@@ -1,7 +1,6 @@
 package sokoswitch.game.entities;
 
 import sokoswitch.game.GameAssetManager;
-import sokoswitch.game.level.Tiles;
 
 public class InversePlayer extends Player{
 

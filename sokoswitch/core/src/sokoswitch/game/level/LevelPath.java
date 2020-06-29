@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 public enum LevelPath {
 	
-	WORLD(0, "test.tmx"),
+	//SUBWORLD_1(-1, "0/01.tmx"),
+	WORLD(0, "0/00.tmx"),
 	LEVEL1_1(1, "1/01.tmx"),
 	LEVEL1_2(2, "1/02.tmx"),
 	LEVEL1_3(3, "1/03.tmx"),
@@ -46,6 +47,11 @@ public enum LevelPath {
 	
 	public static LevelPath getLevelPath(int id) {
 		return levelMap.get(id);
+	}
+	
+	public static String getDataPath(int index) {
+		String num = (index < 10) ? "0"+index : ""+index;
+		return LEVEL_DIR+"0/"+num+".world";
 	}
 	
 	public int getLevelNum() {

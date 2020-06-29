@@ -4,8 +4,7 @@ import java.util.HashMap;
 
 public enum Tiles {
 
-	OFF(-2, 2, 0),
-	ON(-1, 2, 1),
+	LEVEL_TILE(-1, 1, 3),
 	EMPTY(0, 0, 0),
 	SPACE(1, 1, 0),
 	PLAYER(2, 1, 1),

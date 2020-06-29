@@ -1,10 +1,9 @@
 package sokoswitch.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
-
 import sokoswitch.game.GameAssetManager;
 
-public class Player extends Entity{
+public class Player extends MoveableEntity{
 	
 	/*if the player can move into the direction it's facing*/
 	protected boolean mobile;

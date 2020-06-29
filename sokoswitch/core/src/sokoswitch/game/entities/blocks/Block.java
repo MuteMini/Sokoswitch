@@ -2,12 +2,11 @@ package sokoswitch.game.entities.blocks;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-
 import sokoswitch.game.GameAssetManager;
-import sokoswitch.game.entities.Entity;
+import sokoswitch.game.entities.MoveableEntity;
 import sokoswitch.game.level.Tiles;
 
-public abstract class Block extends Entity{
+public abstract class Block extends MoveableEntity{
 
 	protected boolean onState;
 	protected boolean pushed;

@@ -10,7 +10,6 @@ public abstract class Entity {
 	
 	protected int id;
 	protected int x, y;
-	protected byte facing;
 	protected Sprite sprite;
 	protected GameAssetManager manager;
 	
@@ -19,27 +18,10 @@ public abstract class Entity {
 		setSprite(id);
 		this.x = x;
 		this.y = y;
-		this.facing = 0;
 	}
 	
 	public void render(Batch batch) {
 		sprite.draw(batch);
-	}
-	
-	public void move(int direction) {
-		if(direction == 0) {
-			y += 1;
-		}
-		else if(direction == 1) {
-			x += 1;
-		}
-		else if(direction == 2) {
-			y -= 1;
-		}
-		else if(direction == 3) {
-			x -= 1;
-		}
-		setSpritePos();
 	}
 	
 	public Vector2 getPosition() {
@@ -54,10 +36,6 @@ public abstract class Entity {
 		return id;
 	}
 	
-	public byte getFacing() {
-		return facing;
-	}
-	
 	public void setSprite(int id) {
 		this.id = id;
 		Tiles tile = Tiles.getTilesById(id);
@@ -66,24 +44,6 @@ public abstract class Entity {
 	
 	public void setSpritePos() {
 		sprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
-	}
-	
-	public void setSpritePos(float offset) {
-		if(this.facing / 2 == 0)
-			offset *= -1;
-			
-		if(this.facing % 2 == 0)
-			sprite.setCenter((x*Tiles.SIZE)+(Tiles.SIZE/2), (y*Tiles.SIZE)+offset+(Tiles.SIZE/2));
-		else if (this.facing % 2 == 1)
-			sprite.setCenter((x*Tiles.SIZE)+offset+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
-	}
-	
-	public boolean setFacing(byte facing) {
-		if(this.facing != facing) {
-			this.facing = facing;
-			return true;
-		}
-		return false;
 	}
 	
 	public void setPosition(int x, int y) {
