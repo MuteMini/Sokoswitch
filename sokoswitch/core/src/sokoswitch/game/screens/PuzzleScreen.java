@@ -32,7 +32,6 @@ public class PuzzleScreen extends ScreenAdapter{
 		this.game = game;
 		this.levelId = levelId;
 		this.cameraCentered = false;
-		this.keysPressed = new Stack<>();
 		this.levelsSolved = levelsSolved;
 		resetLevel();
 	}
@@ -43,6 +42,7 @@ public class PuzzleScreen extends ScreenAdapter{
 	
 	@Override
 	public void show() {
+		this.keysPressed = new Stack<>();
 		Gdx.input.setInputProcessor(new InputAdapter() {
 	        @Override 
 	        public boolean keyDown (int keycode) {
@@ -148,15 +148,16 @@ public class PuzzleScreen extends ScreenAdapter{
 		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		
-		if(gameLevel.isSolved()) {
+		if(gameLevel.isWorld() && gameLevel.isToSwitch()) {
+			gameLevel.setToSwitch(false);
+			if(gameLevel.getSwitchId() == 0)
+				game.gsm.pop();
+			else
+				game.gsm.showPuzzleScreen(gameLevel.getSwitchId());
+		}
+		else if(!gameLevel.isWorld() && gameLevel.isSolved()) {
 			levelsSolved.add((long)levelId);
 			game.gsm.pop();
-			//game.gsm.showWorldScreen(gameLevel.getLinkedWorld());
-		}
-		
-		if(gameLevel.isToSwitch()) {
-			gameLevel.setToSwitch(false);
-			game.gsm.showPuzzleScreen(gameLevel.getSwitchId());
 		}
 		
 		if(Gdx.input.justTouched()) {
@@ -184,6 +185,10 @@ public class PuzzleScreen extends ScreenAdapter{
 	@Override
 	public void dispose() {
 		gameLevel.dispose();
+	}
+	
+	public int getLevelId() {
+		return levelId;
 	}
 	
 	public HashSet<Long> getLevelsSolved() {

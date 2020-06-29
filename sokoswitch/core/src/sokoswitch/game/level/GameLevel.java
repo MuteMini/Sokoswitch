@@ -251,9 +251,7 @@ public class GameLevel extends Level{
 		
 		if(isWorld()) {
 			for(LevelTile lt : levelPlaced) {
-				if(lt.isShown()) {
-					lt.render(mapRender.getBatch());
-				}
+				lt.render(mapRender.getBatch());
 			}
 		}
 		for(Player p : players) {
@@ -548,18 +546,22 @@ public class GameLevel extends Level{
 		
 		if(isWorld()) {
 			for(LevelTile lt : levelPlaced) {
-				for(Player p : players) {
-					if(lt.getPosition().equals(p.getPosition())) {
-						this.switchToLevel = true;
-						this.switchLevelId = lt.getConnectedLevel();
-						break;
+				if(lt.isShown()) {
+					for(Player p : players) {
+						if(lt.getPosition().equals(p.getPosition())) {
+							this.switchToLevel = true;
+							this.switchLevelId = lt.getConnectedLevel();
+							break;
+						}
 					}
 				}
 			}
 		}
-		if(wasSwitched)
+		
+		if(wasSwitched) {
 			addState();
-		this.solved = checkLevelSolved();
+			this.solved = checkLevelSolved();
+		}
 	}
 	
 	private void joinAllBlocks() {

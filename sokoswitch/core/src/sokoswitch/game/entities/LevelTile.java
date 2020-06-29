@@ -2,7 +2,6 @@ package sokoswitch.game.entities;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -56,7 +55,8 @@ public class LevelTile extends Entity{
 	@Override
 	public void render(Batch batch) {
 		sprite.draw(batch);
-		font.draw(batch, displayText, sprite.getX()+(Tiles.SIZE/2)-(stringWidth/2)-5, sprite.getY()+170);
+		if(isShown)
+			font.draw(batch, displayText, sprite.getX()+(Tiles.SIZE/2)-(stringWidth/2)-5, sprite.getY()+170);
 	}
 	
 	public boolean isShown() {
