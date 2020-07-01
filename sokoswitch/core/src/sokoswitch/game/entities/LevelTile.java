@@ -40,14 +40,11 @@ public class LevelTile extends Entity{
 
 	public void update(HashSet<Long> completed) {
 		if(!isShown) {
-			if(prereq.contains((long)0)) {
-				setChangedSprite(-2);
+			if(prereq.contains((long)0))
 				isShown = true;
-			}
 			else {
 				for(Long comp : completed) {
 					if(prereq.contains(comp)) {
-						setChangedSprite(-2);
 						isShown = true;
 						break;
 					}
@@ -56,10 +53,14 @@ public class LevelTile extends Entity{
 		}
 		if(!isSolved) {
 			if(completed.contains((long)connectedLevel)) {
-				setChangedSprite(-1);
 				isSolved = true;
 			}
 		}
+		
+		if(isSolved)
+			setChangedSprite(-1);
+		else if(isShown)
+			setChangedSprite(-2);
 	}
 	
 	@Override

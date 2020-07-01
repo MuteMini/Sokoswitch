@@ -12,7 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import sokoswitch.game.GameAssetManager;
 import sokoswitch.game.entities.*;
 import sokoswitch.game.entities.blocks.*;
-import sokoswitch.game.worlddata.WorldData;
+import sokoswitch.game.loaders.WorldData;
 
 public class GameLevel extends Level{
 	

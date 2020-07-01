@@ -9,15 +9,15 @@ import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import sokoswitch.game.level.*;
-import sokoswitch.game.worlddata.*;
+import sokoswitch.game.loaders.*;
 
 public final class GameAssetManager {
 	
 	public final AssetManager manager = new AssetManager();
 	
-	public final String puzzleEntityPath = "entities.atlas";
-	public final String normalBlockPath = "normalBlock.atlas";
-	public final String lockedBlockPath = "lockedBlock.atlas";
+	public final String puzzleEntityPath = "textures/entities.atlas";
+	public final String normalBlockPath = "textures/normalBlock.atlas";
+	public final String lockedBlockPath = "textures/lockedBlock.atlas";
 	public final String[] fontPath = {"fonts/BalsamiqSans-Regular.ttf"};
 	public final int fontArraySize = 1;
 	
