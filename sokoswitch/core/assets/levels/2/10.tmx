@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.3.4" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="256" tileheight="256" infinite="0" nextlayerid="4" nextobjectid="1">
  <properties>
+  <property name="cameraCentered" type="bool" value="false"/>
   <property name="isWorld" type="bool" value="false"/>
+  <property name="linkedWorld" type="int" value="-1"/>
  </properties>
- <tileset firstgid="1" name="prototypeSet" tilewidth="256" tileheight="256" tilecount="16" columns="4">
-  <image source="../../puzzlePrototype2.png" width="1024" height="1024"/>
- </tileset>
+ <tileset firstgid="1" source="../prototypeSet.tsx"/>
  <layer id="1" name="Floor" width="8" height="8">
   <data encoding="csv">
 1,1,1,0,0,0,0,0,

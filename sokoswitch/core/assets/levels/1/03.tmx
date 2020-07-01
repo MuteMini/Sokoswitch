@@ -5,9 +5,7 @@
   <property name="isWorld" type="bool" value="false"/>
   <property name="linkedWorld" type="int" value="0"/>
  </properties>
- <tileset firstgid="1" name="prototypeSet" tilewidth="256" tileheight="256" tilecount="16" columns="4">
-  <image source="../../puzzlePrototype2.png" width="1024" height="1024"/>
- </tileset>
+ <tileset firstgid="1" source="../prototypeSet.tsx"/>
  <layer id="1" name="Floor" width="5" height="3">
   <data encoding="csv">
 0,0,0,0,0,
