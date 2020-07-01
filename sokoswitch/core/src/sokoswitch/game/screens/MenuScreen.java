@@ -20,7 +20,7 @@ public class MenuScreen extends ScreenAdapter{
 	@Override
 	public void show() {
 		//System.out.println("moving on from level " + level);
-		game.gsm.showPuzzleScreen(0);
+		game.gsm.showPuzzleScreen(-1);
 	}
 
 	public void update(float delta) {

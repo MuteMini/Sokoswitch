@@ -20,6 +20,8 @@ public class GameScreenManager{
 		HashSet<Long> tempHs = new HashSet<>();
 		if(screens.peek() instanceof PuzzleScreen)
 			tempHs = ((PuzzleScreen)screens.peek()).getLevelsSolved();
+		tempHs.add((long)6);
+		tempHs.add((long)16);
 		screens.push(new PuzzleScreen(game, id, tempHs));
 	}
 	

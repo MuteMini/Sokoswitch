@@ -580,6 +580,9 @@ public class GameLevel extends Level{
 				}
 			}
 		}
+		for(BlockWrapper bw : pushable) {
+			bw.updateSprites();
+		}
 	}
 	
 	private void resetBlockValue() {
@@ -606,6 +609,9 @@ public class GameLevel extends Level{
 		ArrayList<Player> players = undoStack.peek().getPlayerArray(gam);
 		this.players = new ArrayList<>(players);
 		this.pushable = undoStack.peek().getBlockArray(gam);
+		for(BlockWrapper bw : pushable) {
+			bw.updateSprites();
+		}
 	}
 	
 	private boolean checkLevelSolved() {

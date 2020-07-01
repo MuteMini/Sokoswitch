@@ -25,6 +25,7 @@ public class BlockWrapper{
 			b.setFacing((byte)direction);
 			b.move(direction);
 		}
+		updateSprites();
 	}
 	
 	public void unpush() {
@@ -124,6 +125,64 @@ public class BlockWrapper{
 	public void switchStates() {
 		for(Block b : blocksJoined) {
 			b.switchState();
+		}
+	}
+	
+	public void updateSprites() {
+		for(Block b : blocksJoined) {
+			b.resetBlocksTouched();
+		}
+		
+		Vector2[] blockPos = getBlockPos();
+		for(int i = 0; i < blocksJoined.size(); i++) {
+			for(int j = 0; j < blocksJoined.size(); j++) {
+				if(i != j && blockPos[i].dst(blockPos[j]) <= Math.sqrt(2)+0.1) {
+					float x = blockPos[i].x - blockPos[j].x;
+					float y = blockPos[i].y - blockPos[j].y;
+					if(x < 0) {
+						if(y < 0) {
+							blocksJoined.get(i).blocksTouching(2);
+							blocksJoined.get(j).blocksTouching(5);
+						}
+						else if(y > 0) {
+							blocksJoined.get(i).blocksTouching(7);
+							blocksJoined.get(j).blocksTouching(0);
+						}
+						else {
+							blocksJoined.get(i).blocksTouching(4);
+							blocksJoined.get(j).blocksTouching(3);
+						}
+					}
+					else if(x > 0) {
+						if(y < 0) {
+							blocksJoined.get(i).blocksTouching(0);
+							blocksJoined.get(j).blocksTouching(7);
+						}
+						else if(y > 0) {
+							blocksJoined.get(i).blocksTouching(5);
+							blocksJoined.get(j).blocksTouching(2);
+						}
+						else {
+							blocksJoined.get(i).blocksTouching(3);
+							blocksJoined.get(j).blocksTouching(4);
+						}
+					}
+					else {
+						if(y < 0) {
+							blocksJoined.get(i).blocksTouching(1);
+							blocksJoined.get(j).blocksTouching(6);
+						}
+						else if(y > 0) {
+							blocksJoined.get(i).blocksTouching(6);
+							blocksJoined.get(j).blocksTouching(1);
+						}
+					}
+				}
+			}
+		}
+		
+		for(Block b : blocksJoined) {
+			b.updateSprite();
 		}
 	}
 	
