@@ -17,11 +17,13 @@ public final class GameAssetManager {
 	
 	public final String puzzleEntityPath = "entities.atlas";
 	public final String normalBlockPath = "normalBlock.atlas";
+	public final String lockedBlockPath = "lockedBlock.atlas";
 	public final String[] fontPath = {"fonts/BalsamiqSans-Regular.ttf"};
 	public final int fontArraySize = 1;
 	
 	private EntityAssets entityAssets;
 	private NormalBlockAssets normalBlockAssets;
+	private LockedBlockAssets lockedBlockAssets;
 	private BitmapFont[] fonts;
 	
 	public GameAssetManager() {
@@ -35,6 +37,7 @@ public final class GameAssetManager {
 	public void loadImages() {
 		manager.load(puzzleEntityPath, TextureAtlas.class);
 		manager.load(normalBlockPath, TextureAtlas.class);
+		manager.load(lockedBlockPath, TextureAtlas.class);
 	}
 	
 	public void loadLevels() {
@@ -54,6 +57,7 @@ public final class GameAssetManager {
 	public void initializeValues() {
 		entityAssets = new EntityAssets(manager.get(puzzleEntityPath));
 		normalBlockAssets = new NormalBlockAssets(manager.get(normalBlockPath));
+		lockedBlockAssets = new LockedBlockAssets(manager.get(lockedBlockPath));
 		
 		fonts = new BitmapFont[fontArraySize];
 		
@@ -67,17 +71,15 @@ public final class GameAssetManager {
 	}
 	
 	public Sprite getSprite(int id, int pos) {
-		if(id == 1) {
-			Sprite sprite = new Sprite(entityAssets.assets[pos]);
-			sprite.setScale(8);
-			return sprite;
-		}
-		else if(id == 2) {
-			Sprite sprite = new Sprite(normalBlockAssets.assets[pos]);
-			sprite.setScale(8);
-			return sprite;
-		}
-		return null;
+		Sprite sprite = new Sprite();
+		if(id == 1)
+			sprite = new Sprite(entityAssets.assets[pos]);
+		else if(id == 2)
+			sprite = new Sprite(normalBlockAssets.assets[pos]);
+		else if(id == 3)
+			sprite = new Sprite(lockedBlockAssets.assets[pos]);
+		sprite.setScale(8);
+		return sprite;
 	}
 	
 	public BitmapFont getFont(int index) {
@@ -159,6 +161,65 @@ public final class GameAssetManager {
         	assets[44] = atlas.findRegion("block45");
         	assets[45] = atlas.findRegion("block46");
         	assets[46] = atlas.findRegion("block47");
+        }
+    }
+	
+	public class LockedBlockAssets {
+        public final TextureRegion[] assets;
+
+        public LockedBlockAssets(TextureAtlas atlas) {
+        	assets = new TextureRegion[47];
+        	assets[0] = atlas.findRegion("lockedBlock1");
+        	assets[1] = atlas.findRegion("lockedBlock2");
+        	assets[2] = atlas.findRegion("lockedBlock3");
+        	assets[3] = atlas.findRegion("lockedBlock4");
+        	assets[4] = atlas.findRegion("lockedBlock5");
+        	assets[5] = atlas.findRegion("lockedBlock6");
+        	assets[6] = atlas.findRegion("lockedBlock7");
+        	assets[7] = atlas.findRegion("lockedBlock8");
+        	assets[8] = atlas.findRegion("lockedBlock9");
+        	
+        	assets[9] = atlas.findRegion("lockedBlock10");
+        	assets[10] = atlas.findRegion("lockedBlock11");
+        	assets[11] = atlas.findRegion("lockedBlock12");
+        	assets[12] = atlas.findRegion("lockedBlock13");
+        	assets[13] = atlas.findRegion("lockedBlock14");
+        	assets[14] = atlas.findRegion("lockedBlock15");
+        	assets[15] = atlas.findRegion("lockedBlock16");
+        	assets[16] = atlas.findRegion("lockedBlock17");
+        	assets[17] = atlas.findRegion("lockedBlock18");
+        	assets[18] = atlas.findRegion("lockedBlock19");
+        	
+        	assets[19] = atlas.findRegion("lockedBlock20");
+        	assets[20] = atlas.findRegion("lockedBlock21");
+        	assets[21] = atlas.findRegion("lockedBlock22");
+        	assets[22] = atlas.findRegion("lockedBlock23");
+        	assets[23] = atlas.findRegion("lockedBlock24");
+        	assets[24] = atlas.findRegion("lockedBlock25");
+        	assets[25] = atlas.findRegion("lockedBlock26");
+        	assets[26] = atlas.findRegion("lockedBlock27");
+        	assets[27] = atlas.findRegion("lockedBlock28");
+        	assets[28] = atlas.findRegion("lockedBlock29");
+        	
+        	assets[29] = atlas.findRegion("lockedBlock30");
+        	assets[30] = atlas.findRegion("lockedBlock31");
+        	assets[31] = atlas.findRegion("lockedBlock32");
+        	assets[32] = atlas.findRegion("lockedBlock33");
+        	assets[33] = atlas.findRegion("lockedBlock34");
+        	assets[34] = atlas.findRegion("lockedBlock35");
+        	assets[35] = atlas.findRegion("lockedBlock36");
+        	assets[36] = atlas.findRegion("lockedBlock37");
+        	assets[37] = atlas.findRegion("lockedBlock38");
+        	assets[38] = atlas.findRegion("lockedBlock39");
+        	
+        	assets[39] = atlas.findRegion("lockedBlock40");
+        	assets[40] = atlas.findRegion("lockedBlock41");
+        	assets[41] = atlas.findRegion("lockedBlock42");
+        	assets[42] = atlas.findRegion("lockedBlock43");
+        	assets[43] = atlas.findRegion("lockedBlock44");
+        	assets[44] = atlas.findRegion("lockedBlock45");
+        	assets[45] = atlas.findRegion("lockedBlock46");
+        	assets[46] = atlas.findRegion("lockedBlock47");
         }
     }
 }

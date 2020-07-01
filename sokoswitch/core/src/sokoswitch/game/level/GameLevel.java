@@ -580,14 +580,18 @@ public class GameLevel extends Level{
 				}
 			}
 		}
-		for(BlockWrapper bw : pushable) {
-			bw.updateSprites();
-		}
+		updateBlockSprites();
 	}
 	
 	private void resetBlockValue() {
 		for(BlockWrapper bw : pushable) {
 			bw.unpush();
+		}
+	}
+	
+	private void updateBlockSprites() {
+		for(BlockWrapper bw : pushable) {
+			bw.updateSprites();
 		}
 	}
 	
@@ -600,18 +604,16 @@ public class GameLevel extends Level{
 	
 	private void addState() {
 		undoStack.add(new GameState(players, pushable));
+		updateBlockSprites();
 	}
 	
 	private void undoState() {
-		if(undoStack.size() > 1) {
+		if(undoStack.size() > 1)
 			undoStack.pop();
-		}
 		ArrayList<Player> players = undoStack.peek().getPlayerArray(gam);
 		this.players = new ArrayList<>(players);
 		this.pushable = undoStack.peek().getBlockArray(gam);
-		for(BlockWrapper bw : pushable) {
-			bw.updateSprites();
-		}
+		updateBlockSprites();
 	}
 	
 	private boolean checkLevelSolved() {

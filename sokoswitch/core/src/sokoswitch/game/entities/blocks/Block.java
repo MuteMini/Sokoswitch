@@ -214,11 +214,6 @@ public abstract class Block extends MoveableEntity{
 					this.sprite = manager.getSprite(spriteId, 31);
 				break;
 		}
-		
-		for(boolean b : blockTouch) {
-			System.out.print(b + " ");
-		}
-		System.out.println();
 	}
 	
 	public boolean getState() {
