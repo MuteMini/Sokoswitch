@@ -437,7 +437,7 @@ public class GameLevel extends Level{
 								break;
 							}
 							for(int j = 0; j < players.size(); j++) {
-								if(vect.equals(players.get(j).interact())) {
+								if(j != i && vect.equals(players.get(j).interact())) {
 									playerPosOverlaps[j] = true;
 								}
 							}
