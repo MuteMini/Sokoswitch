@@ -1,4 +1,4 @@
-package sokoswitch.game.worlddata;
+package sokoswitch.game.loaders;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;

@@ -1,4 +1,4 @@
-package sokoswitch.game.worlddata;
+package sokoswitch.game.loaders;
 
 import java.io.*;
 import java.util.*;
