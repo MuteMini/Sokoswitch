@@ -97,7 +97,7 @@ public class LoadingScreen extends ScreenAdapter{
 		shapeRenderer.end();
 		
 		batch.begin();
-		font.draw(batch, loadingString, WIDTH_GUIDE*5.1f-(layout.width/2), HEIGHT_GUIDE*6.1f);
+		font.draw(batch, loadingString, WIDTH_GUIDE*5.1f-(layout.width/2), HEIGHT_GUIDE*6.2f);
 		batch.end();
 	}
 
