@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import sokoswitch.game.level.*;
 import sokoswitch.game.loaders.*;
 
@@ -27,7 +26,7 @@ public final class GameAssetManager {
 	private BitmapFont[] fonts;
 	
 	public GameAssetManager() {
-		TmxMapLoader loader = new TmxMapLoader();
+		CustomTmxMapLoader loader = new CustomTmxMapLoader();
 		FileHandleResolver resolver = new InternalFileHandleResolver();
 		manager.setLoader(TiledMap.class, loader);
 		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
@@ -72,13 +71,14 @@ public final class GameAssetManager {
 	
 	public Sprite getSprite(int id, int pos) {
 		Sprite sprite = new Sprite();
-		if(id == 1)
-			sprite = new Sprite(entityAssets.assets[pos]);
-		else if(id == 2)
-			sprite = new Sprite(normalBlockAssets.assets[pos]);
-		else if(id == 3)
-			sprite = new Sprite(lockedBlockAssets.assets[pos]);
-		sprite.setScale(8);
+		
+		if(id == 1) sprite = new Sprite(entityAssets.assets[pos]);
+		else if(id == 2) sprite = new Sprite(normalBlockAssets.assets[pos]);
+		else if(id == 3) sprite = new Sprite(lockedBlockAssets.assets[pos]);
+			
+		if(id == 1) sprite.setScale(8);
+		else sprite.setScale(8.1f);
+		
 		return sprite;
 	}
 	
