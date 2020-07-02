@@ -454,7 +454,7 @@ public class GameLevel extends Level{
 								}
 								for(int j = 0; j < players.size(); j++) {
 									if(vect.equals(players.get(j).getPosition())) {
-										if(playerPosOverlaps[j]) {
+										if(playerPosOverlaps[j] && players.get(i).getFacing() != players.get(j).getFacing()) {
 											updateP[j] = false;
 											playerV.set(j, players.get(j).getPosition());
 											update = false;
