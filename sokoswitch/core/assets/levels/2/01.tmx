@@ -3,7 +3,7 @@
  <properties>
   <property name="cameraCentered" type="bool" value="false"/>
   <property name="isWorld" type="bool" value="false"/>
-  <property name="linkedWorld" type="int" value="-1"/>
+  <property name="linkedWorld" type="int" value="0"/>
  </properties>
  <tileset firstgid="1" source="../prototypeSet.tsx"/>
  <layer id="1" name="Floor" width="4" height="4">
