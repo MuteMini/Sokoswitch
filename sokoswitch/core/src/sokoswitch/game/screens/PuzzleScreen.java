@@ -148,17 +148,22 @@ public class PuzzleScreen extends ScreenAdapter{
 		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		
-		if(gameLevel.isWorld() && gameLevel.isToSwitch()) {
-			gameLevel.setToSwitch(false);
-			if(gameLevel.getSwitchId() == 0)
+		if(gameLevel.isWorld()) {
+			if(gameLevel.isToSwitch()) {
+				gameLevel.setToSwitch(false);
+				if(gameLevel.getSwitchId() == 0)
+					game.gsm.pop();
+				else
+					game.gsm.showPuzzleScreen(gameLevel.getSwitchId());
+			}
+		}
+		else if(!gameLevel.isWorld()) {
+			if(gameLevel.isSolved()) {
+				levelsSolved.add((long)levelId);
 				game.gsm.pop();
-			else
-				game.gsm.showPuzzleScreen(gameLevel.getSwitchId());
+			}
 		}
-		else if(!gameLevel.isWorld() && gameLevel.isSolved()) {
-			levelsSolved.add((long)levelId);
-			game.gsm.pop();
-		}
+			
 		
 		if(Gdx.input.justTouched()) {
 			resetLevel();
