@@ -156,6 +156,9 @@ public class PuzzleScreen extends ScreenAdapter{
 				else
 					game.gsm.showPuzzleScreen(gameLevel.getSwitchId());
 			}
+			if(gameLevel.isSolved()) {
+				levelsSolved.add((long)levelId);
+			}
 		}
 		else if(!gameLevel.isWorld()) {
 			if(gameLevel.isSolved()) {

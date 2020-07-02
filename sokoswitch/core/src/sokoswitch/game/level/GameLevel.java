@@ -533,13 +533,11 @@ public class GameLevel extends Level{
 			playerInteract.add(players.get(i).interact());
 		}
 		
-		boolean wasSwitched = false;
 		for(BlockWrapper bw : pushable) {
 			for(Block b : bw.getBlockArray()) {
 				if(b.switchPossible(movement) 
 						&& playerInteract.contains(b.getPosition())) {
 					bw.switchStates();
-					wasSwitched = true;
 					break;
 				}
 			}
@@ -559,10 +557,8 @@ public class GameLevel extends Level{
 			}
 		}
 		
-		if(wasSwitched) {
-			addState();
-			this.solved = checkLevelSolved();
-		}
+		addState();
+		this.solved = checkLevelSolved();
 	}
 	
 	private void joinAllBlocks() {
@@ -613,13 +609,22 @@ public class GameLevel extends Level{
 		ArrayList<Player> players = undoStack.peek().getPlayerArray(gam);
 		this.players = new ArrayList<>(players);
 		this.pushable = undoStack.peek().getBlockArray(gam);
-		updateBlockSprites();
+		joinAllBlocks();
 	}
 	
 	private boolean checkLevelSolved() {
-		for(BlockWrapper bw : pushable) {
-			if(!bw.getBlockStateOn()) {
-				return false;
+		if(isWorld()) {
+			for(LevelTile lt : levelPlaced) {
+				if(lt.getConnectedLevel() != 0 && !lt.isSolved()) {
+					return false;
+				}
+			}
+		}
+		else {
+			for(BlockWrapper bw : pushable) {
+				if(!bw.getBlockStateOn()) {
+					return false;
+				}
 			}
 		}
 		return true;

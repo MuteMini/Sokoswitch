@@ -67,11 +67,15 @@ public class LevelTile extends Entity{
 	public void render(Batch batch) {
 		sprite.draw(batch);
 		if(isShown)
-			font.draw(batch, displayText, sprite.getX()+(Tiles.SIZE/2)-(stringWidth/2)-120, sprite.getY()+60);
+			font.draw(batch, displayText, sprite.getX()+(Tiles.SIZE/2)-(stringWidth/2)-115, sprite.getY()+60);
 	}
 	
 	public boolean isShown() {
 		return isShown;
+	}
+	
+	public boolean isSolved() {
+		return isSolved;
 	}
 	
 	public int getConnectedLevel() {
