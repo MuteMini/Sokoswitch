@@ -15,23 +15,19 @@ public class LevelTile extends Entity{
 	private float stringWidth;
 	private int connectedLevel;
 	private ArrayList<Long> prereq;
+	private int prereqSize;
 	private boolean isShown;
 	private boolean isSolved;
 	
-	public LevelTile(int x, int y, GameAssetManager manager, String displayText, int connectedLevel, ArrayList<Long> prereq) {
+	public LevelTile(int x, int y, GameAssetManager manager, String displayText, int connectedLevel, ArrayList<Long> prereq, int prereqSize) {
 		super(-3, x, y, manager);
 
 		this.font = manager.getFont(0);
-		try {
-	        int displayNum = Integer.parseInt(displayText);
-	        this.displayText = (displayNum < 10) ? "0"+displayNum : ""+displayNum;
-	    } catch (NumberFormatException e) {
-	    	this.displayText = displayText;
-	    }
-		
+        this.displayText = displayText;
 		this.stringWidth = new GlyphLayout(font, this.displayText).width;
 		this.connectedLevel = connectedLevel;
 		this.prereq = prereq;
+		this.prereqSize = prereqSize;
 		this.isShown = false;
 		this.isSolved = false;
 		
@@ -43,11 +39,14 @@ public class LevelTile extends Entity{
 			if(prereq.contains((long)0))
 				isShown = true;
 			else {
+				int reqCount = 0;
 				for(Long comp : completed) {
 					if(prereq.contains(comp)) {
-						isShown = true;
-						break;
+						reqCount++;
 					}
+				}
+				if(reqCount >= prereqSize) {
+					isShown = true;
 				}
 			}
 		}
