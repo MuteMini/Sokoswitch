@@ -142,38 +142,38 @@ public class BlockWrapper{
 					if(x < 0) {
 						if(y < 0) {
 							blocksJoined.get(i).blocksTouching(2);
-							blocksJoined.get(j).blocksTouching(5);
+							blocksJoined.get(j).blocksTouching(6);
 						}
 						else if(y > 0) {
-							blocksJoined.get(i).blocksTouching(7);
+							blocksJoined.get(i).blocksTouching(4);
 							blocksJoined.get(j).blocksTouching(0);
 						}
 						else {
-							blocksJoined.get(i).blocksTouching(4);
-							blocksJoined.get(j).blocksTouching(3);
+							blocksJoined.get(i).blocksTouching(3);
+							blocksJoined.get(j).blocksTouching(7);
 						}
 					}
 					else if(x > 0) {
 						if(y < 0) {
 							blocksJoined.get(i).blocksTouching(0);
-							blocksJoined.get(j).blocksTouching(7);
+							blocksJoined.get(j).blocksTouching(4);
 						}
 						else if(y > 0) {
-							blocksJoined.get(i).blocksTouching(5);
+							blocksJoined.get(i).blocksTouching(6);
 							blocksJoined.get(j).blocksTouching(2);
 						}
 						else {
-							blocksJoined.get(i).blocksTouching(3);
-							blocksJoined.get(j).blocksTouching(4);
+							blocksJoined.get(i).blocksTouching(7);
+							blocksJoined.get(j).blocksTouching(3);
 						}
 					}
 					else {
 						if(y < 0) {
 							blocksJoined.get(i).blocksTouching(1);
-							blocksJoined.get(j).blocksTouching(6);
+							blocksJoined.get(j).blocksTouching(5);
 						}
 						else if(y > 0) {
-							blocksJoined.get(i).blocksTouching(6);
+							blocksJoined.get(i).blocksTouching(5);
 							blocksJoined.get(j).blocksTouching(1);
 						}
 					}
