@@ -42,6 +42,10 @@ public class PuzzleScreen extends PlayerScreen{
 	}
 
 	public void update(float delta) {
+		if(!keysPressed.isEmpty() && keysPressed.peek() == 7) {
+			game.gsm.pop();
+		}
+		
 		gameLevel.takeInput(keysPressed);
 		gameLevel.update(delta);
 		

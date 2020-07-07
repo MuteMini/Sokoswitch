@@ -69,6 +69,9 @@ public class Sokoswitch extends Game {
 	            	case Input.Keys.Z:
 	            		keysPressed.push(6);
 	            		break;
+	            	case Input.Keys.ESCAPE:
+	            		keysPressed.push(7);
+	            		break;
 	            	default:
 	            		 return false;
 	            }
@@ -98,6 +101,9 @@ public class Sokoswitch extends Game {
 	            		break;
 	            	case Input.Keys.Z:
 	            		keysPressed.remove((Integer)6);
+	            		break;
+	            	case Input.Keys.ESCAPE:
+	            		keysPressed.remove((Integer)7);
 	            		break;
 	            	default:
 	            		 return false;
