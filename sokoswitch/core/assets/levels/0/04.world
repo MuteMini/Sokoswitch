@@ -1,0 +1,18 @@
+{
+  "horizontal":false,
+  "pos":[
+    [0, 0]
+  ],
+  "displayText":[
+    "its not done"
+  ],
+  "connectedLevel":[
+    0
+  ],
+  "prereq":[
+    [0]
+  ],
+  "prereqSize":[
+    1
+  ]
+}
