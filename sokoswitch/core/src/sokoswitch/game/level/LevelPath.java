@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 public enum LevelPath {
 	
+	SUBWORLD_4(-4, "0/04.world"),
+	SUBWORLD_3(-3, "0/03.world"),
 	SUBWORLD_2(-2, "0/02.world"),
 	SUBWORLD_1(-1, "0/01.world"),
 	WORLD(0, "0/00.world"),
@@ -32,7 +34,10 @@ public enum LevelPath {
 	LEVEL3_b(23, "3/b.tmx"),
 	LEVEL3_c(24, "3/c.tmx"),
 	LEVEL3_d(25, "3/d.tmx"),
-	TEST(26, "g.tmx");
+	LEVEL3_e(26, "3/e.tmx"),
+	LEVEL3_f(27, "3/f.tmx"),
+	LEVEL3_g(28, "3/g.tmx"),
+	LEVEL3_A(29, "3/~a.tmx");
 	
 	private static final String LEVEL_DIR = "levels/";
 	private static HashMap<Integer, LevelPath> levelMap;

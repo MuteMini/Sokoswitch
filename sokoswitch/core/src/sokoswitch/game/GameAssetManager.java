@@ -62,7 +62,7 @@ public final class GameAssetManager {
 		normalBlockAssets = new NormalBlockAssets(manager.get(normalBlockPath));
 		lockedBlockAssets = new LockedBlockAssets(manager.get(lockedBlockPath));
 		
-		fonts = new BitmapFont[fontArraySize];
+		fonts = new BitmapFont[2];
 		
 		FreeTypeFontGenerator balsamic = manager.get(fontPath[0]);
 		FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
@@ -71,6 +71,8 @@ public final class GameAssetManager {
 			param.borderColor = Color.DARK_GRAY;
 			param.color = new Color(.90f, .90f, .90f, 1);
 		fonts[0] = balsamic.generateFont(param);
+			param.size = 100;
+		fonts[1] = balsamic.generateFont(param);
 	}
 	
 	public Sprite getSprite(int id, int pos) {

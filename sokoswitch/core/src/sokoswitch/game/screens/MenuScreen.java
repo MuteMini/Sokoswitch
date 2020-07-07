@@ -7,20 +7,16 @@ import sokoswitch.game.Sokoswitch;
 public class MenuScreen extends GameScreen{
 
 	private Sokoswitch game;
-	
-	//private int level;
 
 	public MenuScreen(Sokoswitch game) {
 		super();
 		this.game = game;
-		
-		//this.level = 0;
 	}
 	
 	@Override
 	public void show() {
-		//System.out.println("moving on from level " + level);
 		game.gsm.showWorldScreen(0);
+		//game.gsm.showPuzzleScreen(29);
 	}
 
 	public void update(float delta) {
@@ -33,10 +29,6 @@ public class MenuScreen extends GameScreen{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		update(delta);
-		
-		/*if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-			gsm.showPuzzleScreen(testNum);
-		}*/
 	}
 
 	@Override
