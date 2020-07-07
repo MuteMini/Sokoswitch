@@ -73,13 +73,16 @@ public class WorldScreen extends PlayerScreen{
 			Vector2 ve1 = lt1.getPosition();
 			for(Long l : lt1.getPrereq()) {
 				int prereqPos = worldData.levelConnectedInOrder.indexOf(l);
+				if(prereqPos == -1) {
+					continue;
+				}
 				LevelTile lt2 = levelTiles.get(prereqPos);
 				Vector2 ve2 = lt2.getPosition();
 				
 				HashSet<LevelRoad> tempSet;
 				boolean beingShown = false;
 				
-				if(l == 0 || (lt1.isShown() && lt2.isSolved())) tempSet = roadsShown;
+				if((lt1.isShown() && lt2.isSolved()) || (lt1.isShown() && l <= 0)) tempSet = roadsShown;
 				else tempSet = roadsHidden;
 				
 				if(tempSet == roadsShown) beingShown = true; 
@@ -129,11 +132,14 @@ public class WorldScreen extends PlayerScreen{
 			Vector2 ve1 = lt1.getPosition();
 			for(Long l : lt1.getPrereq()) {
 				int prereqPos = worldData.levelConnectedInOrder.indexOf(l);
+				if(prereqPos == -1) {
+					continue;
+				}
 				LevelTile lt2 = levelTiles.get(prereqPos);
 				Vector2 ve2 = lt2.getPosition();
 				LevelRoad temp;
 				
-				if(lt1.isShown() && lt2.isSolved()) {
+				if((lt1.isShown() && lt2.isSolved()) || (lt1.isShown() && l < 0)) {
 					if(worldData.horizontal) {
 						temp = new LevelRoad((int)ve2.x+1, (int)ve2.y, game.gam);
 						if(roadsHidden.remove(temp)) roadsToShow.add(temp);
