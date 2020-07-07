@@ -1,12 +1,8 @@
 package sokoswitch.game.screens;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import com.badlogic.gdx.Files;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import java.util.*;
+import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.*;
 import sokoswitch.game.Sokoswitch;
@@ -23,11 +19,17 @@ public class WorldScreen extends PlayerScreen{
 	private HashSet<LevelRoad> roadsHidden;
 	private HashSet<LevelRoad> roadsShown;
 	private HashSet<Vector2> visitable;
-
+	private Queue<LevelRoad> roadsToShow;
+	
+	private int levelId;
 	private boolean keysHeld;
+	private float heldCount;
 	
 	private Sprite cursorSprite;
 	private int cursorX, cursorY;
+	
+	private boolean animationShown;
+	private float animationCount;
 	
 	public WorldScreen(Sokoswitch game, int levelId, HashSet<Long> levelsSolved) {
 		super();
@@ -36,16 +38,22 @@ public class WorldScreen extends PlayerScreen{
 		
 		this.worldData = game.gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath());
 		
+		this.levelId = levelId;
 		this.keysHeld = false;
+		this.heldCount = 0;
 		
 		this.cursorSprite = new Sprite(new Texture(Gdx.files.getFileHandle("tempCursor.png", Files.FileType.Internal)));
 			cursorSprite.scale(8);
 		this.cursorX = -1;
 		this.cursorY = -1;
 		
+		this.animationShown = false;
+		this.animationCount = 0;
+		
 		this.levelTiles = new ArrayList<>();
 		this.roadsHidden = new HashSet<>();
 		this.roadsShown = new HashSet<>();
+		this.roadsToShow = new LinkedList<>();
 		this.visitable = new HashSet<>();
 		
 		for(int i = 0; i < worldData.getDataSize(); i++) {
@@ -54,59 +62,155 @@ public class WorldScreen extends PlayerScreen{
 				this.cursorX = (int)pos.x;
 				this.cursorY = (int)pos.y;
 			}
-			levelTiles.add(new LevelTile((int)pos.x, (int)pos.y, game.gam, worldData.levelDisplay[i], worldData.levelConnected[i], worldData.levelPrereq[i], worldData.levelReqSize[i]));
+			LevelTile lt = new LevelTile((int)pos.x, (int)pos.y, game.gam, worldData.levelDisplay[i], worldData.levelConnected[i], worldData.levelPrereq[i], worldData.levelReqSize[i]);
+			lt.update(levelsSolved);
+			levelTiles.add(lt);
 			visitable.add(pos);
 		}
-		/*for(int i = 1; i < levelTiles.size(); i++) {
-			LevelTile lt = levelTiles.get(i);
-			Vector2 ve1 = lt.getPosition();
-			for(Long l : lt.getPrereq()) {
-				Vector2 ve2 = levelTiles.get(Math.toIntExact(l)).getPosition();
+		
+		for(int i = 1; i < levelTiles.size(); i++) {
+			LevelTile lt1 = levelTiles.get(i);
+			Vector2 ve1 = lt1.getPosition();
+			for(Long l : lt1.getPrereq()) {
+				int prereqPos = worldData.levelConnectedInOrder.indexOf(l);
+				LevelTile lt2 = levelTiles.get(prereqPos);
+				Vector2 ve2 = lt2.getPosition();
+				
+				HashSet<LevelRoad> tempSet;
+				boolean beingShown = false;
+				
+				if(l == 0 || (lt1.isShown() && lt2.isSolved())) tempSet = roadsShown;
+				else tempSet = roadsHidden;
+				
+				if(tempSet == roadsShown) beingShown = true; 
+				
 				if(worldData.horizontal) {
-					
+					tempSet.add(new LevelRoad((int)ve2.x+1, (int)ve2.y, game.gam));
+					tempSet.add(new LevelRoad((int)ve1.x-1, (int)ve1.y, game.gam));
+					if(beingShown) {
+						visitable.add(new Vector2(ve2.x+1, ve2.y));
+						visitable.add(new Vector2(ve1.x-1, ve1.y));
+					}
+					for(int j = (int)Math.min(ve1.y, ve2.y); j <= (int)Math.max(ve1.y, ve2.y); j++) {
+						tempSet.add(new LevelRoad((int)ve1.x-2, j, game.gam));
+						if(beingShown) visitable.add(new Vector2(ve1.x-2, j));
+					}
 				}
 				else {
-					
+					tempSet.add(new LevelRoad((int)ve2.x, (int)ve2.y+1, game.gam));
+					tempSet.add(new LevelRoad((int)ve1.x, (int)ve1.y-1, game.gam));
+					if(beingShown) {
+						visitable.add(new Vector2(ve2.x, ve2.y+1));
+						visitable.add(new Vector2(ve1.x, ve1.y-1));
+					}
+					for(int j = (int)Math.min(ve1.x, ve2.x); j <= (int)Math.max(ve1.x, ve2.x); j++) {
+						tempSet.add(new LevelRoad(j, (int)ve1.y-1, game.gam));
+						if(beingShown) visitable.add(new Vector2(j, ve1.y-1));
+					}
 				}
 			}
-		}*/
-		roadsHidden.add(new LevelRoad(1, 1, game.gam));
-		roadsHidden.add(new LevelRoad(1, 1, game.gam));
-		System.out.println(roadsHidden.size());
+		}
 	}
 	
 	@Override
 	public void show() {
-		game.camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		game.camera.zoom = 3;
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-		/**/
-		
+		game.camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		game.camera.zoom = 3.5f;
 		game.camera.position.set(cursorX*Tiles.SIZE + (Tiles.SIZE/2), cursorY*Tiles.SIZE + (Tiles.SIZE/2), 0);
 		game.camera.update();
+		
+		for(LevelTile lt : levelTiles) {
+			lt.update(levelsSolved);
+		}
+		
+		for(int i = 1; i < levelTiles.size(); i++) {
+			LevelTile lt1 = levelTiles.get(i);
+			Vector2 ve1 = lt1.getPosition();
+			for(Long l : lt1.getPrereq()) {
+				int prereqPos = worldData.levelConnectedInOrder.indexOf(l);
+				LevelTile lt2 = levelTiles.get(prereqPos);
+				Vector2 ve2 = lt2.getPosition();
+				LevelRoad temp;
+				
+				if(lt1.isShown() && lt2.isSolved()) {
+					if(worldData.horizontal) {
+						temp = new LevelRoad((int)ve2.x+1, (int)ve2.y, game.gam);
+						if(roadsHidden.remove(temp)) roadsToShow.add(temp);
+						
+						if(ve1.y >= ve2.y) {
+							for(int j = (int)ve2.y; j <= (int)ve1.y; j++) {
+								temp = new LevelRoad((int)ve1.x-2, j, game.gam);
+								if(roadsHidden.remove(temp)) roadsToShow.add(temp);
+							}
+						}
+						else {
+							for(int j = (int)ve2.y; j >= (int)ve1.y; j--) {
+								temp = new LevelRoad((int)ve1.x-2, j, game.gam);
+								if(roadsHidden.remove(temp)) roadsToShow.add(temp);
+							}
+						}
+						
+						temp = new LevelRoad((int)ve1.x-1, (int)ve1.y, game.gam);
+						if(roadsHidden.remove(temp)) roadsToShow.add(temp);
+					}
+					else {
+						temp = new LevelRoad((int)ve2.x, (int)ve2.y+1, game.gam);
+						if(roadsHidden.remove(temp)) roadsToShow.add(temp);
+						
+						if(ve1.x >= ve2.x) {
+							for(int j = (int)ve2.x; j <= (int)ve1.x; j++) {
+								temp = new LevelRoad(j, (int)ve1.y-1, game.gam);
+								if(roadsHidden.remove(temp)) roadsToShow.add(temp);
+							}
+						}
+						else {
+							for(int j = (int)ve2.x; j >= (int)ve1.x; j--) {
+								temp = new LevelRoad(j, (int)ve1.y-1, game.gam);
+								if(roadsHidden.remove(temp)) roadsToShow.add(temp);
+							}
+						}
+						
+						temp = new LevelRoad((int)ve1.x, (int)ve1.y-1, game.gam);
+						if(roadsHidden.remove(temp)) roadsToShow.add(temp);
+					}
+				}
+			}
+		}
+		if(!roadsToShow.isEmpty()) {
+			animationShown = true;
+		}
+		
+		boolean allSolved = true;
+		for(LevelTile lt : levelTiles) {
+			if(lt.getConnectedLevel() != 0 && !lt.isSolved())
+				allSolved = false;
+		}
+		if(allSolved) {
+			levelsSolved.add((long)levelId);
+		}
 	}
 	
 	public void update(float delta) {
 		if(!keysHeld && !keysPressed.isEmpty()) {
 			switch(keysPressed.peek()) {
 				case 1:
-					if(cursorY < worldData.levelSize[1] && visitable.contains(new Vector2(cursorX, cursorY+1)))
+					if(visitable.contains(new Vector2(cursorX, cursorY+1)))
 						cursorY++;
 					keysHeld = true;
 					break;
 				case 2:
-					if(cursorY > 0 && visitable.contains(new Vector2(cursorX, cursorY-1)))
+					if(visitable.contains(new Vector2(cursorX, cursorY-1)))
 						cursorY--;
 					keysHeld = true;
 					break;
 				case 3:
-					if(cursorX < worldData.levelSize[0] && visitable.contains(new Vector2(cursorX+1, cursorY)))
+					if(visitable.contains(new Vector2(cursorX+1, cursorY)))
 						cursorX++;
 					keysHeld = true;
 					break;
 				case 4:
-					if(cursorX > 0 && visitable.contains(new Vector2(cursorX-1, cursorY)))
+					if(visitable.contains(new Vector2(cursorX-1, cursorY)))
 						cursorX--;
 					keysHeld = true;
 					break;
@@ -117,6 +221,7 @@ public class WorldScreen extends PlayerScreen{
 			}
 		}
 		else if(keysPressed.isEmpty()) {
+			heldCount = 0;
 			keysHeld = false;
 		}
 
@@ -127,16 +232,30 @@ public class WorldScreen extends PlayerScreen{
 		game.camera.position.set(cameraX, cameraY, 0);
 		game.camera.update();
 		
-		if(Math.abs(cursorSprite.getX()-cameraX) < 64 && Math.abs(cursorSprite.getY()-cameraY) < 64) keysHeld = false;
+		if(keysHeld) {
+			heldCount += delta;
+			if(heldCount > 0.4) {
+				heldCount = 0;
+				keysHeld = false;
+			}
+		}
+		
+		if(animationShown) {
+			animationCount+=delta;
+			if(animationCount > 0.6) {
+				LevelRoad lr = roadsToShow.poll();
+				roadsShown.add(lr);
+				visitable.add(lr.getPosition());
+				animationCount = 0;
+				if(roadsToShow.isEmpty()) animationShown = false;
+			}
+		}
 		
 		for(LevelTile lt : levelTiles) {
 			lt.update(levelsSolved);
 		}
-		
-		if(Gdx.input.justTouched()) {
-			Vector3 bruh = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-			game.camera.unproject(bruh);
-			System.out.println(bruh);
+		for(LevelRoad lr : roadsShown) {
+			lr.updateSprite(visitable);
 		}
 	}
 	
@@ -160,7 +279,9 @@ public class WorldScreen extends PlayerScreen{
 		for(LevelTile lt : levelTiles) {
 			if((int)lt.getPosition().x == cursorX && (int)lt.getPosition().y == cursorY){
 				int id = lt.getConnectedLevel();
-				if(id <= 0) game.gsm.showWorldScreen(id);
+				
+				if(id == 0) game.gsm.pop();
+				else if(id < 0) game.gsm.showWorldScreen(id);
 				else game.gsm.showPuzzleScreen(id);
 			}
 		}

@@ -336,7 +336,7 @@ public class GameLevel extends Level{
 					if(players.get(i) instanceof InversePlayer) {
 						boolean updateInverse = true;
 						for(int j = 0; j < playerV.size(); j++) {
-							if(playerV.get(j).equals(players.get(i).getPosition())) {
+							if(i != j && playerV.get(j).equals(players.get(i).getPosition())) {
 								updateInverse = false;
 								updateP[j] = false;
 								playerV.set(j, players.get(j).getPosition());
@@ -425,7 +425,9 @@ public class GameLevel extends Level{
 							playerV.set(i, players.get(i).getPosition());
 						}
 					}
+					System.out.println(i+" "+updateP[i]+" "+updateB[i]+"|"+players.get(i).getPosition());
 				}
+				System.out.println();
 				complete = allUpdated;
 			}
 			

@@ -22,7 +22,7 @@ public class LevelTile extends Entity{
 	public LevelTile(int x, int y, GameAssetManager manager, String displayText, int connectedLevel, ArrayList<Long> prereq, int prereqSize) {
 		super(-3, x, y, manager);
 
-		this.font = manager.getFont(0);
+		this.font = (displayText.length() <= 2) ? manager.getFont(0) : manager.getFont(1);
         this.displayText = displayText;
 		this.stringWidth = new GlyphLayout(font, this.displayText).width;
 		this.connectedLevel = connectedLevel;

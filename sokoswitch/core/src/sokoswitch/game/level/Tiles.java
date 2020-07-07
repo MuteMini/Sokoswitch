@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public enum Tiles {
 	
-	LEVELROAD(-4, 1, 1),
+	LEVELROAD(-4, 0, 1),
 	LOCKED_LEVELTILE(-3, 1, 0),
 	UNSOLVED_LEVELTILE(-2, 1, 1),
 	SOLVED_LEVELTILE(-1, 1, 2),

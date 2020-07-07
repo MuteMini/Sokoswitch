@@ -10,21 +10,23 @@ import com.badlogic.gdx.math.Vector2;
 public class WorldData {
 
 	public boolean horizontal;
-	public int[] levelSize;
 	public ArrayList<Vector2> levelPos;
 	public int[] levelConnected;
 	public String[] levelDisplay;
 	public ArrayList<Long>[] levelPrereq;
 	public int[] levelReqSize;
 	
+	public ArrayList<Long> levelConnectedInOrder;
+	
 	@SuppressWarnings("unchecked")
 	public WorldData() {
-		this.levelSize = new int[2];
 		this.levelPos = new ArrayList<>();
 		this.levelConnected = new int[0];
 		this.levelDisplay = new String[0];
 		this.levelPrereq = new ArrayList[0];
 		this.levelReqSize = new int[0];
+		
+		this.levelConnectedInOrder = new ArrayList<>();
 	}
 
     public WorldData(FileHandle file) {
@@ -42,10 +44,6 @@ public class WorldData {
 		try {
 			Reader reader = file.reader();
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
-			
-			Iterator<Long> sizeArr = ((JSONArray) jsonObject.get("size")).iterator();
-			levelSize[0] = Math.toIntExact(sizeArr.next());
-			levelSize[1] = Math.toIntExact(sizeArr.next());
 			
 			JSONArray posArr = (JSONArray) jsonObject.get("pos");
 			JSONArray connectArr = (JSONArray) jsonObject.get("connectedLevel");
@@ -65,6 +63,9 @@ public class WorldData {
 			this.levelDisplay = new String[displayArr.size()];
 			this.levelPrereq = new ArrayList[prereqArr.size()];
 			this.levelReqSize =  new int[reqSizeArr.size()];
+			
+			Iterator<Long> tempConnect = connectArr.listIterator();
+			tempConnect.forEachRemaining(levelConnectedInOrder::add);
 			
 			int count = 0;
 			while(posIterator.hasNext()) {
