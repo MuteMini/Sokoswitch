@@ -425,9 +425,8 @@ public class GameLevel extends Level{
 							playerV.set(i, players.get(i).getPosition());
 						}
 					}
-					System.out.println(i+" "+updateP[i]+" "+updateB[i]+"|"+players.get(i).getPosition());
+					//System.out.println(i+" "+updateP[i]+" "+updateB[i]+"|"+players.get(i).getPosition());
 				}
-				System.out.println();
 				complete = allUpdated;
 			}
 			

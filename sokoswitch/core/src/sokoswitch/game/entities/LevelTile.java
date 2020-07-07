@@ -25,7 +25,7 @@ public class LevelTile extends Entity{
 		this.font = (displayText.length() <= 2) ? manager.getFont(0) : manager.getFont(1);
         this.displayText = displayText;
         GlyphLayout gl = new GlyphLayout(font, this.displayText);
-		this.stringWidth = (displayText.length() < 2) ? gl.width/3.4f : gl.width/2.8f;
+		this.stringWidth = (displayText.length() < 2) ? gl.width/3.4f : gl.width/2.6f;
 		this.stringHeight = gl.height/1.5f;
 		this.connectedLevel = connectedLevel;
 		this.prereq = prereq;
