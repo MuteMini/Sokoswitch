@@ -1,18 +1,16 @@
 package sokoswitch.game.level;
 
 import java.util.*;
-
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-
 import sokoswitch.game.GameAssetManager;
+import sokoswitch.game.Sokoswitch;
 import sokoswitch.game.entities.*;
 import sokoswitch.game.entities.blocks.*;
-import sokoswitch.game.loaders.WorldData;
 
 public class GameLevel extends Level{
 	
@@ -23,13 +21,6 @@ public class GameLevel extends Level{
 	private TiledMap map;
 	private ArrayList<TiledMapTileLayer> layers;
 	private OrthogonalTiledMapRenderer mapRender;
-	
-	/*only exists if the level is considered a "world"*/
-	private WorldData worldData;
-	private ArrayList<LevelTile> levelPlaced;
-	private boolean switchToLevel;
-	private int switchLevelId;
-	private HashSet<Long> levelsSolved;
 	
 	/*holds the entities on the grid - players and blocks*/
 	private Comparator<Player> playerComparator;
@@ -62,8 +53,8 @@ public class GameLevel extends Level{
 	/*self explanatory, hopefully*/
 	private boolean solved;
 	
-	public GameLevel(int levelId, GameAssetManager gam, HashSet<Long> levelsSolved) {	
-		this.gam = gam;
+	public GameLevel(int levelId, Sokoswitch game, HashSet<Long> levelsSolved) {	
+		this.gam = game.gam;
 		
 		this.levelId = levelId;
 		this.map = gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath());
@@ -71,19 +62,7 @@ public class GameLevel extends Level{
 		for(MapLayer layer : map.getLayers()) {
 			layers.add((TiledMapTileLayer)layer);
 		}
-		this.mapRender = new OrthogonalTiledMapRenderer(map);
-		
-		if(isWorld()) {
-			this.worldData = gam.manager.get(LevelPath.getDataPath(Math.abs(levelId)));
-			this.levelPlaced = new ArrayList<>();
-			for(int i = 0; i < worldData.getDataSize(); i++) {
-				Vector2 pos = worldData.getLevelPos().get(i);
-				levelPlaced.add(new LevelTile((int)pos.x, (int)pos.y, gam, worldData.getLevelDisplay(i), worldData.getLevelConnected(i), worldData.getLevelPrereq(i)));
-			}
-		}
-		this.levelsSolved = levelsSolved;
-		this.switchToLevel = false;
-		this.switchLevelId = 0;
+		this.mapRender = new OrthogonalTiledMapRenderer(map, game.batch);
 		
 		this.pushable = new ArrayList<>();
 		this.playerComparator = new Comparator<Player>(){
@@ -194,12 +173,6 @@ public class GameLevel extends Level{
 	
 	@Override
 	public void update(float delta) {	
-		if(isWorld()) {
-			for(LevelTile lt : levelPlaced) {
-				lt.update(levelsSolved);
-			}
-		}
-		
 		if(undoHeld) {
 			if(offset < 1) {
 				offset += delta*offsetSpeed;
@@ -247,14 +220,8 @@ public class GameLevel extends Level{
 	@Override
 	public void render(OrthographicCamera camera) {
 		mapRender.setView(camera);
-		mapRender.getBatch().begin();
 		mapRender.renderTileLayer(layers.get(0));
-		
-		if(isWorld()) {
-			for(LevelTile lt : levelPlaced) {
-				lt.render(mapRender.getBatch());
-			}
-		}
+
 		for(Player p : players) {
 			float tempOffset = movementOffset;
 			if(!p.getMobile())
@@ -278,7 +245,6 @@ public class GameLevel extends Level{
 				b.render(mapRender.getBatch());
 			}
 		}
-		mapRender.getBatch().end();
 	}
 
 	@Override
@@ -320,36 +286,6 @@ public class GameLevel extends Level{
 		return solved;
 	}
 
-	public boolean isCentered() {
-		if(map.getProperties().get("cameraCentered") != null)
-			return (boolean) map.getProperties().get("cameraCentered");
-		return false;
-	}
-	
-	public boolean isWorld() {
-		if(map.getProperties().get("isWorld") != null)
-			return (boolean) map.getProperties().get("isWorld");
-		return false;
-	}
-	
-	public int getLinkedWorld() {
-		if(map.getProperties().get("linkedWorld") != null)
-			return (int) map.getProperties().get("linkedWorld");
-		return 0;
-	}
-	
-	public int getSwitchId() {
-		return switchLevelId;
-	}
-	
-	public boolean isToSwitch() {
-		return switchToLevel;
-	}
-	
-	public void setToSwitch(boolean switchToLevel) {
-		this.switchToLevel = switchToLevel;
-	}
-	
 	private void moveEntities() {	
 		resetBlockValue();
 		resetPlayerValue();
@@ -408,9 +344,11 @@ public class GameLevel extends Level{
 						}
 						if(!updateInverse) {
 							updateP[i] = false;
+							allUpdated = false;
 							playerV.set(i, players.get(i).getPosition());
 						}
 					}
+					
 					if(first != last) {
 						allUpdated = false;
 						for(int j = 0; j < playerV.size(); j++) {
@@ -420,6 +358,7 @@ public class GameLevel extends Level{
 							}
 						}
 					}
+					
 					if(blockPushed != null) {
 						int xOffset = (players.get(i).getFacing() % 2 == 0) ? 0 : 1;
 						int yOffset = (players.get(i).getFacing() % 2 == 0) ? 1 : 0;
@@ -434,6 +373,7 @@ public class GameLevel extends Level{
 							if(locateTilesByCoordinate(0, (int)vect.x, (int)vect.y) != Tiles.SPACE 
 									|| locateTilesByCoordinate(0, (int)vect.x+xOffset, (int)vect.y+yOffset) == Tiles.EMPTY) {
 								update = false;
+								allUpdated = false;
 								break;
 							}
 							for(int j = 0; j < players.size(); j++) {
@@ -528,31 +468,17 @@ public class GameLevel extends Level{
 	}
 
 	private void interact() {
-		Set<Vector2> playerInteract = new HashSet<>();
+		List<Vector2> playerInteract = new ArrayList<>();
 		for(int i = 0; i < players.size(); i++) {
 			playerInteract.add(players.get(i).interact());
 		}
 		
 		for(BlockWrapper bw : pushable) {
 			for(Block b : bw.getBlockArray()) {
-				if(b.switchPossible(movement) 
+				while(b.switchPossible(movement) 
 						&& playerInteract.contains(b.getPosition())) {
+					playerInteract.remove(b.getPosition());
 					bw.switchStates();
-					break;
-				}
-			}
-		}
-		
-		if(isWorld()) {
-			for(LevelTile lt : levelPlaced) {
-				if(lt.isShown()) {
-					for(Player p : players) {
-						if(lt.getPosition().equals(p.getPosition())) {
-							this.switchToLevel = true;
-							this.switchLevelId = lt.getConnectedLevel();
-							break;
-						}
-					}
 				}
 			}
 		}
@@ -613,18 +539,9 @@ public class GameLevel extends Level{
 	}
 	
 	private boolean checkLevelSolved() {
-		if(isWorld()) {
-			for(LevelTile lt : levelPlaced) {
-				if(lt.getConnectedLevel() != 0 && !lt.isSolved()) {
-					return false;
-				}
-			}
-		}
-		else {
-			for(BlockWrapper bw : pushable) {
-				if(!bw.getBlockStateOn()) {
-					return false;
-				}
+		for(BlockWrapper bw : pushable) {
+			if(!bw.getBlockStateOn()) {
+				return false;
 			}
 		}
 		return true;

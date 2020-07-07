@@ -14,15 +14,17 @@ public final class GameAssetManager {
 	
 	public final AssetManager manager = new AssetManager();
 	
+	public final String levelRoadPath = "textures/levelRoad.atlas";
 	public final String puzzleEntityPath = "textures/entities.atlas";
 	public final String normalBlockPath = "textures/normalBlock.atlas";
 	public final String lockedBlockPath = "textures/lockedBlock.atlas";
-	public final String[] fontPath = {"fonts/BalsamiqSans-Regular.ttf"};
+	public final String[] fontPath = {"fonts/BalsamiqSans-Regular.ttf", "fonts/Kenney-Pixel.ttf", "fonts/Nunito-Regular.ttf"};
 	public final int fontArraySize = 1;
 	
 	private EntityAssets entityAssets;
 	private NormalBlockAssets normalBlockAssets;
 	private LockedBlockAssets lockedBlockAssets;
+	
 	private BitmapFont[] fonts;
 	
 	public GameAssetManager() {
@@ -34,6 +36,7 @@ public final class GameAssetManager {
 	}
 	
 	public void loadImages() {
+		manager.load(levelRoadPath, TextureAtlas.class);
 		manager.load(puzzleEntityPath, TextureAtlas.class);
 		manager.load(normalBlockPath, TextureAtlas.class);
 		manager.load(lockedBlockPath, TextureAtlas.class);
@@ -42,8 +45,9 @@ public final class GameAssetManager {
 	public void loadLevels() {
 		for(LevelPath lp : LevelPath.values()) {
 			if(lp.getLevelNum() <= 0)
-				manager.load(LevelPath.getDataPath(Math.abs(lp.getLevelNum())), WorldData.class);
-			manager.load(lp.getFilePath(), TiledMap.class);
+				manager.load(lp.getFilePath(), WorldData.class);
+			else
+				manager.load(lp.getFilePath(), TiledMap.class);
 		}
 	}
 	
@@ -72,11 +76,15 @@ public final class GameAssetManager {
 	public Sprite getSprite(int id, int pos) {
 		Sprite sprite = new Sprite();
 		
-		if(id == 1) sprite = new Sprite(entityAssets.assets[pos]);
+		if(id == 0) sprite = new Sprite(((TextureAtlas)manager.get(levelRoadPath)).findRegion("levelRoad"+pos));
+		else if(id == 1) sprite = new Sprite(entityAssets.assets[pos]);
 		else if(id == 2) sprite = new Sprite(normalBlockAssets.assets[pos]);
 		else if(id == 3) sprite = new Sprite(lockedBlockAssets.assets[pos]);
 			
-		if(id == 1) sprite.setScale(8);
+		if(id == 1) {
+			if(pos == 3 || pos == 4) sprite.setScale(7.5f);
+			else sprite.setScale(8);
+		}
 		else sprite.setScale(8.1f);
 		
 		return sprite;
