@@ -1,17 +1,17 @@
 package sokoswitch.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.*;
 import sokoswitch.game.Sokoswitch;
 
-public class MenuScreen extends ScreenAdapter{
+public class MenuScreen extends GameScreen{
 
 	private Sokoswitch game;
 	
 	//private int level;
 
 	public MenuScreen(Sokoswitch game) {
+		super();
 		this.game = game;
 		
 		//this.level = 0;
@@ -20,7 +20,7 @@ public class MenuScreen extends ScreenAdapter{
 	@Override
 	public void show() {
 		//System.out.println("moving on from level " + level);
-		game.gsm.showPuzzleScreen(0);
+		game.gsm.showWorldScreen(0);
 	}
 
 	public void update(float delta) {
