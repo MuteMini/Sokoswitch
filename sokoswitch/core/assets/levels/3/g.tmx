@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.4" tiledversion="1.4.1" orientation="orthogonal" renderorder="right-down" width="6" height="12" tilewidth="256" tileheight="256" infinite="0" nextlayerid="4" nextobjectid="1">
- <properties>
-  <property name="cameraCentered" type="bool" value="false"/>
-  <property name="isWorld" type="bool" value="false"/>
-  <property name="linkedWorld" type="int" value="0"/>
- </properties>
- <tileset firstgid="1" source="prototypeSet.tsx"/>
+ <tileset firstgid="1" source="../prototypeSet.tsx"/>
  <layer id="1" name="Floor" width="6" height="12">
   <data encoding="csv">
 0,0,0,0,1,0,
