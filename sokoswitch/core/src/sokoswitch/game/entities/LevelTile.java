@@ -6,13 +6,13 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import sokoswitch.game.GameAssetManager;
-import sokoswitch.game.level.Tiles;
 
 public class LevelTile extends Entity{
 
 	private BitmapFont font;
 	private String displayText;
 	private float stringWidth;
+	private float stringHeight;
 	private int connectedLevel;
 	private ArrayList<Long> prereq;
 	private int prereqSize;
@@ -24,7 +24,9 @@ public class LevelTile extends Entity{
 
 		this.font = (displayText.length() <= 2) ? manager.getFont(0) : manager.getFont(1);
         this.displayText = displayText;
-		this.stringWidth = new GlyphLayout(font, this.displayText).width;
+        GlyphLayout gl = new GlyphLayout(font, this.displayText);
+		this.stringWidth = (displayText.length() < 2) ? gl.width/3.4f : gl.width/2.8f;
+		this.stringHeight = gl.height/1.5f;
 		this.connectedLevel = connectedLevel;
 		this.prereq = prereq;
 		this.prereqSize = prereqSize;
@@ -65,8 +67,8 @@ public class LevelTile extends Entity{
 	@Override
 	public void render(Batch batch) {
 		sprite.draw(batch);
-		if(isShown)
-			font.draw(batch, displayText, sprite.getX()+(Tiles.SIZE/2)-(stringWidth/2)-115, sprite.getY()+60);
+		if(isShown) font.draw(batch, displayText, sprite.getX()-stringWidth, sprite.getY()+stringHeight);
+			//font.draw(batch, displayText, sprite.getX(), sprite.getY()-(stringHeight/2)+(Tiles.SIZE/2));
 	}
 	
 	public boolean isShown() {

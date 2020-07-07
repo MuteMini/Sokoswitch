@@ -71,7 +71,7 @@ public final class GameAssetManager {
 			param.borderColor = Color.DARK_GRAY;
 			param.color = new Color(.90f, .90f, .90f, 1);
 		fonts[0] = balsamic.generateFont(param);
-			param.size = 100;
+			param.size = 90;
 		fonts[1] = balsamic.generateFont(param);
 	}
 	
