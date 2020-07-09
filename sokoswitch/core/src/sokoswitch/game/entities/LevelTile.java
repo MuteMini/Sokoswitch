@@ -20,7 +20,7 @@ public class LevelTile extends Entity{
 	private boolean isSolved;
 	
 	public LevelTile(int x, int y, GameAssetManager manager, String displayText, int connectedLevel, ArrayList<Long> prereq, int prereqSize) {
-		super(-3, x, y, manager);
+		super(0, 11, x, y, manager);
 
 		this.font = (displayText.length() <= 2) ? manager.getFont(0) : manager.getFont(1);
         this.displayText = displayText;
@@ -59,9 +59,9 @@ public class LevelTile extends Entity{
 		}
 		
 		if(isSolved)
-			setChangedSprite(-1);
+			setChangedSprite(13);
 		else if(isShown)
-			setChangedSprite(-2);
+			setChangedSprite(12);
 	}
 	
 	@Override
@@ -91,8 +91,12 @@ public class LevelTile extends Entity{
 		this.isShown = isShown;
 	}
 	
-	private void setChangedSprite(int id) {
-		setSprite(id);
+	public void setIsSolved(boolean isSolved) {
+		this.isSolved = isSolved;
+	}
+	
+	private void setChangedSprite(int pos) {
+		setSprite(0, pos);
 		setSpritePos();
 	}
 }

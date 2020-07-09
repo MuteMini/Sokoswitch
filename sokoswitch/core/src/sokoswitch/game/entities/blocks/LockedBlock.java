@@ -5,7 +5,7 @@ import sokoswitch.game.GameAssetManager;
 public class LockedBlock extends Block{
 
 	public LockedBlock(int x, int y, boolean turnedOn, GameAssetManager manager) {
-		super(6, x, y, turnedOn, manager);
+		super(2, 3, x, y, turnedOn, manager);
 		this.spriteId = 3;
 		updateSprite();
 	}

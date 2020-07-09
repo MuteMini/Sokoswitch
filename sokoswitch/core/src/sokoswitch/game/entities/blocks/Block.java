@@ -14,8 +14,8 @@ public abstract class Block extends MoveableEntity{
 	protected boolean[] blockTouch;
 	protected int spriteId;
 	
-	public Block(int id, int x, int y, boolean onState, GameAssetManager manager) {
-		super(id, x, y, manager);
+	public Block(int id, int pos, int x, int y, boolean onState, GameAssetManager manager) {
+		super(id, pos, x, y, manager);
 		this.onState = onState;
 		this.pushed = false;
 		this.blockTouch = new boolean[8];
@@ -454,6 +454,6 @@ public abstract class Block extends MoveableEntity{
 	}
 	
 	protected void updateStateSprite() {
-		this.stateSprite = manager.getSprite(1, onState ? 5 : 6);
+		this.stateSprite = manager.getSprite(1, onState ? 2 :3);
 	}
 }

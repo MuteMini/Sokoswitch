@@ -13,7 +13,7 @@ public class Player extends MoveableEntity{
 	protected int tag;
 	
 	public Player(int x, int y, int tag, int facing, GameAssetManager manager) {
-		super(2, x, y, manager);
+		super(1, 0, x, y, manager);
 		this.tag = tag;
 		this.facing = (byte)facing;
 		this.mobile = false;

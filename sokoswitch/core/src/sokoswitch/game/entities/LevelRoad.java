@@ -7,7 +7,7 @@ import sokoswitch.game.GameAssetManager;
 public class LevelRoad extends Entity{
 	
 	public LevelRoad(int x, int y, GameAssetManager manager) {
-		super(-4, x, y, manager);
+		super(0, 1, x, y, manager);
 		this.sprite = manager.getSprite(0, 1);
 		
 		setSpritePos();
@@ -24,39 +24,39 @@ public class LevelRoad extends Entity{
 			case 0b0010:
 			case 0b1000:
 			case 0b1010:
-				this.sprite = manager.getSprite(0, 1);
+				this.sprite = manager.getSprite(0, 0);
 				break;
 			case 0b0001:
 			case 0b0100:
 			case 0b0101:
-				this.sprite = manager.getSprite(0, 2);
+				this.sprite = manager.getSprite(0, 1);
 				break;
 			case 0b0011:
-				this.sprite = manager.getSprite(0, 3);
+				this.sprite = manager.getSprite(0, 2);
 				break;
 			case 0b0110:
-				this.sprite = manager.getSprite(0, 4);
+				this.sprite = manager.getSprite(0, 3);
 				break;
 			case 0b1100:
-				this.sprite = manager.getSprite(0, 5);
+				this.sprite = manager.getSprite(0, 4);
 				break;
 			case 0b1001:
-				this.sprite = manager.getSprite(0, 6);
+				this.sprite = manager.getSprite(0, 5);
 				break;
 			case 0b0111:
-				this.sprite = manager.getSprite(0, 7);
+				this.sprite = manager.getSprite(0, 6);
 				break;
 			case 0b1110:
-				this.sprite = manager.getSprite(0, 8);
+				this.sprite = manager.getSprite(0, 7);
 				break;
 			case 0b1101:
-				this.sprite = manager.getSprite(0, 9);
+				this.sprite = manager.getSprite(0, 8);
 				break;
 			case 0b1011:
-				this.sprite = manager.getSprite(0, 10);
+				this.sprite = manager.getSprite(0, 9);
 				break;
 			case 0b1111:
-				this.sprite = manager.getSprite(0, 11);
+				this.sprite = manager.getSprite(0, 10);
 		}
 		setSpritePos();
 	}

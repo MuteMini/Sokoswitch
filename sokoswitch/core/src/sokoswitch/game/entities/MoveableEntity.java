@@ -7,8 +7,8 @@ public class MoveableEntity extends Entity{
 
 	protected byte facing;
 	
-	public MoveableEntity(int id, int x, int y, GameAssetManager manager) {
-		super(id, x, y, manager);
+	public MoveableEntity(int id, int pos, int x, int y, GameAssetManager manager) {
+		super(id, pos, x, y, manager);
 		this.facing = 0;
 	}
 

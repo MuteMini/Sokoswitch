@@ -8,16 +8,15 @@ import sokoswitch.game.level.Tiles;
 
 public abstract class Entity {
 	
-	protected int id;
 	protected int x, y;
 	protected Sprite sprite;
 	protected GameAssetManager manager;
 	
-	public Entity(int id, int x, int y, GameAssetManager manager) {
+	public Entity(int id, int pos, int x, int y, GameAssetManager manager) {
 		this.manager = manager;
-		setSprite(id);
 		this.x = x;
 		this.y = y;
+		setSprite(id, pos);
 	}
 	
 	public void render(Batch batch) {
@@ -32,14 +31,8 @@ public abstract class Entity {
 		return sprite;
 	}
 	
-	public int getId() {
-		return id;
-	}
-	
-	public void setSprite(int id) {
-		this.id = id;
-		Tiles tile = Tiles.getTilesById(id);
-		this.sprite = manager.getSprite(tile.getTextureId(), tile.getTexturePos());
+	public void setSprite(int id, int pos) {
+		this.sprite = manager.getSprite(id, pos);
 	}
 	
 	public void setSpritePos() {
