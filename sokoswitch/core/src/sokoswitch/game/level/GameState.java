@@ -37,7 +37,7 @@ public class GameState {
 				blockPos[i][j][0] = bwArrv[j].x;
 				blockPos[i][j][1] = bwArrv[j].y;
 				blockType[i][j] = new int[2];
-				blockType[i][j][0] = bwArrb.get(j).getId();
+				blockType[i][j][0] = bwArrb.get(j).getBlockId();
 				blockType[i][j][1] = bwArrb.get(j).getState() ? 1 : 0;
 			}
 		}
@@ -64,12 +64,10 @@ public class GameState {
 			for(int j = 0; j < blockPos[i].length; j++) {
 				Block b = null;
 				switch(blockType[i][j][0]) {
-					case 4:
-					case 5:
+					case 1:
 						b = new NormalBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][1] == 1), manager);
 						break;
-					case 6:
-					case 7:
+					case 2:
 						b = new LockedBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][1] == 1), manager);
 						break;
 				}

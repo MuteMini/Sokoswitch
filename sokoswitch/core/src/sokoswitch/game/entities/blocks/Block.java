@@ -12,6 +12,7 @@ public abstract class Block extends MoveableEntity{
 	protected boolean onState;
 	protected boolean pushed;
 	protected boolean[] blockTouch;
+	protected int blockId;
 	protected int spriteId;
 	
 	public Block(int id, int pos, int x, int y, boolean onState, GameAssetManager manager) {
@@ -422,6 +423,10 @@ public abstract class Block extends MoveableEntity{
 	
 	public boolean getPushed() {
 		return pushed;
+	}
+	
+	public int getBlockId() {
+		return blockId;
 	}
 
 	public void setState(boolean onState) {

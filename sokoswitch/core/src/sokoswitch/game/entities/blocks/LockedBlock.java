@@ -6,6 +6,7 @@ public class LockedBlock extends Block{
 
 	public LockedBlock(int x, int y, boolean turnedOn, GameAssetManager manager) {
 		super(2, 3, x, y, turnedOn, manager);
+		this.blockId = 2;
 		this.spriteId = 3;
 		updateSprite();
 	}
