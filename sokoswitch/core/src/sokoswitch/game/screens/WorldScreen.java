@@ -64,6 +64,11 @@ public class WorldScreen extends PlayerScreen{
 			}
 			LevelTile lt = new LevelTile((int)pos.x, (int)pos.y, game.gam, worldData.levelDisplay[i], worldData.levelConnected[i], worldData.levelPrereq[i], worldData.levelReqSize[i]);
 			lt.update(levelsSolved);
+			
+			//testing
+			lt.setIsShown(true);
+			lt.setIsSolved(true);
+			
 			levelTiles.add(lt);
 			visitable.add(pos);
 		}
@@ -240,7 +245,7 @@ public class WorldScreen extends PlayerScreen{
 		
 		if(keysHeld) {
 			heldCount += delta;
-			if(heldCount > 0.4) {
+			if(heldCount > 0.2) {
 				heldCount = 0;
 				keysHeld = false;
 			}
