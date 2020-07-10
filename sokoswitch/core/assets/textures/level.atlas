@@ -1,4 +1,4 @@
-levelRoad.png
+level.png
 size: 352, 32
 format: RGBA8888
 filter: Nearest,Nearest
@@ -76,6 +76,27 @@ levelRoad10
 levelRoad11
   rotate: false
   xy: 64, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+levelTile0
+  rotate: false
+  xy: 352, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+levelTile1
+  rotate: false
+  xy: 384, 0
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+levelTile2
+  rotate: false
+  xy: 416, 0
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
