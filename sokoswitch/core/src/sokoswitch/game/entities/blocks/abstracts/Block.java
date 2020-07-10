@@ -1,4 +1,4 @@
-package sokoswitch.game.entities.blocks;
+package sokoswitch.game.entities.blocks.abstracts;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -47,6 +47,10 @@ public abstract class Block extends MoveableEntity{
 
 	public boolean connectionPossible(int direction) {
 		return true;
+	}
+	
+	public boolean isSolved() {
+		return onState;
 	}
 	
 	public void resetBlocksTouched() {
