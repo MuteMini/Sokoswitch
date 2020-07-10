@@ -4,8 +4,8 @@ import sokoswitch.game.GameAssetManager;
 
 public class InversePlayer extends Player{
 
-	public InversePlayer(int x, int y, int tag, int facing, GameAssetManager manager) {
-		super(x, y, tag, facing, manager);
+	public InversePlayer(int x, int y, int facing, GameAssetManager manager) {
+		super(x, y, facing, manager);
 		setSprite(1, 1);
 	}
 	

@@ -22,8 +22,7 @@ public class GameState {
 				playerData[i][2] = 2;
 			else
 				playerData[i][2] = 1;
-			playerData[i][3] = (int)players.get(i).getTag();
-			playerData[i][4] = (int)players.get(i).getFacing();
+			playerData[i][3] = (int)players.get(i).getFacing();
 		}
 		
 		this.blockPos = new float[pushable.size()][][];
@@ -48,9 +47,9 @@ public class GameState {
 		for(int i = 0; i < playerData.length; i++) {
 			Player p = null;
 			if(playerData[i][2] == 1)
-				p = new Player(playerData[i][0], playerData[i][1], playerData[i][3], playerData[i][4], manager);
+				p = new Player(playerData[i][0], playerData[i][1], playerData[i][3], manager);
 			else
-				p = new InversePlayer(playerData[i][0], playerData[i][1], playerData[i][3], playerData[i][4], manager);
+				p = new InversePlayer(playerData[i][0], playerData[i][1], playerData[i][3], manager);
 			p.setSpritePos();
 			players.add(p);
 		}

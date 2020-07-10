@@ -86,13 +86,12 @@ public class GameLevel extends Level{
 		this.solved = false;
 		
 		LevelData levelData = gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath()+".level");
-		int tag = 1;
 		for(int i = 0; i < levelData.playerPos.length; i++) {
 			Player p;
 			if(!levelData.playerType[i])
-				p = new Player(levelData.playerPos[i][0], levelData.playerPos[i][1], tag++, 0, gam);
+				p = new Player(levelData.playerPos[i][0], levelData.playerPos[i][1], 0, gam);
 			else
-				p = new InversePlayer(levelData.playerPos[i][0], levelData.playerPos[i][1], tag++, 2, gam);
+				p = new InversePlayer(levelData.playerPos[i][0], levelData.playerPos[i][1], 2, gam);
 			p.setSpritePos();
 			players.add(p);
 		}
@@ -114,13 +113,7 @@ public class GameLevel extends Level{
 			b.setSpritePos();
 			pushable.add(new BlockWrapper(b));
 		}
-			
-		Collections.sort(players, new Comparator<Player>(){
-			@Override
-			public int compare(Player o1, Player o2) {
-				return (((Integer)(o1.getTag())).compareTo((Integer)(o2.getTag())));
-			}
-		});
+		
 		addState();
 		joinAllBlocks();
 	}
@@ -269,11 +262,7 @@ public class GameLevel extends Level{
 	}
 	
 	public Player getPlayer() {
-		for(Player p : players) {
-			if(p.getTag() == 1)
-				return p;
-		}
-		return null;
+		return players.get(0);
 	}
 	
 	public boolean isSolved() {

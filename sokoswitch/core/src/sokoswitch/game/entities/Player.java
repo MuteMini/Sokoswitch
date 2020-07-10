@@ -9,12 +9,9 @@ public class Player extends MoveableEntity{
 	protected boolean mobile;
 	/*if the player has chosen to rotate*/
 	protected boolean rotate;
-	/*holds the "tag" of the player for equal method*/
-	protected int tag;
 	
-	public Player(int x, int y, int tag, int facing, GameAssetManager manager) {
+	public Player(int x, int y, int facing, GameAssetManager manager) {
 		super(1, 0, x, y, manager);
-		this.tag = tag;
 		this.facing = (byte)facing;
 		this.mobile = false;
 		this.rotate = false;
@@ -39,11 +36,7 @@ public class Player extends MoveableEntity{
 	public boolean getRotate() {
 		return rotate;
 	}
-	
-	public int getTag() {
-		return tag;
-	}
-	
+
 	public void setMobile(boolean mobile) {
 		this.mobile = mobile;
 	}
