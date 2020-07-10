@@ -11,6 +11,7 @@ import sokoswitch.game.GameAssetManager;
 import sokoswitch.game.Sokoswitch;
 import sokoswitch.game.entities.*;
 import sokoswitch.game.entities.blocks.*;
+import sokoswitch.game.loaders.LevelData;
 
 public class GameLevel extends Level{
 	
@@ -23,7 +24,6 @@ public class GameLevel extends Level{
 	private OrthogonalTiledMapRenderer mapRender;
 	
 	/*holds the entities on the grid - players and blocks*/
-	private Comparator<Player> playerComparator;
 	private ArrayList<Player> players;
 	private ArrayList<BlockWrapper> pushable;
 	
@@ -57,7 +57,7 @@ public class GameLevel extends Level{
 		this.gam = game.gam;
 		
 		this.levelId = levelId;
-		this.map = gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath());
+		this.map = gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath()+".tmx");
 		this.layers = new ArrayList<>();
 		for(MapLayer layer : map.getLayers()) {
 			layers.add((TiledMapTileLayer)layer);
@@ -65,12 +65,6 @@ public class GameLevel extends Level{
 		this.mapRender = new OrthogonalTiledMapRenderer(map, game.batch);
 		
 		this.pushable = new ArrayList<>();
-		this.playerComparator = new Comparator<Player>(){
-			@Override
-			public int compare(Player o1, Player o2) {
-				return (((Integer)(o1.getTag())).compareTo((Integer)(o2.getTag())));
-			}
-		};
 		this.players = new ArrayList<>();
 		
 		this.undoStack = new Stack<>();
@@ -91,42 +85,42 @@ public class GameLevel extends Level{
 		
 		this.solved = false;
 		
-		int xMax = getWidth();
-		int yMax = getHeight();
+		LevelData levelData = gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath()+".level");
 		int tag = 1;
-		for(int y = 0; y < yMax; y++) {
-			for(int x = 0; x < xMax; x++) {
-				//Tiles t1 = locateTilesByCoordinate(1,x,y);
-				Tiles t2 = locateTilesByCoordinate(2,x,y);
-				switch(t2) {
-					case PLAYER:
-						Player p = new Player(x, y, tag++, 0, gam);
-						p.setSpritePos();
-						players.add(p);
-						break;
-					case INVERSE_PLAYER:
-						Player ip = new InversePlayer(x, y, -(tag++), 2, gam);
-						ip.setSpritePos();
-						players.add(ip);
-						break;
-					case BLOCK_OFF:
-					case BLOCK_ON:
-						Block b1 = new NormalBlock(x, y, (t2==Tiles.BLOCK_ON), gam);
-						b1.setSpritePos();
-						pushable.add(new BlockWrapper(b1));
-						break;
-					case LOCKED_BLOCK_OFF:
-					case LOCKED_BLOCK_ON:
-						Block b2 = new LockedBlock(x, y, (t2==Tiles.LOCKED_BLOCK_ON), gam);
-						b2.setSpritePos();
-						pushable.add(new BlockWrapper(b2));
-						break;
-					default:
-				}
-			}
+		for(int i = 0; i < levelData.playerPos.length; i++) {
+			Player p;
+			if(!levelData.playerType[i])
+				p = new Player(levelData.playerPos[i][0], levelData.playerPos[i][1], tag++, 0, gam);
+			else
+				p = new InversePlayer(levelData.playerPos[i][0], levelData.playerPos[i][1], tag++, 2, gam);
+			p.setSpritePos();
+			players.add(p);
 		}
 		
-		Collections.sort(players, playerComparator);
+		for(int i = 0; i < levelData.blockPos.length; i++) {
+			Block b;
+			int blockOnState = levelData.blockState.get(i)[1];
+			switch(levelData.blockState.get(i)[0]) {
+				case 1:
+					b = new NormalBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), gam);
+					break;
+				case 2:
+					b = new LockedBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), gam);
+					break;
+				default:
+					b = null;
+					break;
+			}
+			b.setSpritePos();
+			pushable.add(new BlockWrapper(b));
+		}
+			
+		Collections.sort(players, new Comparator<Player>(){
+			@Override
+			public int compare(Player o1, Player o2) {
+				return (((Integer)(o1.getTag())).compareTo((Integer)(o2.getTag())));
+			}
+		});
 		addState();
 		joinAllBlocks();
 	}
@@ -264,8 +258,8 @@ public class GameLevel extends Level{
 	}
 
 	@Override
-	public Tiles locateTilesByCoordinate(int layer, int x, int y) {
-		Cell cell = layers.get(layer).getCell(x, y);
+	public Tiles locateTilesByCoordinate(int x, int y) {
+		Cell cell = layers.get(0).getCell(x, y);
 		if(cell != null) {
 			TiledMapTile tile = cell.getTile();
 			if(tile != null)
@@ -301,7 +295,7 @@ public class GameLevel extends Level{
 				p.setMobile(true);
 				notMobile = false;
 			}
-			playerV.add(locateTilesByCoordinate(0, (int)p.interact().x, (int)p.interact().y) == Tiles.SPACE ? p.interact() : p.getPosition());
+			playerV.add(locateTilesByCoordinate((int)p.interact().x, (int)p.interact().y) == Tiles.SPACE ? p.interact() : p.getPosition());
 		}
 		
 		if(players.get(0).getRotate()) {
@@ -370,8 +364,8 @@ public class GameLevel extends Level{
 						
 						boolean update = true;	
 						for(Vector2 vect : blockV) {
-							if(locateTilesByCoordinate(0, (int)vect.x, (int)vect.y) != Tiles.SPACE 
-									|| locateTilesByCoordinate(0, (int)vect.x+xOffset, (int)vect.y+yOffset) == Tiles.EMPTY) {
+							if(locateTilesByCoordinate((int)vect.x, (int)vect.y) != Tiles.SPACE 
+									|| locateTilesByCoordinate((int)vect.x+xOffset, (int)vect.y+yOffset) == Tiles.EMPTY) {
 								update = false;
 								allUpdated = false;
 								break;

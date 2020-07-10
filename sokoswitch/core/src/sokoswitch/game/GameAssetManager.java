@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import sokoswitch.game.level.*;
 import sokoswitch.game.loaders.*;
 
@@ -14,13 +15,14 @@ public final class GameAssetManager {
 	
 	public final AssetManager manager = new AssetManager();
 	
-	public final String levelRoadPath = "textures/levelRoad.atlas";
+	public final String levelPath = "textures/level.atlas";
 	public final String puzzleEntityPath = "textures/entities.atlas";
 	public final String normalBlockPath = "textures/normalBlock.atlas";
 	public final String lockedBlockPath = "textures/lockedBlock.atlas";
 	public final String[] fontPath = {"fonts/BalsamiqSans-Regular.ttf", "fonts/Kenney-Pixel.ttf", "fonts/Nunito-Regular.ttf"};
 	public final int fontArraySize = 1;
 	
+	private LevelAssets levelAssets;
 	private EntityAssets entityAssets;
 	private NormalBlockAssets normalBlockAssets;
 	private LockedBlockAssets lockedBlockAssets;
@@ -28,15 +30,15 @@ public final class GameAssetManager {
 	private BitmapFont[] fonts;
 	
 	public GameAssetManager() {
-		CustomTmxMapLoader loader = new CustomTmxMapLoader();
 		FileHandleResolver resolver = new InternalFileHandleResolver();
-		manager.setLoader(TiledMap.class, loader);
+		manager.setLoader(TiledMap.class, new TmxMapLoader(resolver));
 		manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
 		manager.setLoader(WorldData.class, new WorldDataLoader(resolver));
+		manager.setLoader(LevelData.class, new LevelDataLoader(resolver));
 	}
 	
 	public void loadImages() {
-		manager.load(levelRoadPath, TextureAtlas.class);
+		manager.load(levelPath, TextureAtlas.class);
 		manager.load(puzzleEntityPath, TextureAtlas.class);
 		manager.load(normalBlockPath, TextureAtlas.class);
 		manager.load(lockedBlockPath, TextureAtlas.class);
@@ -46,8 +48,10 @@ public final class GameAssetManager {
 		for(LevelPath lp : LevelPath.values()) {
 			if(lp.getLevelNum() <= 0)
 				manager.load(lp.getFilePath(), WorldData.class);
-			else
-				manager.load(lp.getFilePath(), TiledMap.class);
+			else {
+				manager.load(lp.getFilePath()+".tmx", TiledMap.class);
+				manager.load(lp.getFilePath()+".level", LevelData.class);
+			}
 		}
 	}
 	
@@ -58,6 +62,7 @@ public final class GameAssetManager {
 	}
 	
 	public void initializeValues() {
+		levelAssets = new LevelAssets(manager.get(levelPath));
 		entityAssets = new EntityAssets(manager.get(puzzleEntityPath));
 		normalBlockAssets = new NormalBlockAssets(manager.get(normalBlockPath));
 		lockedBlockAssets = new LockedBlockAssets(manager.get(lockedBlockPath));
@@ -78,13 +83,13 @@ public final class GameAssetManager {
 	public Sprite getSprite(int id, int pos) {
 		Sprite sprite = new Sprite();
 		
-		if(id == 0) sprite = new Sprite(((TextureAtlas)manager.get(levelRoadPath)).findRegion("levelRoad"+pos));
+		if(id == 0) sprite = new Sprite(levelAssets.assets[pos]);
 		else if(id == 1) sprite = new Sprite(entityAssets.assets[pos]);
 		else if(id == 2) sprite = new Sprite(normalBlockAssets.assets[pos]);
 		else if(id == 3) sprite = new Sprite(lockedBlockAssets.assets[pos]);
 			
 		if(id == 1) {
-			if(pos == 3 || pos == 4) sprite.setScale(7.5f);
+			if(pos == 0 || pos == 1) sprite.setScale(7.5f);
 			else sprite.setScale(8);
 		}
 		else sprite.setScale(8.1f);
@@ -100,19 +105,49 @@ public final class GameAssetManager {
 		manager.dispose();
 	}
 	
+	public class LevelAssets {
+		public final TextureRegion[] assets;
+
+        public LevelAssets(TextureAtlas atlas) {
+        	assets = new TextureRegion[14];
+        	assets[0] = atlas.findRegion("levelRoad1");
+        	assets[1] = atlas.findRegion("levelRoad2");
+        	assets[2] = atlas.findRegion("levelRoad3");
+        	assets[3] = atlas.findRegion("levelRoad4");
+        	assets[4] = atlas.findRegion("levelRoad5");
+        	assets[5] = atlas.findRegion("levelRoad6");
+        	assets[6] = atlas.findRegion("levelRoad7");
+        	assets[7] = atlas.findRegion("levelRoad8");
+        	assets[8] = atlas.findRegion("levelRoad9");
+        	assets[9] = atlas.findRegion("levelRoad10");
+        	assets[10] = atlas.findRegion("levelRoad11");
+        	assets[11] = atlas.findRegion("levelTile0");
+        	assets[12] = atlas.findRegion("levelTile1");
+        	assets[13] = atlas.findRegion("levelTile2");
+        }
+	}
+	
 	public class EntityAssets {
         public final TextureRegion[] assets;
 
         public EntityAssets(TextureAtlas atlas) {
-        	assets = new TextureRegion[7];
-        	assets[0] = atlas.findRegion("levelTile0");
-        	assets[1] = atlas.findRegion("levelTile1");
-        	assets[2] = atlas.findRegion("levelTile2");
-        	assets[3] = atlas.findRegion("player");
-        	assets[4] = atlas.findRegion("inversePlayer");
-        	assets[5] = atlas.findRegion("on");
-        	assets[6] = atlas.findRegion("off");
-        }
+        	assets = new TextureRegion[15];
+        	assets[0] = atlas.findRegion("player");
+        	assets[1] = atlas.findRegion("inversePlayer");
+        	assets[2] = atlas.findRegion("on");
+        	assets[3] = atlas.findRegion("off");
+        	assets[4] = atlas.findRegion("limitNone");
+        	assets[5] = atlas.findRegion("red1");
+			assets[6] = atlas.findRegion("red2");
+			assets[7] = atlas.findRegion("red3");
+			assets[8] = atlas.findRegion("red4");
+			assets[9] = atlas.findRegion("red5");
+			assets[10] = atlas.findRegion("green1");
+			assets[11] = atlas.findRegion("green2");
+			assets[12] = atlas.findRegion("green3");
+			assets[13] = atlas.findRegion("green4");
+			assets[14] = atlas.findRegion("green5");
+    	}
     }
 	
 	public class NormalBlockAssets {
