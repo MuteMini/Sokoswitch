@@ -1,6 +1,7 @@
 package sokoswitch.game.entities.blocks;
 
 import sokoswitch.game.GameAssetManager;
+import sokoswitch.game.entities.blocks.abstracts.Block;
 
 public class LockedBlock extends Block{
 

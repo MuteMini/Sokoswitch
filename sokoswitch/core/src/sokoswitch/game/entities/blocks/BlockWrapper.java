@@ -3,6 +3,8 @@ package sokoswitch.game.entities.blocks;
 import java.util.*;
 import com.badlogic.gdx.math.Vector2;
 
+import sokoswitch.game.entities.blocks.abstracts.Block;
+
 public class BlockWrapper{
 	
 	protected ArrayList<Block> blocksJoined;
@@ -186,9 +188,9 @@ public class BlockWrapper{
 		}
 	}
 	
-	public boolean getBlockStateOn() {
+	public boolean getSolved() {
 		for(Block b : blocksJoined) {
-			if(!b.getState()) {
+			if(!b.isSolved()) {
 				return false;
 			}
 		}

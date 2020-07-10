@@ -3,15 +3,15 @@ package sokoswitch.game.entities.blocks;
 import sokoswitch.game.GameAssetManager;
 import sokoswitch.game.entities.blocks.abstracts.NumberedBlock;
 
-public class LimitedBlock extends NumberedBlock{
-	
-	public LimitedBlock(int x, int y, boolean onState, int switchAmount, GameAssetManager manager) {
+public class AttentionBlock extends NumberedBlock{
+
+	public AttentionBlock(int x, int y, boolean onState, int switchAmount, GameAssetManager manager) {
 		super(x, y, onState, switchAmount, manager);
 	}
-	
+
 	@Override
 	public boolean isSolved() {
-		return onState;
+		return onState && switchAmount > 0;
 	}
 	
 	@Override
@@ -21,6 +21,6 @@ public class LimitedBlock extends NumberedBlock{
 
 	@Override
 	protected void updateSwitchSprite() {
-		this.switchSprite = manager.getSprite(1, 4+switchAmount);
+		this.switchSprite = manager.getSprite(1, 9+(5-switchAmount));
 	}
 }
