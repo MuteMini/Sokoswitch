@@ -1,0 +1,14 @@
+{
+  "players":[
+    [3, 6, false]
+  ],
+  "blocks":[
+    [2, 1, 1, false],
+    [1, 2, 2, false],
+    [5, 2, 2, true],
+    [3, 3, 2, true],
+    [1, 4, 2, false],
+    [5, 4, 2, false],
+    [4, 5, 1, false],
+  ]
+}
