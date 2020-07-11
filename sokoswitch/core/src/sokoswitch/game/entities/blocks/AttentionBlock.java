@@ -7,11 +7,12 @@ public class AttentionBlock extends NumberedBlock{
 
 	public AttentionBlock(int x, int y, boolean onState, int switchAmount, GameAssetManager manager) {
 		super(x, y, onState, switchAmount, manager);
+		this.blockId = 4;
 	}
 
 	@Override
 	public boolean isSolved() {
-		return onState && switchAmount > 0;
+		return onState && switchAmount == 0;
 	}
 	
 	@Override

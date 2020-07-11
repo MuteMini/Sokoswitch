@@ -13,7 +13,6 @@ public abstract class NumberedBlock extends NormalBlock {
 	
 	public NumberedBlock(int x, int y, boolean onState, int switchAmount, GameAssetManager manager) {
 		super(x, y, onState, manager);
-		this.blockId = 3;
 		this.switchAmount = switchAmount;
 		updateSwitchSprite();
 	}
@@ -27,7 +26,7 @@ public abstract class NumberedBlock extends NormalBlock {
 	@Override
 	public void switchState() {
 		super.switchState();
-		switchAmount--;
+		if(switchAmount > 0) switchAmount--;
 		updateSwitchSprite();
 	}
 	

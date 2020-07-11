@@ -2,7 +2,6 @@ package sokoswitch.game.level;
 
 import java.util.*;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.*;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -11,6 +10,7 @@ import sokoswitch.game.GameAssetManager;
 import sokoswitch.game.Sokoswitch;
 import sokoswitch.game.entities.*;
 import sokoswitch.game.entities.blocks.*;
+import sokoswitch.game.entities.blocks.abstracts.Block;
 import sokoswitch.game.loaders.LevelData;
 
 public class GameLevel extends Level{
@@ -20,7 +20,7 @@ public class GameLevel extends Level{
 	@SuppressWarnings("unused")
 	private int levelId;
 	private TiledMap map;
-	private ArrayList<TiledMapTileLayer> layers;
+	private TiledMapTileLayer layer;
 	private OrthogonalTiledMapRenderer mapRender;
 	
 	/*holds the entities on the grid - players and blocks*/
@@ -58,10 +58,7 @@ public class GameLevel extends Level{
 		
 		this.levelId = levelId;
 		this.map = gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath()+".tmx");
-		this.layers = new ArrayList<>();
-		for(MapLayer layer : map.getLayers()) {
-			layers.add((TiledMapTileLayer)layer);
-		}
+		this.layer = (TiledMapTileLayer)map.getLayers().get(0);
 		this.mapRender = new OrthogonalTiledMapRenderer(map, game.batch);
 		
 		this.pushable = new ArrayList<>();
@@ -105,6 +102,12 @@ public class GameLevel extends Level{
 					break;
 				case 2:
 					b = new LockedBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), gam);
+					break;
+				case 3:
+					b = new LimitedBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), levelData.blockState.get(i)[2], gam);
+					break;
+				case 4:
+					b = new AttentionBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), levelData.blockState.get(i)[2], gam);
 					break;
 				default:
 					b = null;
@@ -207,7 +210,7 @@ public class GameLevel extends Level{
 	@Override
 	public void render(OrthographicCamera camera) {
 		mapRender.setView(camera);
-		mapRender.renderTileLayer(layers.get(0));
+		mapRender.renderTileLayer(layer);
 
 		for(Player p : players) {
 			float tempOffset = movementOffset;
@@ -242,17 +245,17 @@ public class GameLevel extends Level{
 
 	@Override
 	public int getWidth() {
-		return layers.get(0).getWidth();
+		return layer.getWidth();
 	}
 
 	@Override
 	public int getHeight() {
-		return layers.get(0).getHeight();
+		return layer.getHeight();
 	}
 
 	@Override
 	public Tiles locateTilesByCoordinate(int x, int y) {
-		Cell cell = layers.get(0).getCell(x, y);
+		Cell cell = layer.getCell(x, y);
 		if(cell != null) {
 			TiledMapTile tile = cell.getTile();
 			if(tile != null)
@@ -524,7 +527,7 @@ public class GameLevel extends Level{
 	
 	private boolean checkLevelSolved() {
 		for(BlockWrapper bw : pushable) {
-			if(!bw.getBlockStateOn()) {
+			if(!bw.getSolved()) {
 				return false;
 			}
 		}

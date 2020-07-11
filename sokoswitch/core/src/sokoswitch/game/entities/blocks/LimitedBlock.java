@@ -7,6 +7,7 @@ public class LimitedBlock extends NumberedBlock{
 	
 	public LimitedBlock(int x, int y, boolean onState, int switchAmount, GameAssetManager manager) {
 		super(x, y, onState, switchAmount, manager);
+		this.blockId = 3;
 	}
 	
 	@Override

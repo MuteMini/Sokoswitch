@@ -70,7 +70,7 @@ public class LevelData {
 						blockData = new Integer[3];
 						blockData[0] = blockType;
 						blockData[1] = ((boolean)blockObjects.next()) ? 1 : 0;
-						blockData[2] = (int)blockObjects.next();
+						blockData[2] = Math.toIntExact((long)blockObjects.next());
 						break;
 				}
 				blockState.add(blockData);
