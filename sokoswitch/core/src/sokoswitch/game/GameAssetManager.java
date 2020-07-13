@@ -131,22 +131,17 @@ public final class GameAssetManager {
         public final TextureRegion[] assets;
 
         public EntityAssets(TextureAtlas atlas) {
-        	assets = new TextureRegion[15];
+        	assets = new TextureRegion[16];
         	assets[0] = atlas.findRegion("player");
         	assets[1] = atlas.findRegion("inversePlayer");
         	assets[2] = atlas.findRegion("on");
         	assets[3] = atlas.findRegion("off");
         	assets[4] = atlas.findRegion("limitNone");
-        	assets[5] = atlas.findRegion("red1");
-			assets[6] = atlas.findRegion("red2");
-			assets[7] = atlas.findRegion("red3");
-			assets[8] = atlas.findRegion("red4");
-			assets[9] = atlas.findRegion("red5");
-			assets[10] = atlas.findRegion("green1");
-			assets[11] = atlas.findRegion("green2");
-			assets[12] = atlas.findRegion("green3");
-			assets[13] = atlas.findRegion("green4");
-			assets[14] = atlas.findRegion("green5");
+        	assets[5] = atlas.findRegion("limit1");
+			assets[6] = atlas.findRegion("limit2");
+			assets[7] = atlas.findRegion("limit3");
+			assets[8] = atlas.findRegion("limit4");
+			assets[9] = atlas.findRegion("limit5");
     	}
     }
 	
