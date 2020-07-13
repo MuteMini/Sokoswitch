@@ -45,6 +45,10 @@ public abstract class NumberedBlock extends NormalBlock {
 		return switchAmount > 0;
 	}
 	
+	public boolean isSolved() {
+		return onState && switchAmount == 0;
+	}
+	
 	public int getSwitchAmount() {
 		return switchAmount;
 	}
