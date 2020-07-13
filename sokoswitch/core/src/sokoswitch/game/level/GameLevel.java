@@ -104,10 +104,10 @@ public class GameLevel extends Level{
 					b = new LockedBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), gam);
 					break;
 				case 3:
-					b = new LimitedBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), levelData.blockState.get(i)[2], gam);
+					b = new LimiterBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), levelData.blockState.get(i)[2], gam);
 					break;
 				case 4:
-					b = new AttentionBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), levelData.blockState.get(i)[2], gam);
+					b = new LockedLimiterBlock(levelData.blockPos[i][0], levelData.blockPos[i][1], (blockOnState==1), levelData.blockState.get(i)[2], gam);
 					break;
 				default:
 					b = null;
@@ -462,10 +462,10 @@ public class GameLevel extends Level{
 		
 		for(BlockWrapper bw : pushable) {
 			for(Block b : bw.getBlockArray()) {
-				while(b.switchPossible(movement) 
+				while(b.switchPossibleDirect(movement) 
 						&& playerInteract.contains(b.getPosition())) {
+					bw.switchStates(b.getPosition());
 					playerInteract.remove(b.getPosition());
-					bw.switchStates();
 				}
 			}
 		}

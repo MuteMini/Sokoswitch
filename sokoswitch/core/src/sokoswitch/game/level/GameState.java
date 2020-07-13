@@ -83,10 +83,10 @@ public class GameState {
 						b = new LockedBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][1] == 1), manager);
 						break;
 					case 3:
-						b = new LimitedBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][1] == 1), (int)blockType[i][j][2], manager);
+						b = new LimiterBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][1] == 1), (int)blockType[i][j][2], manager);
 						break;
 					case 4:
-						b = new AttentionBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][1] == 1), (int)blockType[i][j][2], manager);
+						b = new LockedLimiterBlock((int)blockPos[i][j][0], (int)blockPos[i][j][1], (blockType[i][j][1] == 1), (int)blockType[i][j][2], manager);
 						break;
 				}
 				b.setSpritePos();
