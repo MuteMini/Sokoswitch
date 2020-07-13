@@ -35,13 +35,18 @@ public abstract class Block extends MoveableEntity{
 		pushed = true;
 	}
 	
-	public abstract void switchState();
+	public abstract void switchStateDirect();
+	public abstract void switchStateIndirect();
 	
 	public boolean movePossible(int direction) {
 		return true;
 	}
 	
-	public boolean switchPossible(int direction) {
+	public boolean switchPossibleDirect(int direction) {
+		return true;
+	}
+	
+	public boolean switchPossibleIndirect(int direction) {
 		return true;
 	}
 

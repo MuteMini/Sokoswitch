@@ -84,7 +84,7 @@ public class BlockWrapper{
 				}
 			}
 		}
-		
+
 		ArrayList<BlockWrapper> tempBW = new ArrayList<>();
 		boolean allVisited = false;
 		boolean[] visited = new boolean[thisBv.length];
@@ -98,7 +98,7 @@ public class BlockWrapper{
 				}
 			}
 			
-			if(vertex != -1) {
+			if(vertex == -1) {
 				allVisited = true;
 			}
 			else {
@@ -124,9 +124,62 @@ public class BlockWrapper{
 		return newBW;
 	}
 	
-	public void switchStates() {
-		for(Block b : blocksJoined) {
-			b.switchState();
+	@SuppressWarnings("unchecked")
+	public void switchStates(Vector2 blockTouched) {
+		if(blocksJoined.size() > 1) {
+			int blockPos = -1;
+			Vector2[] thisBv = this.getBlockPos();
+			SortedMap<Integer, Integer>[] conections = new TreeMap[thisBv.length];
+			
+			for(int i = 0; i < thisBv.length; i++) {
+				if(blockPos == -1 && thisBv[i].equals(blockTouched)) blockPos = i;
+				conections[i] = new TreeMap<>();
+			}
+			
+			for(int i = 0; i < thisBv.length-1; i++) {
+				for(int j = i+1; j < thisBv.length; j++) {
+					if(thisBv[i].dst(thisBv[j]) == 1) {
+						int direction = 0;
+						float x = thisBv[i].x - thisBv[j].x;
+						float y = thisBv[i].y - thisBv[j].y;
+							if(y > 0) direction = 2;
+							else if(x < 0) direction = 1;
+							else if(x > 0) direction = 3;
+							
+						conections[i].put(j, direction);
+						conections[j].put(i, direction);
+					}
+				}
+			}
+			
+			Queue<Integer> qu = new LinkedList<Integer>();
+			boolean[] visited = new boolean[thisBv.length];
+			
+			qu.add(blockPos);
+			visited[blockPos] = true;
+			
+			while(!qu.isEmpty()) {
+				int pos = qu.poll();
+				Iterator<Map.Entry<Integer, Integer>> posMapSet = conections[pos].entrySet().iterator();
+				
+				while(posMapSet.hasNext()) {
+					Map.Entry<Integer, Integer> entry = posMapSet.next();
+					if(!visited[entry.getKey()] && blocksJoined.get(entry.getKey()).switchPossibleIndirect(entry.getValue())) {
+						visited[entry.getKey()] = true;
+						qu.add(entry.getKey());
+					}
+				}
+			}
+			
+			for(int i = 0; i < visited.length; i++) {
+				if(visited[i]) {
+					if(blocksJoined.get(i).getPosition().equals(blockTouched)) blocksJoined.get(i).switchStateDirect();
+					else blocksJoined.get(i).switchStateIndirect();
+				}
+			}
+		}
+		else {
+			blocksJoined.get(0).switchStateDirect();
 		}
 	}
 	

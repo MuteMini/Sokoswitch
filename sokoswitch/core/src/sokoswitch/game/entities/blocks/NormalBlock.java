@@ -13,8 +13,13 @@ public class NormalBlock extends Block{
 	}
 	
 	@Override
-	public void switchState() {
+	public void switchStateDirect() {
 		this.onState = !this.onState;
 		updateStateSprite();
+	}
+
+	@Override
+	public void switchStateIndirect() {
+		switchStateDirect();
 	}
 }

@@ -24,10 +24,25 @@ public abstract class NumberedBlock extends NormalBlock {
 	}
 	
 	@Override
-	public void switchState() {
-		super.switchState();
+	public void switchStateDirect() {
+		super.switchStateDirect();
 		if(switchAmount > 0) switchAmount--;
 		updateSwitchSprite();
+	}
+	
+	@Override
+	public void switchStateIndirect() {
+		switchStateDirect();
+	}
+
+	@Override
+	public boolean switchPossibleDirect(int direction) {
+		return switchAmount > 0;
+	}
+	
+	@Override
+	public boolean switchPossibleIndirect(int direction) {
+		return switchAmount > 0;
 	}
 	
 	public int getSwitchAmount() {
@@ -50,5 +65,7 @@ public abstract class NumberedBlock extends NormalBlock {
 		else switchSprite.setCenter((x*Tiles.SIZE)+offset+(Tiles.SIZE/2), (y*Tiles.SIZE)+(Tiles.SIZE/2));
 	}
 	
-	protected abstract void updateSwitchSprite();
+	protected void updateSwitchSprite() {
+		this.switchSprite = manager.getSprite(1, 9-switchAmount);
+	}
 }

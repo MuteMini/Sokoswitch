@@ -13,13 +13,18 @@ public class LockedBlock extends Block{
 	}
 	
 	@Override
-	public void switchState() {
+	public void switchStateDirect() {
 		this.onState = !this.onState;
 		updateStateSprite();
 	}
 	
 	@Override
-	public boolean switchPossible(int direction) {
+	public void switchStateIndirect() {
+		switchStateDirect();
+	}
+	
+	@Override
+	public boolean switchPossibleDirect(int direction) {
 		return false;
 	}
 }
