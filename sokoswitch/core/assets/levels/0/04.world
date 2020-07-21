@@ -1,18 +1,33 @@
 {
   "horizontal":false,
   "pos":[
-    [0, 0]
+    [0, 0],
+    [0, 2],
+    [2, 0],
+    [4, 0]
   ],
   "displayText":[
-    "its not done"
+    "its not done",
+    "01",
+    "a",
+    "b"
   ],
   "connectedLevel":[
-    0
+    0,
+    401,
+    490,
+    491
   ],
   "prereq":[
-    [0]
+    [0],
+    [0],
+    [0],
+    [490]
   ],
   "prereqSize":[
+    1,
+    1,
+    1,
     1
   ]
 }
