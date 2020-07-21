@@ -33,6 +33,7 @@ public class WorldScreen extends PlayerScreen{
 	
 	public WorldScreen(Sokoswitch game, int levelId, HashSet<Long> levelsSolved) {
 		super();
+		
 		this.levelsSolved = levelsSolved;
 		this.game = game;
 		
@@ -93,27 +94,37 @@ public class WorldScreen extends PlayerScreen{
 				if(tempSet == roadsShown) beingShown = true; 
 				
 				if(worldData.horizontal) {
-					tempSet.add(new LevelRoad((int)ve2.x+1, (int)ve2.y, game.gam));
-					tempSet.add(new LevelRoad((int)ve1.x-1, (int)ve1.y, game.gam));
-					if(beingShown) {
-						visitable.add(new Vector2(ve2.x+1, ve2.y));
-						visitable.add(new Vector2(ve1.x-1, ve1.y));
+					if(ve2.x+1 < ve1.x) {
+						tempSet.add(new LevelRoad((int)ve2.x+1, (int)ve2.y, game.gam));
+						if(beingShown) visitable.add(new Vector2(ve2.x+1, ve2.y));
 					}
+					if(ve1.x-1 > ve2.x) {
+						tempSet.add(new LevelRoad((int)ve1.x-1, (int)ve1.y, game.gam));
+						if(beingShown) visitable.add(new Vector2(ve1.x-1, ve1.y));
+					}
+					
+					int mid = ((int)ve1.x-(int)ve2.x) / 2;
 					for(int j = (int)Math.min(ve1.y, ve2.y); j <= (int)Math.max(ve1.y, ve2.y); j++) {
-						tempSet.add(new LevelRoad((int)ve1.x-2, j, game.gam));
-						if(beingShown) visitable.add(new Vector2(ve1.x-2, j));
+						tempSet.add(new LevelRoad((int)ve1.x-mid, j, game.gam));
+						if(beingShown) visitable.add(new Vector2(ve1.x-mid, j));
 					}
 				}
 				else {
-					tempSet.add(new LevelRoad((int)ve2.x, (int)ve2.y+1, game.gam));
-					tempSet.add(new LevelRoad((int)ve1.x, (int)ve1.y-1, game.gam));
-					if(beingShown) {
-						visitable.add(new Vector2(ve2.x, ve2.y+1));
-						visitable.add(new Vector2(ve1.x, ve1.y-1));
+					if(ve2.y+1 < ve1.y) {
+						tempSet.add(new LevelRoad((int)ve2.x, (int)ve2.y+1, game.gam));
+						if(beingShown) visitable.add(new Vector2(ve2.x, ve2.y+1));
 					}
+					if(ve1.y-1 > ve2.y) {
+						tempSet.add(new LevelRoad((int)ve1.x, (int)ve1.y-1, game.gam));
+						if(beingShown) visitable.add(new Vector2(ve1.x, ve1.y-1));
+					}
+					
+					int mid = ((int)ve1.y-(int)ve2.y) / 2;
 					for(int j = (int)Math.min(ve1.x, ve2.x); j <= (int)Math.max(ve1.x, ve2.x); j++) {
-						tempSet.add(new LevelRoad(j, (int)ve1.y-1, game.gam));
-						if(beingShown) visitable.add(new Vector2(j, ve1.y-1));
+						if(!visitable.contains(new Vector2(j, ve1.y-mid))) {
+							tempSet.add(new LevelRoad(j, (int)ve1.y-mid, game.gam));
+							if(beingShown) visitable.add(new Vector2(j, ve1.y-mid));
+						}
 					}
 				}
 			}
@@ -274,7 +285,7 @@ public class WorldScreen extends PlayerScreen{
 	public void render(float delta) {
 		Gdx.gl.glClearColor(.50f, .50f, .50f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
 		update(delta);
 		for(LevelTile lt : levelTiles) {
 			lt.render(game.batch);
@@ -282,10 +293,10 @@ public class WorldScreen extends PlayerScreen{
 		for(LevelRoad lr : roadsShown) {
 			lr.render(game.batch);
 		}
-		
+
 		cursorSprite.draw(game.batch);
 	}
-
+	
 	private void checkInput() {
 		for(LevelTile lt : levelTiles) {
 			if((int)lt.getPosition().x == cursorX && (int)lt.getPosition().y == cursorY){

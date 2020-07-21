@@ -5,14 +5,16 @@ import java.util.HashSet;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.Vector2;
+
 import sokoswitch.game.GameAssetManager;
 
 public class LevelTile extends Entity{
 
 	private BitmapFont font;
 	private String displayText;
-	private float stringWidth;
-	private float stringHeight;
+	private GlyphLayout displayLayout;
+	private Vector2 spriteCenter;
 	private int connectedLevel;
 	private ArrayList<Long> prereq;
 	private int prereqSize;
@@ -22,11 +24,9 @@ public class LevelTile extends Entity{
 	public LevelTile(int x, int y, GameAssetManager manager, String displayText, int connectedLevel, ArrayList<Long> prereq, int prereqSize) {
 		super(0, 11, x, y, manager);
 
-		this.font = (displayText.length() <= 2) ? manager.getFont(0) : manager.getFont(1);
+		this.font = manager.getFont(0);
         this.displayText = displayText;
-        GlyphLayout gl = new GlyphLayout(font, this.displayText);
-		this.stringWidth = (displayText.length() < 2) ? gl.width/3.4f : gl.width/2.6f;
-		this.stringHeight = gl.height/1.5f;
+        this.displayLayout = new GlyphLayout(font, displayText);
 		this.connectedLevel = connectedLevel;
 		this.prereq = prereq;
 		this.prereqSize = prereqSize;
@@ -34,6 +34,7 @@ public class LevelTile extends Entity{
 		this.isSolved = false;
 		
 		setSpritePos();
+		this.spriteCenter = new Vector2(sprite.getX()+sprite.getWidth()/2, sprite.getY()+sprite.getHeight()/2);
 	}
 
 	public void update(HashSet<Long> completed) {
@@ -67,8 +68,9 @@ public class LevelTile extends Entity{
 	@Override
 	public void render(Batch batch) {
 		sprite.draw(batch);
-		if(isShown) font.draw(batch, displayText, sprite.getX()-stringWidth, sprite.getY()+stringHeight);
+		if(isShown) font.draw(batch, displayText, spriteCenter.x-displayLayout.width/2, spriteCenter.y+displayLayout.height/2);
 			//font.draw(batch, displayText, sprite.getX(), sprite.getY()-(stringHeight/2)+(Tiles.SIZE/2));
+		
 	}
 	
 	public boolean isShown() {
