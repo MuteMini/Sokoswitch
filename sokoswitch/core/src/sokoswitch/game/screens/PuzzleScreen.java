@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.viewport.*;
 import sokoswitch.game.Sokoswitch;
 import sokoswitch.game.level.*;
 
-public class PuzzleScreen extends PlayerScreen{
+public class PuzzleScreen extends PlayerScreen implements PauseMenu{
 
 	/*used to switch screens*/
 	private Sokoswitch game;
@@ -16,17 +16,22 @@ public class PuzzleScreen extends PlayerScreen{
 	private int levelId;
 	/*holds the actual game level*/
 	private GameLevel gameLevel;
+	
+	/*holds if the game has been paused*/
+	private boolean paused;
+	private PauseStage pauseStage;
 
 	public PuzzleScreen(Sokoswitch game, int levelId, HashSet<Long> levelsSolved) {
 		super();
 		this.game = game;
 		this.levelId = levelId;
 		this.levelsSolved = levelsSolved;
-		resetLevel();
-	}
-	
-	public void resetLevel() {
-		this.gameLevel = new GameLevel(levelId, game, levelsSolved);
+		this.paused = false;
+		
+		reset();
+		
+		String levelIdString = "Stage " + (char)(levelId/100 + 65) + " Level " + (levelId%100) +": ";
+		this.pauseStage = new PauseStage(game.gam, game.hud, true, levelIdString, "bruh", this);
 	}
 	
 	@Override
@@ -43,22 +48,21 @@ public class PuzzleScreen extends PlayerScreen{
 
 	public void update(float delta) {
 		if(!keysPressed.isEmpty() && keysPressed.peek() == 7) {
-			game.gsm.pop();
+			paused = !paused;
+			keysPressed.pop();
 		}
-		
-		gameLevel.takeInput(keysPressed);
-		gameLevel.update(delta);
 		
 		if(gameLevel.isSolved()) {
 			levelsSolved.add((long)levelId);
-			game.gsm.pop();
+			leave();
 		}
-
-		if(Gdx.input.justTouched()) {
-			resetLevel();
-			/*Vector3 clickPos = game.camera.unproject(new Vector3(Gdx.input.getX(),Gdx.input.getY(), 0));
-			Tiles tile = gameLevel.locateTilesByPosition(2, clickPos.x, clickPos.y);
-			System.out.println(tile.getId() + " " + clickPos);*/
+		else if(paused) {
+			pauseStage.takeInput(keysPressed);
+			pauseStage.update(delta);
+		}
+		else {
+			gameLevel.takeInput(keysPressed);
+			gameLevel.update(delta);
 		}
 	}
 	
@@ -68,7 +72,14 @@ public class PuzzleScreen extends PlayerScreen{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		update(delta);
+		game.viewport.apply();
 		gameLevel.render(game.camera);
+		if(paused) {
+			game.batch.end();
+			pauseStage.getViewport().apply();
+			pauseStage.draw();
+			game.viewport.apply();
+		}
 	}
 
 	@Override
@@ -79,9 +90,30 @@ public class PuzzleScreen extends PlayerScreen{
 	@Override
 	public void dispose() {
 		gameLevel.dispose();
+		pauseStage.dispose();
 	}
 	
 	public int getLevelId() {
 		return levelId;
+	}
+
+	@Override
+	public boolean getPaused() {
+		return paused;
+	}
+
+	@Override
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+	}
+	
+	@Override
+	public void reset(){
+		this.gameLevel = new GameLevel(levelId, game, levelsSolved);
+	}
+	
+	@Override
+	public void leave(){
+		game.gsm.pop();
 	}
 }

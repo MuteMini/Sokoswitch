@@ -1,0 +1,19 @@
+buttons.png
+size: 128, 24
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+unhovered
+  rotate: false
+  xy: 0, 0
+  size: 64, 24
+  orig: 64, 24
+  offset: 0, 0
+  index: -1
+hovered
+  rotate: false
+  xy: 64, 0
+  size: 64, 24
+  orig: 64, 24
+  offset: 0, 0
+  index: -1
