@@ -19,6 +19,7 @@ public final class GameAssetManager {
 	public final String puzzleEntityPath = "textures/entities.atlas";
 	public final String normalBlockPath = "textures/normalBlock.atlas";
 	public final String lockedBlockPath = "textures/lockedBlock.atlas";
+	public final String buttonPath = "textures/buttons.atlas";
 	public final String[] fontPath = {"fonts/BalsamiqSans-Regular.ttf", "fonts/Kenney-Pixel.ttf", "fonts/Nunito-Regular.ttf"};
 	public final int fontArraySize = 1;
 	
@@ -42,6 +43,7 @@ public final class GameAssetManager {
 		manager.load(puzzleEntityPath, TextureAtlas.class);
 		manager.load(normalBlockPath, TextureAtlas.class);
 		manager.load(lockedBlockPath, TextureAtlas.class);
+		manager.load(buttonPath, TextureAtlas.class);
 	}
 	
 	public void loadLevels() {
@@ -67,26 +69,45 @@ public final class GameAssetManager {
 		normalBlockAssets = new NormalBlockAssets(manager.get(normalBlockPath));
 		lockedBlockAssets = new LockedBlockAssets(manager.get(lockedBlockPath));
 		
-		fonts = new BitmapFont[2];
+		fonts = new BitmapFont[4];
 		
-		FreeTypeFontGenerator balsamic = manager.get(fontPath[0]);
+		FreeTypeFontGenerator balsamic = manager.get(fontPath[2]);
+		FreeTypeFontGenerator kenny = manager.get(fontPath[1]);
 		FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
 			param.size = 120;
+			param.borderStraight = true;
 			param.borderWidth = 10;
 			param.borderColor = Color.DARK_GRAY;
 			param.color = new Color(.90f, .90f, .90f, 1);
-		fonts[0] = balsamic.generateFont(param);
-			param.size = 90;
+		fonts[0] = kenny.generateFont(param);
+			param.borderWidth = 2;
+			param.size = 60;
 		fonts[1] = balsamic.generateFont(param);
+			param.color = Color.GOLD;
+		fonts[2] = balsamic.generateFont(param);
+			param.color = new Color(.90f, .90f, .90f, 1);
+			param.borderWidth = 0;
+			param.size = 50;
+		fonts[3] = balsamic.generateFont(param);
 	}
 	
 	public Sprite getSprite(int id, int pos) {
 		Sprite sprite = new Sprite();
 		
-		if(id == 0) sprite = new Sprite(levelAssets.assets[pos]);
-		else if(id == 1) sprite = new Sprite(entityAssets.assets[pos]);
-		else if(id == 2) sprite = new Sprite(normalBlockAssets.assets[pos]);
-		else if(id == 3) sprite = new Sprite(lockedBlockAssets.assets[pos]);
+		switch(id) {
+			case 0:
+				sprite = new Sprite(levelAssets.assets[pos]);
+				break;
+			case 1:
+				sprite = new Sprite(entityAssets.assets[pos]);
+				break;
+			case 2:
+				sprite = new Sprite(normalBlockAssets.assets[pos]);
+				break;
+			case 3:
+				sprite = new Sprite(lockedBlockAssets.assets[pos]);
+				break;
+		}
 			
 		if(id == 1) {
 			if(pos == 0 || pos == 1) sprite.setScale(7.5f);
@@ -95,6 +116,19 @@ public final class GameAssetManager {
 		else sprite.setScale(8.1f);
 		
 		return sprite;
+	}
+	
+	public TextureRegion getTextureRegion(int id, int pos) {
+		TextureRegion texture = new TextureRegion();
+		
+		switch(id) {
+			case 1:
+				if(pos == 0) texture = new Sprite(((TextureAtlas)manager.get(buttonPath)).findRegion("unhovered"));
+				else texture = new Sprite(((TextureAtlas)manager.get(buttonPath)).findRegion("hovered"));
+				break;
+		}
+		
+		return texture;
 	}
 	
 	public BitmapFont getFont(int index) {

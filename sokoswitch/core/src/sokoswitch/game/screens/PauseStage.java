@@ -2,13 +2,10 @@ package sokoswitch.game.screens;
 
 import java.util.Stack;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import sokoswitch.game.GameAssetManager;
 
@@ -18,17 +15,14 @@ public class PauseStage extends Stage{
 	private int cursorPos;
 	private PauseMenu pScreen;
 	
-	public PauseStage(GameAssetManager gam, Camera camera, boolean isLevel, String stageNum, String levelName, PauseMenu pScreen) {
-		super(new ScreenViewport(camera));	
-		camera.translate(0, 0, 0);
-		camera.update();
+	public PauseStage(GameAssetManager gam, boolean isLevel, String stageNum, String levelName, PauseMenu pScreen) {
+		super(new ScreenViewport());	
 		
 		this.cursorPos = 0;
 		this.pScreen = pScreen;
 		
 		Table table = new Table();
 		table.setTransform(true);
-		table.setDebug(true, true);
 		table.center();
 		
 		TextureRegion[] sprites = new TextureRegion[]{gam.getTextureRegion(1, 0), gam.getTextureRegion(1, 1)};
@@ -45,11 +39,13 @@ public class PauseStage extends Stage{
         }
         
         Label.LabelStyle style1 = new Label.LabelStyle(gam.getFont(1), null);
-        	Label label1 = new Label(stageNum, style1);
-        Label.LabelStyle style2 = new Label.LabelStyle(gam.getFont(2), null);
-        	Label label2 = new Label(levelName, style2);
+        Label label1 = new Label(stageNum, style1);
         table.add(label1).padBottom(10f);
-        table.add(label2).padBottom(10f);
+        if(isLevel) {
+        	Label.LabelStyle style2 = new Label.LabelStyle(gam.getFont(2), null);
+        	Label label2 = new Label(levelName, style2);
+        	table.add(label2).padBottom(10f);
+        }
         table.row();
         
         for(PauseButton pb : buttonArr) {
@@ -85,6 +81,10 @@ public class PauseStage extends Stage{
 							break;
 						default:
 					}
+					input.pop();
+					break;
+				case 7:
+					pScreen.setPaused(false);
 					input.pop();
 					break;
 			}

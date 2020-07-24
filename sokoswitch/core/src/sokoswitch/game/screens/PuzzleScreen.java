@@ -31,7 +31,7 @@ public class PuzzleScreen extends PlayerScreen implements PauseMenu{
 		reset();
 		
 		String levelIdString = "Stage " + (char)(levelId/100 + 65) + " Level " + (levelId%100) +": ";
-		this.pauseStage = new PauseStage(game.gam, game.hud, true, levelIdString, "bruh", this);
+		this.pauseStage = new PauseStage(game.gam, true, levelIdString, "bruh", this);
 	}
 	
 	@Override
@@ -47,11 +47,6 @@ public class PuzzleScreen extends PlayerScreen implements PauseMenu{
 	}
 
 	public void update(float delta) {
-		if(!keysPressed.isEmpty() && keysPressed.peek() == 7) {
-			paused = !paused;
-			keysPressed.pop();
-		}
-		
 		if(gameLevel.isSolved()) {
 			levelsSolved.add((long)levelId);
 			leave();
@@ -63,6 +58,10 @@ public class PuzzleScreen extends PlayerScreen implements PauseMenu{
 		else {
 			gameLevel.takeInput(keysPressed);
 			gameLevel.update(delta);
+			if(!keysPressed.isEmpty() && keysPressed.peek() == 7) {
+				paused = true;
+				keysPressed.pop();
+			}
 		}
 	}
 	

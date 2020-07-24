@@ -10,7 +10,7 @@ import sokoswitch.game.entities.*;
 import sokoswitch.game.level.*;
 import sokoswitch.game.loaders.WorldData;
 
-public class WorldScreen extends PlayerScreen{
+public class WorldScreen extends PlayerScreen implements PauseMenu{
 
 	private Sokoswitch game;
 	
@@ -30,6 +30,9 @@ public class WorldScreen extends PlayerScreen{
 	
 	private boolean animationShown;
 	private float animationCount;
+	
+	private boolean paused;
+	private PauseStage pauseStage;
 	
 	public WorldScreen(Sokoswitch game, int levelId, HashSet<Long> levelsSolved) {
 		super();
@@ -129,6 +132,10 @@ public class WorldScreen extends PlayerScreen{
 				}
 			}
 		}
+		
+		this.paused = false;
+		String levelIdString = (levelId == 0) ? "World Selector" : "Stage " + (char)(levelId/100 + 65) + " Selector";
+		this.pauseStage = new PauseStage(game.gam, false, levelIdString, null, this);
 	}
 	
 	@Override
@@ -214,70 +221,80 @@ public class WorldScreen extends PlayerScreen{
 	}
 	
 	public void update(float delta) {
-		if(!keysHeld && !keysPressed.isEmpty()) {
-			switch(keysPressed.peek()) {
-				case 1:
-					if(visitable.contains(new Vector2(cursorX, cursorY+1)))
-						cursorY++;
-					keysHeld = true;
-					break;
-				case 2:
-					if(visitable.contains(new Vector2(cursorX, cursorY-1)))
-						cursorY--;
-					keysHeld = true;
-					break;
-				case 3:
-					if(visitable.contains(new Vector2(cursorX+1, cursorY)))
-						cursorX++;
-					keysHeld = true;
-					break;
-				case 4:
-					if(visitable.contains(new Vector2(cursorX-1, cursorY)))
-						cursorX--;
-					keysHeld = true;
-					break;
-				case 5:
-					checkInput();
-					keysPressed.pop();
-					break;
+		if(paused) {
+			pauseStage.takeInput(keysPressed);
+			pauseStage.update(delta);
+		}
+		else {
+			if(!paused && !keysHeld && !keysPressed.isEmpty()) {
+				switch(keysPressed.peek()) {
+					case 1:
+						if(visitable.contains(new Vector2(cursorX, cursorY+1)))
+							cursorY++;
+						keysHeld = true;
+						break;
+					case 2:
+						if(visitable.contains(new Vector2(cursorX, cursorY-1)))
+							cursorY--;
+						keysHeld = true;
+						break;
+					case 3:
+						if(visitable.contains(new Vector2(cursorX+1, cursorY)))
+							cursorX++;
+						keysHeld = true;
+						break;
+					case 4:
+						if(visitable.contains(new Vector2(cursorX-1, cursorY)))
+							cursorX--;
+						keysHeld = true;
+						break;
+					case 5:
+						checkInput();
+						keysPressed.pop();
+						break;
+					case 7:
+						paused = true;
+						keysPressed.pop();
+						break;
+				}
 			}
-		}
-		else if(keysPressed.isEmpty()) {
-			heldCount = 0;
-			keysHeld = false;
-		}
-
-		cursorSprite.setCenter(cursorX*Tiles.SIZE + (Tiles.SIZE/2), cursorY*Tiles.SIZE + (Tiles.SIZE/2));
-		
-		float cameraX = (Math.abs(cursorSprite.getX() - game.camera.position.x) < 10) ? cursorSprite.getX() : game.camera.position.x+(cursorSprite.getX() - game.camera.position.x)*(delta*2);
-		float cameraY = (Math.abs(cursorSprite.getY() - game.camera.position.y) < 10) ? cursorSprite.getY() : game.camera.position.y+(cursorSprite.getY() - game.camera.position.y)*(delta*2);
-		game.camera.position.set(cameraX, cameraY, 0);
-		game.camera.update();
-		
-		if(keysHeld) {
-			heldCount += delta;
-			if(heldCount > 0.2) {
+			else if(keysPressed.isEmpty()) {
 				heldCount = 0;
 				keysHeld = false;
 			}
-		}
-		
-		if(animationShown) {
-			animationCount+=delta;
-			if(animationCount > 0.6) {
-				LevelRoad lr = roadsToShow.poll();
-				roadsShown.add(lr);
-				visitable.add(lr.getPosition());
-				animationCount = 0;
-				if(roadsToShow.isEmpty()) animationShown = false;
+			
+			cursorSprite.setCenter(cursorX*Tiles.SIZE + (Tiles.SIZE/2), cursorY*Tiles.SIZE + (Tiles.SIZE/2));
+			
+			float cameraX = (Math.abs(cursorSprite.getX() - game.camera.position.x) < 10) ? cursorSprite.getX() : game.camera.position.x+(cursorSprite.getX() - game.camera.position.x)*(delta*2);
+			float cameraY = (Math.abs(cursorSprite.getY() - game.camera.position.y) < 10) ? cursorSprite.getY() : game.camera.position.y+(cursorSprite.getY() - game.camera.position.y)*(delta*2);
+			game.camera.position.set(cameraX, cameraY, 0);
+			game.camera.update();
+			
+			if(keysHeld) {
+				heldCount += delta;
+				if(heldCount > 0.2) {
+					heldCount = 0;
+					keysHeld = false;
+				}
 			}
-		}
-		
-		for(LevelTile lt : levelTiles) {
-			lt.update(levelsSolved);
-		}
-		for(LevelRoad lr : roadsShown) {
-			lr.updateSprite(visitable);
+			
+			if(animationShown) {
+				animationCount+=delta;
+				if(animationCount > 0.6) {
+					LevelRoad lr = roadsToShow.poll();
+					roadsShown.add(lr);
+					visitable.add(lr.getPosition());
+					animationCount = 0;
+					if(roadsToShow.isEmpty()) animationShown = false;
+				}
+			}
+
+			for(LevelTile lt : levelTiles) {
+				lt.update(levelsSolved);
+			}
+			for(LevelRoad lr : roadsShown) {
+				lr.updateSprite(visitable);
+			}
 		}
 	}
 	
@@ -287,6 +304,7 @@ public class WorldScreen extends PlayerScreen{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		update(delta);
+		game.viewport.apply();
 		for(LevelTile lt : levelTiles) {
 			lt.render(game.batch);
 		}
@@ -295,6 +313,11 @@ public class WorldScreen extends PlayerScreen{
 		}
 
 		cursorSprite.draw(game.batch);
+		
+		if(paused) {
+			game.batch.end();
+			pauseStage.draw();
+		}
 	}
 	
 	private void checkInput() {
@@ -307,5 +330,23 @@ public class WorldScreen extends PlayerScreen{
 				else game.gsm.showPuzzleScreen(id);
 			}
 		}
+	}
+
+	@Override
+	public boolean getPaused() {
+		return paused;
+	}
+
+	@Override
+	public void setPaused(boolean paused) {
+		this.paused = paused;
+	}
+	
+	@Override
+	public void reset(){}
+	
+	@Override
+	public void leave(){
+		game.gsm.pop();
 	}
 }
