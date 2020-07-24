@@ -29,13 +29,15 @@ public class Sokoswitch extends Game {
 	
 	@Override
 	public void create () {
-		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		gsm = new GameScreenManager(this);
-		gam = new GameAssetManager();
-		shapeRenderer = new ShapeRenderer();
-		batch = new SpriteBatch();
+		this.camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		this.viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
+		this.gsm = new GameScreenManager(this);
+		this.gam = new GameAssetManager();
+		this.shapeRenderer = new ShapeRenderer();
+		this.batch = new SpriteBatch();
 		setScreen(gsm.peek());
+		
+		this.viewport.apply();
 		
 		this.totalDeltaTime = 0;
 		this.renderCount = 0;
@@ -64,6 +66,7 @@ public class Sokoswitch extends Game {
 	            		keysPressed.push(4);
 	            		break;
 	            	case Input.Keys.SPACE:
+	            	case Input.Keys.ENTER:
 	            		keysPressed.push(5);
 	            		break;
 	            	case Input.Keys.Z:
@@ -116,12 +119,12 @@ public class Sokoswitch extends Game {
 	@Override
 	public void render () {
 		camera.update();
-		
+
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		((GameScreen)screen).setKeysPressed(keysPressed);
 		screen.render(Gdx.graphics.getDeltaTime());
-		batch.end();
+		if(batch.isDrawing()) batch.end();
 		
 		drawScreenTransition();
 
@@ -147,6 +150,7 @@ public class Sokoswitch extends Game {
 		screen.dispose();
 		gam.dispose();
 		batch.dispose();
+		shapeRenderer.dispose();
 	}
 	
 	@Override

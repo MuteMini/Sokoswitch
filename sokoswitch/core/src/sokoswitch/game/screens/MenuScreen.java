@@ -7,7 +7,7 @@ import sokoswitch.game.Sokoswitch;
 public class MenuScreen extends GameScreen{
 
 	private Sokoswitch game;
-
+	
 	public MenuScreen(Sokoswitch game) {
 		super();
 		this.game = game;
@@ -16,7 +16,7 @@ public class MenuScreen extends GameScreen{
 	@Override
 	public void show() {
 		game.gsm.showWorldScreen(0);
-		//game.gsm.showPuzzleScreen(29);
+		//game.gsm.showPuzzleScreen(203);
 	}
 
 	public void update(float delta) {
