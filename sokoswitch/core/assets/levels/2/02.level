@@ -1,4 +1,8 @@
 {
+  "levelName":"Revelation",
+  "height":3
+  "width":6
+  "tiles":[0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
   "players":[
     [0, 1, false]
   ],

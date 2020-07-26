@@ -1,4 +1,8 @@
 {
+  "levelName":"The Beginning",
+  "height":3,
+  "width":4,
+  "tiles":[0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1],
   "players":[
     [0, 1, false]
   ],

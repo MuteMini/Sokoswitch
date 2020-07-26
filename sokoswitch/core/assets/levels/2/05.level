@@ -1,4 +1,8 @@
 {
+  "levelName":"Stuck in More Corners",
+  "height":4,
+  "width":5,
+  "tiles":[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   "players":[
     [2, 3, false]
   ],

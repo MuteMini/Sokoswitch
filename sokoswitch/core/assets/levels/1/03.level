@@ -1,10 +1,14 @@
 {
+  "levelName":"Connectors",
+  "height":3,
+  "width":5,
+  "tiles":[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
   "players":[
     [0, 1, false]
   ],
   "blocks":[
-    [2, 1, 1, true],
-    [4, 0, 1, false],
-    [4, 2, 1, false]
+    [1, 1, 1, true],
+    [3, 0, 1, false],
+    [3, 2, 1, false]
   ]
 }

@@ -1,4 +1,8 @@
 {
+  "levelName":"Switcheroo",
+  "height":5,
+  "width":5,
+  "tiles":[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   "players":[
     [2, 2, false]
   ],
