@@ -30,8 +30,8 @@ public class PuzzleScreen extends PlayerScreen implements PauseMenu{
 		
 		reset();
 		
-		String levelIdString = "Stage " + (char)(levelId/100 + 65) + " Level " + (levelId%100) +": ";
-		this.pauseStage = new PauseStage(game.gam, true, levelIdString, "bruh", this);
+		String levelIdString = "Stage " + (char)(levelId/100 + 64) + " Level " + (levelId%100) +": ";
+		this.pauseStage = new PauseStage(game.gam, true, levelIdString, this.gameLevel.getLevelName(), this);
 	}
 	
 	@Override

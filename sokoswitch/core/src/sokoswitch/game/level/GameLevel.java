@@ -29,6 +29,9 @@ public class GameLevel extends Level{
 	
 	private Stack<GameState> undoStack;
 	
+	/*holds level name*/
+	private String levelName;
+	
 	/*controls animation offset values*/
 	private float offset;
 	private int offsetSpeed;
@@ -57,9 +60,6 @@ public class GameLevel extends Level{
 		this.gam = game.gam;
 		
 		this.levelId = levelId;
-		this.map = gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath()+".tmx");
-		this.layer = (TiledMapTileLayer)map.getLayers().get(0);
-		this.mapRender = new OrthogonalTiledMapRenderer(map, game.batch);
 		
 		this.pushable = new ArrayList<>();
 		this.players = new ArrayList<>();
@@ -82,7 +82,13 @@ public class GameLevel extends Level{
 		
 		this.solved = false;
 		
-		LevelData levelData = gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath()+".level");
+		LevelData levelData = gam.manager.get(LevelPath.getLevelPath(levelId).getFilePath());
+		this.map = levelData.map;
+		this.layer = (TiledMapTileLayer)this.map.getLayers().get(0);
+		this.mapRender = new OrthogonalTiledMapRenderer(this.map, game.batch);
+		
+		this.levelName = levelData.levelName;
+		
 		for(int i = 0; i < levelData.playerPos.length; i++) {
 			Player p;
 			if(!levelData.playerType[i])
@@ -253,6 +259,10 @@ public class GameLevel extends Level{
 		return layer.getHeight();
 	}
 
+	public String getLevelName() {
+		return levelName;
+	}
+	
 	@Override
 	public Tiles locateTilesByCoordinate(int x, int y) {
 		Cell cell = layer.getCell(x, y);

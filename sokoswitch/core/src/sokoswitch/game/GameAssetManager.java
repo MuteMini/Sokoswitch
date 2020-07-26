@@ -4,6 +4,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.freetype.*;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -20,6 +21,7 @@ public final class GameAssetManager {
 	public final String normalBlockPath = "textures/normalBlock.atlas";
 	public final String lockedBlockPath = "textures/lockedBlock.atlas";
 	public final String buttonPath = "textures/buttons.atlas";
+	public final String tilePath = "textures/tile.png";
 	public final String[] fontPath = {"fonts/BalsamiqSans-Regular.ttf", "fonts/Kenney-Pixel.ttf", "fonts/Nunito-Regular.ttf"};
 	public final int fontArraySize = 1;
 	
@@ -44,6 +46,7 @@ public final class GameAssetManager {
 		manager.load(normalBlockPath, TextureAtlas.class);
 		manager.load(lockedBlockPath, TextureAtlas.class);
 		manager.load(buttonPath, TextureAtlas.class);
+		manager.load(tilePath, Texture.class);
 	}
 	
 	public void loadLevels() {
@@ -51,8 +54,7 @@ public final class GameAssetManager {
 			if(lp.getLevelNum() <= 0)
 				manager.load(lp.getFilePath(), WorldData.class);
 			else {
-				manager.load(lp.getFilePath()+".tmx", TiledMap.class);
-				manager.load(lp.getFilePath()+".level", LevelData.class);
+				manager.load(lp.getFilePath(), LevelData.class);
 			}
 		}
 	}
@@ -69,26 +71,30 @@ public final class GameAssetManager {
 		normalBlockAssets = new NormalBlockAssets(manager.get(normalBlockPath));
 		lockedBlockAssets = new LockedBlockAssets(manager.get(lockedBlockPath));
 		
-		fonts = new BitmapFont[4];
+		fonts = new BitmapFont[5];
 		
 		FreeTypeFontGenerator balsamic = manager.get(fontPath[2]);
 		FreeTypeFontGenerator kenny = manager.get(fontPath[1]);
 		FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-			param.size = 120;
-			param.borderStraight = true;
-			param.borderWidth = 10;
-			param.borderColor = Color.DARK_GRAY;
+			param.size = 150;
+			param.mono = true;
 			param.color = new Color(.90f, .90f, .90f, 1);
 		fonts[0] = kenny.generateFont(param);
-			param.borderWidth = 2;
+			param.size = 170;
+			param.color = Color.BLACK;
+		fonts[1] = kenny.generateFont(param);
 			param.size = 60;
-		fonts[1] = balsamic.generateFont(param);
-			param.color = Color.GOLD;
-		fonts[2] = balsamic.generateFont(param);
+			param.mono = false;
+			param.borderWidth = 2;
+			param.borderColor = Color.DARK_GRAY;
 			param.color = new Color(.90f, .90f, .90f, 1);
-			param.borderWidth = 0;
-			param.size = 50;
+		fonts[2] = balsamic.generateFont(param);
+			param.color = Color.GOLD;
 		fonts[3] = balsamic.generateFont(param);
+			param.size = 50;
+			param.borderWidth = 0;
+			param.color = new Color(.90f, .90f, .90f, 1);
+		fonts[4] = balsamic.generateFont(param);
 	}
 	
 	public Sprite getSprite(int id, int pos) {

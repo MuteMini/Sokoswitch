@@ -5,32 +5,72 @@ import java.util.*;
 import org.json.simple.*;
 import org.json.simple.parser.*;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayers;
+import com.badlogic.gdx.maps.tiled.*;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 
 public class LevelData {
 
+	public String levelName;
 	public int[][] playerPos;
 	public boolean[] playerType;
 	public int[][] blockPos;
 	public ArrayList<Integer[]> blockState;
+	public TiledMap map;
 
 	public LevelData() {
+		this.levelName = "";
 		this.playerPos = new int[0][2];
 		this.playerType = new boolean[0];
 		this.blockPos = new int[0][2];
 		this.blockState = new ArrayList<>();
+		this.map = new TiledMap();
 	}
 
-    public LevelData(FileHandle file) {
+    public LevelData(FileHandle file, Texture texture) {
     	this();
-    	setLevelData(file);
+    	setLevelData(file, texture);
     }
 
 	@SuppressWarnings("unchecked")
-	private void setLevelData(FileHandle file) {
+	private void setLevelData(FileHandle file, Texture texture) {
 		JSONParser parser = new JSONParser();
 		try {
 			Reader reader = file.reader();
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
+			
+			this.levelName = (String) jsonObject.get("levelName");
+			int height = Math.toIntExact((long)jsonObject.get("height"));
+			int width = Math.toIntExact((long)jsonObject.get("width"));
+			
+			JSONArray tileArr = (JSONArray) jsonObject.get("tiles");
+			Iterator<Long> tiletIterator = tileArr.iterator();
+			
+			MapLayers layers = this.map.getLayers();
+			TiledMapTileLayer layer1 = new TiledMapTileLayer(width, height, 256, 256);
+			
+			Cell cell1 = new Cell();
+			StaticTiledMapTile spaceTile = new StaticTiledMapTile(new TextureRegion(texture));
+			spaceTile.setId(1);
+			cell1.setTile(spaceTile);
+			
+			int xPos = 0, yPos = 0;
+			while(tiletIterator.hasNext()) {
+				if(xPos == width) {
+					xPos = 0;
+					yPos++;
+				}
+				switch(Math.toIntExact((long)tiletIterator.next())) {
+					case 1:
+					layer1.setCell(xPos, yPos, cell1);
+				}
+				xPos++;
+			}
+			
+			layers.add(layer1);
 			
 			JSONArray playerArr = (JSONArray) jsonObject.get("players");
 			Iterator<JSONArray> playerIterator = playerArr.iterator();

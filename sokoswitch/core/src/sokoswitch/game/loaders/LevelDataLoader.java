@@ -16,7 +16,7 @@ public class LevelDataLoader extends AsynchronousAssetLoader<LevelData, LevelDat
 	@Override
 	public void loadAsync(AssetManager manager, String fileName, FileHandle file, LevelDataParameter parameter) {
 		this.levelData = null;
-        this.levelData = new LevelData(file);
+        this.levelData = new LevelData(file, manager.get("textures/tile.png"));
 	}
 
 	@Override
