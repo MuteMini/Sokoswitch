@@ -69,10 +69,6 @@ public class WorldScreen extends PlayerScreen implements PauseMenu{
 			LevelTile lt = new LevelTile((int)pos.x, (int)pos.y, game.gam, worldData.levelDisplay[i], worldData.levelConnected[i], worldData.levelPrereq[i], worldData.levelReqSize[i]);
 			lt.update(levelsSolved);
 			
-			//testing
-			lt.setIsShown(true);
-			lt.setIsSolved(true);
-			
 			levelTiles.add(lt);
 			visitable.add(pos);
 		}
@@ -134,7 +130,7 @@ public class WorldScreen extends PlayerScreen implements PauseMenu{
 		}
 		
 		this.paused = false;
-		String levelIdString = (levelId == 0) ? "World Selector" : "Stage " + (char)(levelId/100 + 65) + " Selector";
+		String levelIdString = (levelId == 0) ? "World Selector" : "Stage " + (char)(-levelId + 64) + " Selector";
 		this.pauseStage = new PauseStage(game.gam, false, levelIdString, null, this);
 	}
 	
@@ -304,7 +300,6 @@ public class WorldScreen extends PlayerScreen implements PauseMenu{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		update(delta);
-		game.viewport.apply();
 		for(LevelTile lt : levelTiles) {
 			lt.render(game.batch);
 		}
