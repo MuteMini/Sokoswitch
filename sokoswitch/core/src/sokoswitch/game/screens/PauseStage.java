@@ -35,7 +35,7 @@ public class PauseStage extends Stage{
         else {
         	this.buttonArr = new PauseButton[2];
             this.buttonArr[0] = new PauseButton(gam.getFont(3), sprites, PauseStates.button_return);
-     		this.buttonArr[1] = new PauseButton(gam.getFont(3), sprites, PauseStates.button_leave);
+     		this.buttonArr[1] = new PauseButton(gam.getFont(3), sprites, PauseStates.button_exit);
         }
         
         Label.LabelStyle style1 = new Label.LabelStyle(gam.getFont(1), null);
@@ -79,8 +79,12 @@ public class PauseStage extends Stage{
 						case button_leave:
 							pScreen.leave();
 							break;
+						case button_exit:
+							pScreen.exit();
+							break;
 						default:
 					}
+					cursorPos = 0;
 					input.pop();
 					break;
 				case 7:
@@ -107,7 +111,8 @@ public class PauseStage extends Stage{
 	public enum PauseStates{
 		button_return("Return"), 
 		button_reset("Reset"), 
-		button_leave("Leave");
+		button_leave("Leave"),
+		button_exit("Exit");
 		
 		private String displayText;
 		

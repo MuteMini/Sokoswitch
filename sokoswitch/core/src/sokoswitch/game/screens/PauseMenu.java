@@ -6,4 +6,5 @@ public interface PauseMenu {
 	void setPaused(boolean paused);
 	void reset();
 	void leave();
+	void exit();
 }

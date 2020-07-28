@@ -35,6 +35,12 @@ public class GameScreenManager{
 		screens.push(new MenuScreen(game));
 	}
 	
+	public void returnToMenu() {
+		while(!(screens.peek() instanceof MenuScreen)) {
+			screens.pop();
+		}
+	}
+	
 	public void pop() {
 		screens.pop();
 	}

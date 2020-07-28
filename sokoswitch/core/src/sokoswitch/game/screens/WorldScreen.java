@@ -69,6 +69,9 @@ public class WorldScreen extends PlayerScreen implements PauseMenu{
 			LevelTile lt = new LevelTile((int)pos.x, (int)pos.y, game.gam, worldData.levelDisplay[i], worldData.levelConnected[i], worldData.levelPrereq[i], worldData.levelReqSize[i]);
 			lt.update(levelsSolved);
 			
+			//testing
+			lt.setIsShown(true);
+			
 			levelTiles.add(lt);
 			visitable.add(pos);
 		}
@@ -341,7 +344,10 @@ public class WorldScreen extends PlayerScreen implements PauseMenu{
 	public void reset(){}
 	
 	@Override
-	public void leave(){
-		game.gsm.pop();
+	public void leave(){}
+	
+	@Override 
+	public void exit() {
+		game.gsm.returnToMenu();
 	}
 }

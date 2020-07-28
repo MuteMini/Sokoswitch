@@ -77,7 +77,6 @@ public class PuzzleScreen extends PlayerScreen implements PauseMenu{
 			game.batch.end();
 			pauseStage.getViewport().apply();
 			pauseStage.draw();
-			game.viewport.apply();
 		}
 	}
 
@@ -115,4 +114,7 @@ public class PuzzleScreen extends PlayerScreen implements PauseMenu{
 	public void leave(){
 		game.gsm.pop();
 	}
+	
+	@Override
+	public void exit(){}
 }
