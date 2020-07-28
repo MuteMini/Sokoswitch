@@ -2,10 +2,10 @@ package sokoswitch.game;
 
 import java.util.Stack;
 import com.badlogic.gdx.*;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.viewport.*;
 import sokoswitch.game.screens.*;
 
@@ -15,17 +15,21 @@ public class Sokoswitch extends Game {
 	public Viewport viewport;
 	public GameScreenManager gsm;
 	public GameAssetManager gam;
-	public ShapeRenderer shapeRenderer;
 	public SpriteBatch batch;
 	
 	/*holds what keys are being pressed*/
 	private Stack<Integer> keysPressed;
 	
+	/*holds the normal camera's matrix*/
+	private Matrix4 normalMatrix;
+	
 	public float totalDeltaTime;
 	public int renderCount;
 	
 	public int transition;
-	private float alpha;
+	private boolean pauseTransition;
+	private float animationDelta;
+	private float pauseDelta;
 	
 	@Override
 	public void create () {
@@ -33,8 +37,10 @@ public class Sokoswitch extends Game {
 		this.viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
 		this.gsm = new GameScreenManager(this);
 		this.gam = new GameAssetManager();
-		this.shapeRenderer = new ShapeRenderer();
 		this.batch = new SpriteBatch();
+		
+		this.normalMatrix = this.camera.projection;
+		
 		setScreen(gsm.peek());
 		
 		this.viewport.apply();
@@ -42,7 +48,9 @@ public class Sokoswitch extends Game {
 		this.totalDeltaTime = 0;
 		this.renderCount = 0;
 		this.transition = 0;
-		this.alpha = 0;
+		this.pauseTransition = false;
+		this.animationDelta = 0;
+		this.pauseDelta = 0;
 		
 		this.keysPressed = new Stack<>();
 		Gdx.input.setInputProcessor(new InputAdapter() {
@@ -73,6 +81,7 @@ public class Sokoswitch extends Game {
 	            		keysPressed.push(6);
 	            		break;
 	            	case Input.Keys.ESCAPE:
+	            	case Input.Keys.P:
 	            		keysPressed.push(7);
 	            		break;
 	            	default:
@@ -121,12 +130,14 @@ public class Sokoswitch extends Game {
 		camera.update();
 
 		batch.setProjectionMatrix(camera.combined);
+		batch.enableBlending();
 		batch.begin();
+		
 		((GameScreen)screen).setKeysPressed(keysPressed);
 		screen.render(Gdx.graphics.getDeltaTime());
 		if(batch.isDrawing()) batch.end();
 		
-		drawScreenTransition();
+		if(transition != 0) drawScreenTransition();
 
 		if(transition <= 0 && gsm.peek() != screen) {
 			setScreen(gsm.peek());
@@ -150,7 +161,6 @@ public class Sokoswitch extends Game {
 		screen.dispose();
 		gam.dispose();
 		batch.dispose();
-		shapeRenderer.dispose();
 	}
 	
 	@Override
@@ -159,46 +169,79 @@ public class Sokoswitch extends Game {
 	}
 	
 	private void drawScreenTransition() {
-		if(transition != 0) {
-			shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-			Gdx.gl.glEnable(GL20.GL_BLEND);
-		}
+		batch.setProjectionMatrix(normalMatrix);
+		batch.begin();
+		
+		animationDelta += Gdx.graphics.getDeltaTime() * (pauseTransition ? 0 : 1);
+		pauseDelta += Gdx.graphics.getDeltaTime() * (pauseTransition ? 1 : 0);
+		
+		if(pauseDelta > 0.6) pauseTransition = false;
+		
+		Pixmap pixmap = new Pixmap(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), Pixmap.Format.RGBA8888);
+		pixmap.setBlending(Pixmap.Blending.None);
+		pixmap.setColor(new Color(.4f, .4f, .4f, 1f));
+		pixmap.fill();
 		switch(transition) {
-			case -1:
-				alpha -= Gdx.graphics.getDeltaTime()*0.6;
-				if(alpha <= 0.1) {
-					alpha = 0;
+			case -2:
+				float radiusMul1 = (pauseDelta == 0) ? 250 : 500;
+				float radius1 = animationDelta*radiusMul1;
+				if(radius1 >= 740) {
+					animationDelta = 0;
+					pauseDelta = 0;
 					transition = 0;
+					break;
 				}
-				shapeRenderer.setColor(.45f, .45f, .45f, alpha);
-				shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-				shapeRenderer.end();
-				Gdx.gl.glDisable(GL20.GL_BLEND);
+				else if(pauseDelta == 0 && radius1 >= 100) {
+					pauseTransition = true;
+					animationDelta /= 2;
+				}
+				pixmap.setColor(new Color(.4f, .4f, .4f, 0f));
+				pixmap.fillCircle(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, (int)radius1);
+				break;
+			case -1:
+				float a1 = 1-animationDelta*0.6f;
+				if(a1 <= 0.1) {
+					animationDelta = 0;
+					transition = 0;
+					break;
+				}
+				pixmap.setColor(new Color(.4f, .4f, .4f, a1));
+				pixmap.fill();
 				break;
 			case 1:
-				alpha += Gdx.graphics.getDeltaTime()*0.6;
-				if(alpha > 1) {
-					alpha = 1;
-					transition = -1;
+				float a2 = animationDelta*0.6f;
+				if(a2 >= 1) {
+					animationDelta = 0;
+					transition = -2;
+					break;
 				}
-				shapeRenderer.setColor(.45f, .45f, .45f, alpha);
-				shapeRenderer.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-				shapeRenderer.end();
-				Gdx.gl.glDisable(GL20.GL_BLEND);
+				pixmap.setColor(new Color(.4f, .4f, .4f, a2));
+				pixmap.fill();
+				break;
+			case 2:
+				float radiusMul2 = (pauseDelta == 0) ? 500 : 125;
+				float radius2 = 740-animationDelta*radiusMul2;
+				if(radius2 <= 0) {
+					animationDelta = 0;
+					pauseDelta = 0;
+					transition = -2;
+					break;
+				}
+				else if(pauseDelta == 0 && radius2 <= 100) {
+					pauseTransition = true;
+					animationDelta *= 4;
+				}
+				pixmap.setColor(new Color(.4f, .4f, .4f, 0f));
+				pixmap.fillCircle(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, (int)radius2);
 				break;
 		}
-	}
-	
-	public void testing() {
-		/*
-		Vector2 vector = new Vector2();
+
+		Texture pixmapTexture = new Texture(pixmap, Pixmap.Format.RGBA8888, false);
+		Sprite transition = new Sprite(pixmapTexture);
+		transition.setPosition(-Gdx.graphics.getWidth()/2, -Gdx.graphics.getHeight()/2);
+		transition.draw(batch);
 		
-		FreeTypeFontGenerator ftfg = new FreeTypeFontGenerator(Gdx.files.internal("fonts/BalsamiqSans-Regular.ttf"));
-		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-		parameter.size = 26;
-		parameter.color = Color.WHITE;
-		font = ftfg.generateFont(parameter);
-		ftfg.dispose();
-		*/
+		batch.end();
+		pixmap.dispose();
 	}
 }
