@@ -11,9 +11,9 @@ import sokoswitch.game.GameAssetManager;
 
 public class LevelTile extends Entity{
 
-	private BitmapFont font;
 	private String displayText;
-	private GlyphLayout displayLayout;
+	private BitmapFont font;
+	private GlyphLayout fontLayout;
 	private Vector2 spriteCenter;
 	private int connectedLevel;
 	private ArrayList<Long> prereq;
@@ -24,9 +24,9 @@ public class LevelTile extends Entity{
 	public LevelTile(int x, int y, GameAssetManager manager, String displayText, int connectedLevel, ArrayList<Long> prereq, int prereqSize) {
 		super(0, 11, x, y, manager);
 
+		this.displayText = displayText;
 		this.font = manager.getFont(0);
-        this.displayText = displayText;
-        this.displayLayout = new GlyphLayout(font, displayText);
+        this.fontLayout = new GlyphLayout(this.font, displayText);
 		this.connectedLevel = connectedLevel;
 		this.prereq = prereq;
 		this.prereqSize = prereqSize;
@@ -68,9 +68,7 @@ public class LevelTile extends Entity{
 	@Override
 	public void render(Batch batch) {
 		sprite.draw(batch);
-		if(isShown) font.draw(batch, displayText, spriteCenter.x-displayLayout.width/2, spriteCenter.y+displayLayout.height/2);
-			//font.draw(batch, displayText, sprite.getX(), sprite.getY()-(stringHeight/2)+(Tiles.SIZE/2));
-		
+		if(isShown) font.draw(batch, displayText, spriteCenter.x-fontLayout.width/2, spriteCenter.y+fontLayout.height/2);
 	}
 	
 	public boolean isShown() {

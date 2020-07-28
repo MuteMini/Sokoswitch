@@ -29,7 +29,7 @@ public final class GameAssetManager {
 	private EntityAssets entityAssets;
 	private NormalBlockAssets normalBlockAssets;
 	private LockedBlockAssets lockedBlockAssets;
-	
+
 	private BitmapFont[] fonts;
 	
 	public GameAssetManager() {
@@ -71,30 +71,29 @@ public final class GameAssetManager {
 		normalBlockAssets = new NormalBlockAssets(manager.get(normalBlockPath));
 		lockedBlockAssets = new LockedBlockAssets(manager.get(lockedBlockPath));
 		
-		fonts = new BitmapFont[5];
+		fonts = new BitmapFont[4];
 		
 		FreeTypeFontGenerator balsamic = manager.get(fontPath[2]);
 		FreeTypeFontGenerator kenny = manager.get(fontPath[1]);
 		FreeTypeFontGenerator.FreeTypeFontParameter param = new FreeTypeFontGenerator.FreeTypeFontParameter();
-			param.size = 150;
+			param.size = 155;
 			param.mono = true;
-			param.color = new Color(.90f, .90f, .90f, 1);
+			param.borderWidth = 10;
+			param.borderColor = Color.DARK_GRAY;
+			param.color = Color.LIGHT_GRAY;
 		fonts[0] = kenny.generateFont(param);
-			param.size = 170;
-			param.color = Color.BLACK;
-		fonts[1] = kenny.generateFont(param);
 			param.size = 60;
 			param.mono = false;
 			param.borderWidth = 2;
 			param.borderColor = Color.DARK_GRAY;
 			param.color = new Color(.90f, .90f, .90f, 1);
-		fonts[2] = balsamic.generateFont(param);
+		fonts[1] = balsamic.generateFont(param);
 			param.color = Color.GOLD;
-		fonts[3] = balsamic.generateFont(param);
+		fonts[2] = balsamic.generateFont(param);
 			param.size = 50;
 			param.borderWidth = 0;
 			param.color = new Color(.90f, .90f, .90f, 1);
-		fonts[4] = balsamic.generateFont(param);
+		fonts[3] = balsamic.generateFont(param);
 	}
 	
 	public Sprite getSprite(int id, int pos) {

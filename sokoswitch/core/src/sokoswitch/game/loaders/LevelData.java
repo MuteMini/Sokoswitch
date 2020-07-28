@@ -57,11 +57,11 @@ public class LevelData {
 			spaceTile.setId(1);
 			cell1.setTile(spaceTile);
 			
-			int xPos = 0, yPos = 0;
+			int xPos = 0, yPos = height-1;
 			while(tiletIterator.hasNext()) {
 				if(xPos == width) {
 					xPos = 0;
-					yPos++;
+					yPos--;
 				}
 				switch(Math.toIntExact((long)tiletIterator.next())) {
 					case 1:
