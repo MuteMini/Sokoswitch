@@ -66,13 +66,14 @@ public class LoadingScreen extends GameScreen{
 			    	game.gam.loadFonts();
 			    	loadingString = "Loading Fonts...";
 			    	break;
-		    }
-			if (loadPos > 3){
-				loadingString = "Loading Complete!";
-				percent = 1;
-				game.gam.initializeValues();
-				game.gsm.showMenu();
-				game.transition = 1;
+			    case 4:
+			    	loadingString = "Loading Complete!";
+					percent = 1;
+					synchronized(this){
+						game.gam.initializeValues();
+						game.gsm.showMenu();
+						game.transition = 1;
+					}
 		    }
 			this.layout = new GlyphLayout(font, loadingString);
 		}
